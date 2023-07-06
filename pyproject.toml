@@ -29,7 +29,7 @@ documentation = "https://omniflow_project.readthedocs.io/"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.7"
 toml = "*"
 
 [tool.poetry.dev-dependencies]

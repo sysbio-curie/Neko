@@ -29,7 +29,7 @@ documentation = "https://omniflow_project.readthedocs.io/"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.9,<4.0"
 toml = "*"
 
 [tool.poetry.dev-dependencies]
@@ -46,6 +46,8 @@ sphinxcontrib-bibtex = "*"
 sphinx-copybutton = "*"
 myst-parser = "*"
 myst-nb = "*"
+omnipath = ">=1.0.7"
+pypath-omnipath = ">=0.15.4"
 jupyterlab = "*"
 pydata-sphinx-theme = "*"
 sphinx-remove-toctrees = "*"

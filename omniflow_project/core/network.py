@@ -3,6 +3,7 @@ import omnipath as op
 from itertools import combinations
 import pandas as pd
 from .._inputs.resources import Resources
+from .._methods.enrichment_methods import Connections
 
 
 class Network:
@@ -20,6 +21,7 @@ class Network:
                  initial_nodes: list[str]):
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["Source", "Target", "Type", "Effect"])
+        self.resources = Resources().all_omnipath_interactions()
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -57,8 +59,7 @@ class Network:
         Basic node connections. It adds all the interactions found in the omnipath database.
         Once an interaction is found it will be added to the list of edges
         """
-        res = Resources()
-        all_interactions = res.all_omnipath_interactions()
+        all_interactions = self.resources
 
         if len(self.nodes) == 1:
             print("Number of node insufficient to create connection")
@@ -81,3 +82,18 @@ class Network:
         Return True if all the nodes in the nodes list are connected, otherwise it returns False
         """
         return False
+
+    def complete_connection(self):
+        """
+        This function tries to connect all nodes of a network object using one of the methods presented in the Connection
+        object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
+        the user should have the possibility to choose different methods to enrich its Network object.
+
+        TO COMPLETE STILL WORK IN PROGRESS
+        """
+        connect = Connections()
+        all_interactions = self.resources
+        edges = Connections.force_nodes_connections(self.nodes, self.edges, self.resources)
+        return
+
+

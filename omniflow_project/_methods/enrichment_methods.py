@@ -1,6 +1,6 @@
+from __future__ import annotations
 import pandas as pd
 from typing_extensions import Literal
-from .._inputs.resources import Resources
 
 
 class Connections:
@@ -10,17 +10,19 @@ class Connections:
     database from the inputs modules, which will be used to extend the initial network.
     """
 
-    def __init__(self):
-        self.resources: Resources = Resources()
+    def __init__(self, database):
+        self.resources = database
+        return
 
     def find_neighbours(self,
-                        node=str,
+                        node: str,
                         mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
         """
         helper function that finds the neighbours of the target node
+        THIS FUNCTION IS SUPER SLOW IT IS NOT GOOD AT ALL, SO IT MUST BE REPLACED WITH AN OPTIMIZED VERSION!!! TO DO ASAP!!!!
         """
 
-        db = self.resources.all_omnipath_interactions()
+        db = self.resources
 
         targets = [i for i in db.loc[db["source"] == node][
             "target"]]  # storing all the target for the selected node
@@ -34,8 +36,12 @@ class Connections:
             return sources + targets
 
     def find_paths(self,
-                   start=str,
-                   end=str,
+                   start: (
+                       str | pd.DataFrame | list[str]
+                   ),
+                   end: (
+                       str | pd.DataFrame
+                   ),
                    maxlen: int = 2,
                    minlen: int = 1,
                    loops: bool = False,
@@ -48,10 +54,21 @@ class Connections:
         match certain criteria (type of interaction, effect, direction, data model, etc...)
         For now (version 0.1.0) it will act as skeleton to retrieve interactions from AllInteractions in Omnipath.
         """
+
+        def convert_to_string_list(start):
+            if isinstance(start, str):
+                return [start]
+            elif isinstance(start, pd.DataFrame):
+                return start['name_of_node'].tolist()
+            elif isinstance(start, list) and all(isinstance(item, str) for item in start):
+                return start
+            else:
+                raise ValueError("Invalid type for 'start' variable")
+
         def find_all_paths_aux(start,
                                end,
                                path,
-                               maxlen=None):
+                               maxlen):
 
             path = path + [start]
 
@@ -80,6 +97,7 @@ class Connections:
                     self.find_neighbours(
                         start,
                         mode
+
                     )
                 )
 
@@ -100,6 +118,14 @@ class Connections:
 
         all_paths = []
 
-        all_paths.extend(find_all_paths_aux(start, end, [], maxlen))
+        start = convert_to_string_list(start)
+
+        end = convert_to_string_list(end)
+
+        for s in start:
+
+            for e in end:
+
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
 
         return all_paths

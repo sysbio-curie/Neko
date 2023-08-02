@@ -4,7 +4,8 @@ from itertools import combinations
 import pandas as pd
 from .._inputs.resources import Resources
 
-class Network():
+
+class Network:
     """
     Main class of the Omniflow package, it stores nodes and edges and offers different methods for enrichment analysis.
     It should take as main argument a list of nodes and as optional a series of filters and others options (inputs/outputs,
@@ -23,16 +24,14 @@ class Network():
             for node in initial_nodes:
                 self.add_node(node)
 
-
     def add_node(self,
-                  node: str):
+                 node: str):
         """
         Add a node to the list of nodes checking that the syntax for the genesymbol is actually correct
         """
         uniprot = mapping.map_name0(node, 'genesymbol', 'uniprot')
         genesymbol = mapping.label(uniprot)
         new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
-        print(genesymbol)
         self.nodes.loc[len(self.nodes)] = new_entry
 
         return
@@ -40,9 +39,9 @@ class Network():
     def add_edge(self,
                  edge: pd.DataFrame):
 
-        if(edge["is_inhibition"].values[0] == True and edge["is_stimulation"].values[0] == False):
+        if (edge["is_inhibition"].values[0] == True and edge["is_stimulation"].values[0] == False):
             effect = "inhibition"
-        elif(edge["is_inhibition"].values[0] == False and edge["is_stimulation"].values[0] == True):
+        elif (edge["is_inhibition"].values[0] == False and edge["is_stimulation"].values[0] == True):
             effect = "stimulation"
         else:
             effect = "undefined"
@@ -58,7 +57,8 @@ class Network():
         Basic node connections. It adds all the interactions found in the omnipath database.
         Once an interaction is found it will be added to the list of edges
         """
-        all_interactions = Resources.all_omnipath_interactions()
+        res = Resources()
+        all_interactions = res.all_omnipath_interactions()
 
         if len(self.nodes) == 1:
             print("Number of node insufficient to create connection")
@@ -81,4 +81,3 @@ class Network():
         Return True if all the nodes in the nodes list are connected, otherwise it returns False
         """
         return False
-

@@ -20,8 +20,10 @@ class Network:
     def __init__(self,
                  initial_nodes: list[str]):
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
-        self.edges = pd.DataFrame(columns=["Source", "Target", "Type", "Effect"])
-        self.resources = Resources().all_omnipath_interactions()
+        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect"])
+        res = Resources()
+        res.load_omnipath_interactions()
+        self.resources = res.omnipath_interactions ### in future release, a string can determine which database to use/load
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -38,18 +40,45 @@ class Network:
 
         return
 
-    def add_edge(self,
-                 edge: pd.DataFrame):
-
+    def add_edge(self, edge: pd.DataFrame):
+        # Check if the edge represents inhibition or stimulation and set the effect accordingly
         if (edge["is_inhibition"].values[0] == True and edge["is_stimulation"].values[0] == False):
             effect = "inhibition"
         elif (edge["is_inhibition"].values[0] == False and edge["is_stimulation"].values[0] == True):
             effect = "stimulation"
         else:
             effect = "undefined"
-        df_edge = pd.DataFrame({"Source": edge["source"], "Target": edge["target"], "Type": edge["type"],
-                                "Effect": effect})
+
+        # Get the type value from the edge DataFrame or set it to None
+        edge_type = edge["type"].values[0] if "type" in edge.columns else None
+
+        # Create a new DataFrame with edge information, including handling None for type
+        df_edge = pd.DataFrame({
+            "source": edge["source"],
+            "target": edge["target"],
+            "Type": edge_type,
+            "Effect": effect
+        })
+
+        # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
+
+    def add_paths_to_edge_list(self, paths):
+        database = self.resources
+
+        for path in paths:  # Iterate through the list of paths
+            if isinstance(path, (str, tuple)):  # Handle single string or tuple
+                path = [path]
+
+            for i in range(0, len(path)):
+                if i == len(path):
+                    return
+                interaction = database.loc[(database["source"] == path[i]) &
+                                           (database["target"] == path[i - 1])]
+                if not interaction.empty:
+                    self.add_edge(interaction)
+
+        return
 
     def convert_series_to_dataframes(self):
         return

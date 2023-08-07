@@ -1,4 +1,5 @@
 from __future__ import annotations
+from future.utils import iteritems
 import pandas as pd
 from typing_extensions import Literal
 
@@ -18,34 +19,32 @@ class Connections:
                         node: str,
                         mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
         """
-        helper function that finds the neighbours of the target node
-        THIS FUNCTION IS SUPER SLOW IT IS NOT GOOD AT ALL, SO IT MUST BE REPLACED WITH AN OPTIMIZED VERSION!!! TO DO ASAP!!!!
+        Optimized helper function that finds the neighbors of the target node.
         """
 
         db = self.resources
 
-        targets = [i for i in db.loc[db["source"] == node][
-            "target"]]  # storing all the target for the selected node
-        sources = [j for j in db.loc[db["target"] == node][
-            "source"]]  # storing all the target for the selected node
+        target_nodes = set(db.loc[db["source"] == node]["target"])
+        source_nodes = set(db.loc[db["target"] == node]["source"])
+
         if mode == "IN":
-            return sources
+            return list(source_nodes)
         elif mode == "OUT":
-            return targets
+            return list(target_nodes)
         else:
-            return sources + targets
+            return list(source_nodes | target_nodes)
 
     def find_paths(self,
                    start: (
                        str | pd.DataFrame | list[str]
                    ),
                    end: (
-                       str | pd.DataFrame
-                   ),
+                       str | pd.DataFrame | None
+                   ) = None,
                    maxlen: int = 2,
                    minlen: int = 1,
                    loops: bool = False,
-                   mode: Literal['OUT', 'IN', 'ALL'] = 'OUT',
+                   mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
                    ) -> list[tuple]:
         """
         Find paths or motifs in a network.
@@ -68,7 +67,7 @@ class Connections:
         def find_all_paths_aux(start,
                                end,
                                path,
-                               maxlen):
+                               maxlen=None):
 
             path = path + [start]
 
@@ -120,7 +119,7 @@ class Connections:
 
         start = convert_to_string_list(start)
 
-        end = convert_to_string_list(end)
+        end = convert_to_string_list(end) if end else (None,)
 
         for s in start:
 

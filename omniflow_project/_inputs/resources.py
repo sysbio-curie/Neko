@@ -1,5 +1,6 @@
 import omnipath as op
 import pypath
+from pypath.utils import mapping
 
 class Resources():
     """
@@ -8,7 +9,24 @@ class Resources():
     """
 
     def __init__(self):
-        self.all_interactions = op.interactions.AllInteractions.get()
+        self.all_omnipath_interactions = None
+        self.omnipath_interactions = None
 
-    def all_omnipath_interactions(self):
-        return self.all_interactions
+    def load_all_omnipath_interactions(self):
+        """
+        loads into the Resources object the omnipath dataframe "all_interactions"
+        """
+        self.all_omnipath_interactions = op.interactions.AllInteractions.get()
+        return
+
+    def translate_dataframe_from_uniprot_to_genesymbol(self):
+        """If the loaded dataframe has the source and target columns in uniprot, it will translate it to genesymbol"""
+
+        return
+
+    def load_omnipath_interactions(self):
+        """
+        loads into the Resources object the omnipath dataframe "Omnipath"
+        """
+        self.omnipath_interactions = op.interactions.OmniPath.get()
+        return

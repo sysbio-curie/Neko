@@ -112,7 +112,8 @@ class Network:
         """
         return False
 
-    def complete_connection(self):
+    def complete_connection(self,
+                            maxlen: int = 2):
         """
         This function tries to connect all nodes of a network object using one of the methods presented in the Connection
         object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
@@ -120,9 +121,29 @@ class Network:
 
         TO COMPLETE STILL WORK IN PROGRESS
         """
-        connect = Connections()
-        all_interactions = self.resources
-        edges = Connections.force_nodes_connections(self.nodes, self.edges, self.resources)
+        connect = Connections(self.resources) ### here we have the database where we look for the interactions
+
+        connect_network = Connections(self.edges) ### here we have the edges dataframe of the network
+        for node1, node2 in combinations(self.nodes["Uniprot"], 2):
+            paths = connect_network.find_paths(node1, node2, maxlen=maxlen, mode="ALL") # as first step, I make sure that there is at least one path between two nodes in the network
+            if paths:
+                continue #
+            else:
+                flag = False
+                i = 0
+                while not flag:
+                    print("Looking for paths with length: ", i, " for node ", node1, " and ", node2)
+                    paths = connect.find_paths(node1, node2, maxlen=i, mode="ALL")
+                    if not paths:
+                        i += 1
+                    else:
+                        self.add_paths_to_edge_list(paths)
+                        flag = True
         return
+
+
+
+
+
 
 

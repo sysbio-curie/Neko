@@ -22,9 +22,4 @@ version 0.1.0
   <li>Enrichment methods: Shortest path (pypath)</li>
   <li>Resources: Omnipath (All interactions)</li>
   <li>Output formats: bnet file</li>
-</ul> 
-
-
-
-
-
+</ul>

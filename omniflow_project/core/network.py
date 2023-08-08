@@ -34,11 +34,42 @@ class Network:
         """
         Add a node to the list of nodes checking that the syntax for the genesymbol is actually correct
         """
-        uniprot = mapping.map_name0(node, 'genesymbol', 'uniprot')
-        genesymbol = mapping.label(uniprot)
-        new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
-        self.nodes.loc[len(self.nodes)] = new_entry
+        complex_string = None
+        genesymbol = None
+        uniprot = None
 
+        if mapping.id_from_label0(node):
+            # Convert UniProt ID to gene symbol
+            uniprot = mapping.id_from_label0(node)
+
+            # Set the UniProt ID as the 'Uniprot' value in the new entry
+            genesymbol = mapping.label(uniprot)
+        elif mapping.id_from_label0(node).startswith("COMPLEX"):
+            node = node[8:]
+            node_list = node.split("_")
+
+            # Translate each element in node_list using mapping.map_name0
+            translated_node_list = [mapping.label(item) for item in node_list]
+
+            # Join the elements in node_list with "_"
+            joined_node_string = "_".join(translated_node_list)
+
+            # Add back the "COMPLEX:" prefix to the string
+            complex_string = "COMPLEX:" + joined_node_string
+        elif mapping.label(node):
+            genesymbol = mapping.label(node)
+            uniprot = mapping.id_from_label0(genesymbol)
+        else:
+            print("Error during translation, check syntax for ", node)
+
+        if complex_string:
+            new_entry = {"Genesymbol": complex_string, "Uniprot": node, "Type": "NaN"}
+            self.nodes.loc[len(self.nodes)] = new_entry
+        else:
+            new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
+            self.nodes.loc[len(self.nodes)] = new_entry
+
+        self.nodes = self.nodes.drop_duplicates()
         return
 
     def add_edge(self, edge: pd.DataFrame):
@@ -65,10 +96,10 @@ class Network:
         })
 
         # add the new nodes to the nodes dataframe
-        if not df_edge["source"].unique() in self.nodes["Uniprot"].unique():
-            self.add_node(df_edge["source"].values[0])
-        if not df_edge["target"].unique() in self.nodes["Uniprot"].unique():
-            self.add_node(df_edge["target"].values[0])
+        if not edge["source"].values[0] in self.nodes["Uniprot"].unique():
+            self.add_node(edge["source"].values[0])
+        if not edge["target"].values[0] in self.nodes["Uniprot"].unique():
+            self.add_node(edge["target"].values[0])
 
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
@@ -160,6 +191,7 @@ class Network:
                 elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
                     # pair of nodes
                     break
+        self.edges = self.edges.drop_duplicates()
         return
 
     def convert_edgelist_into_genesymbol(self):
@@ -168,6 +200,11 @@ class Network:
         I am not sure if it can be useful, mainly because the edge list will contain many different entities that
         will not be possible to translate, and so it will be useless...
         """
-        self.edges["source"] = self.edges["source"].apply(lambda x: mapping.map_name0(x, "uniprot", "genesymbol"))
-        self.edges["target"] = self.edges["target"].apply(lambda x: mapping.map_name0(x, "uniprot", "genesymbol"))
+        # Convert the 'source' column of the edge DataFrame from UniProt to gene symbols
+        self.edges["source"] = self.edges["source"].apply(lambda x: mapping.label(x) or x)
+
+        # Convert the 'target' column of the edge DataFrame from UniProt to gene symbols
+        self.edges["target"] = self.edges["target"].apply(lambda x: mapping.label(x) or x)
+
         return
+

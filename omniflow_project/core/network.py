@@ -4,6 +4,7 @@ from itertools import combinations
 import pandas as pd
 from .._inputs.resources import Resources
 from .._methods.enrichment_methods import Connections
+from typing_extensions import Literal
 
 
 class Network:
@@ -23,7 +24,7 @@ class Network:
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect"])
         res = Resources()
         res.load_omnipath_interactions()
-        self.resources = res.omnipath_interactions ### in future release, a string can determine which database to use/load
+        self.resources = res.omnipath_interactions  ### in future release, a string can determine which database to use/load
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -41,6 +42,9 @@ class Network:
         return
 
     def add_edge(self, edge: pd.DataFrame):
+        """
+        Add an interaction to the list of interactions while converting it to the Omniflow-network format
+        """
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         if (edge["is_inhibition"].values[0] == True and edge["is_stimulation"].values[0] == False):
             effect = "inhibition"
@@ -59,6 +63,12 @@ class Network:
             "Type": edge_type,
             "Effect": effect
         })
+
+        # add the new nodes to the nodes dataframe
+        if not df_edge["source"].unique() in self.nodes["Uniprot"].unique():
+            self.add_node(df_edge["source"].values[0])
+        if not df_edge["target"].unique() in self.nodes["Uniprot"].unique():
+            self.add_node(df_edge["target"].values[0])
 
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
@@ -113,7 +123,8 @@ class Network:
         return False
 
     def complete_connection(self,
-                            maxlen: int = 2):
+                            maxlen: int = 2,
+                            mode: Literal['OUT', 'IN', 'ALL'] = 'ALL'):
         """
         This function tries to connect all nodes of a network object using one of the methods presented in the Connection
         object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
@@ -121,29 +132,42 @@ class Network:
 
         TO COMPLETE STILL WORK IN PROGRESS
         """
-        connect = Connections(self.resources) ### here we have the database where we look for the interactions
+        connect = Connections(self.resources)  # here we have the database where we look for the interactions
 
-        connect_network = Connections(self.edges) ### here we have the edges dataframe of the network
+        connect_network = Connections(self.edges)  # here we have the edges dataframe of the network
         for node1, node2 in combinations(self.nodes["Uniprot"], 2):
-            paths = connect_network.find_paths(node1, node2, maxlen=maxlen, mode="ALL") # as first step, I make sure that there is at least one path between two nodes in the network
-            if paths:
-                continue #
-            else:
-                flag = False
-                i = 0
-                while not flag:
-                    print("Looking for paths with length: ", i, " for node ", node1, " and ", node2)
-                    paths = connect.find_paths(node1, node2, maxlen=i, mode="ALL")
-                    if not paths:
-                        i += 1
-                    else:
-                        self.add_paths_to_edge_list(paths)
-                        flag = True
+            i = 0
+            while i <= maxlen:
+                print("looking for paths in the network with length: ", i, " for node ", node1, " and ", node2)
+                paths = connect_network.find_paths(node1, node2, maxlen=i, mode="ALL")  # as first step, I make sure
+                # that there is at least one path between two nodes in the network
+                if not paths and i < maxlen:  # if there is no path, look for another one until reach maxlen
+                    i += 1
+                    continue
+                elif not paths and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
+                    # until we find a new one
+                    flag = False
+                    i = 0
+                    while not flag:
+                        print("Looking for paths with length: ", i, " for node ", node1, " and ", node2)
+                        paths = connect.find_paths(node1, node2, maxlen=i, mode=mode)
+                        if not paths:
+                            i += 1
+                        else:
+                            self.add_paths_to_edge_list(paths)
+                            flag = True
+                    break
+                elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
+                    # pair of nodes
+                    break
         return
 
-
-
-
-
-
-
+    def convert_edgelist_into_genesymbol(self):
+        """
+        This function converts the edge dataframe from uniprot to genesymbol. This may be removed later,
+        I am not sure if it can be useful, mainly because the edge list will contain many different entities that
+        will not be possible to translate, and so it will be useless...
+        """
+        self.edges["source"] = self.edges["source"].apply(lambda x: mapping.map_name0(x, "uniprot", "genesymbol"))
+        self.edges["target"] = self.edges["target"].apply(lambda x: mapping.map_name0(x, "uniprot", "genesymbol"))
+        return

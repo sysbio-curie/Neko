@@ -1,10 +1,13 @@
 from graphviz import Digraph
 from IPython.display import display
 
+
 class NetworkVisualizer:
     def __init__(self, network, color_by="Effect"):
-        self.dataframe_edges = network.edges
-        self.dataframe_nodes = network.nodes
+        net = network.copy()
+        net.convert_edgelist_into_genesymbol()
+        self.dataframe_edges = net.edges
+        self.dataframe_nodes = net.nodes
         self.color_by = color_by
         self.graph = Digraph(format='pdf')
         self.edge_colors = {
@@ -26,19 +29,38 @@ class NetworkVisualizer:
     def add_edges_to_graph(self):
         for _, row in self.dataframe_edges.iterrows():
             effect = row['Effect']
-            edge_color = self.edge_colors.get(effect, 'black')
+            source = self.wrap_node_name(row['source'])
+            target = self.wrap_node_name(row['target'])
 
-            if self.color_by == "type":
-                edge_color = self.edge_colors.get(row['Type'], 'black')
+            # Determine edge attributes based on effect
+            if effect == 'stimulation':
+                arrowhead = 'normal'
+                color = 'green'
+                dir = 'forward'
+            elif effect == 'inhibition':
+                arrowhead = 'tee'
+                color = 'red'
+                dir = 'forward'
+            else:
+                arrowhead = 'normal'  # Default arrow
+                color = 'black'
+                dir = 'none'
 
-            self.graph.edge(row['source'], row['target'], color=edge_color,
-                            dir='forward' if effect == 'stimulation' else 'none')
+            # Add the edge to the graph with specified attributes
+            self.graph.edge(source, target, color=color, arrowhead=arrowhead, dir=dir)
 
     def add_nodes_to_graph(self):
         for _, row in self.dataframe_nodes.iterrows():
             node = row['Genesymbol']
             node_color = self.node_colors.get(node, 'lightgray')
-            self.graph.node(node, style='filled', fillcolor=node_color)
+            wrapped_node = self.wrap_node_name(node)
+            self.graph.node(wrapped_node, style='filled', fillcolor=node_color)
+
+    def wrap_node_name(self, node_name):
+        if node_name.startswith("COMPLEX:"):
+            return node_name[8:]
+        return node_name
+
 
     def render(self, output_file='network', view=False):
         self.add_edges_to_graph()

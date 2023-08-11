@@ -5,6 +5,7 @@ import pandas as pd
 from .._inputs.resources import Resources
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
+import copy
 
 
 class Network:
@@ -29,10 +30,14 @@ class Network:
             for node in initial_nodes:
                 self.add_node(node)
 
-    def add_node(self,
-                 node: str):
+    def copy(self):
+        new_instance = copy.deepcopy(self)
+        return new_instance
+
+    def mapping_node_identifier(self,
+                                node: str) -> list[str]:
         """
-        Add a node to the list of nodes checking that the syntax for the genesymbol is actually correct
+        Returns an array with the possible identifier of the node
         """
         complex_string = None
         genesymbol = None
@@ -62,6 +67,15 @@ class Network:
         else:
             print("Error during translation, check syntax for ", node)
 
+        return [complex_string, genesymbol, uniprot]
+
+    def add_node(self,
+                 node: str):
+        """
+        Add a node to the list of nodes checking that the syntax for the genesymbol is actually correct
+        """
+        complex_string, genesymbol, uniprot = self.mapping_node_identifier(node)
+
         if complex_string:
             new_entry = {"Genesymbol": complex_string, "Uniprot": node, "Type": "NaN"}
             self.nodes.loc[len(self.nodes)] = new_entry
@@ -76,6 +90,7 @@ class Network:
         """
         Add an interaction to the list of interactions while converting it to the Omniflow-network format
         """
+        print(edge["source"].values[0], edge["target"].values[0])
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         if (edge["is_inhibition"].values[0] == True and edge["is_stimulation"].values[0] == False):
             effect = "inhibition"
@@ -104,7 +119,7 @@ class Network:
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
 
-    def add_paths_to_edge_list(self, paths):
+    def add_paths_to_edge_list(self, paths, mode):
         database = self.resources
 
         for path in paths:  # Iterate through the list of paths
@@ -112,13 +127,17 @@ class Network:
                 path = [path]
 
             for i in range(0, len(path)):
-                if i == len(path):
-                    return
-                interaction = database.loc[(database["source"] == path[i]) &
-                                           (database["target"] == path[i - 1])]
-                if not interaction.empty:
-                    self.add_edge(interaction)
-
+                if i == len(path) - 1:
+                    break
+                interaction_in = database.loc[(database["source"] == path[i]) &
+                                              (database["target"] == path[i + 1])]
+                interaction_out = database.loc[(database["target"] == path[i]) &
+                                               (database["source"] == path[i + 1])]
+                if not interaction_in.empty and (mode == "ALL" or "IN"):
+                    self.add_edge(interaction_in)
+                elif not interaction_out.empty and (mode == "ALL" or "OUT"):
+                    self.add_edge(interaction_out)
+        self.edges = self.edges.drop_duplicates()
         return
 
     def convert_series_to_dataframes(self):
@@ -137,10 +156,10 @@ class Network:
             for node1, node2 in combinations(self.nodes["Uniprot"], 2):
                 interaction1 = all_interactions.loc[(all_interactions["source"] == node1) &
                                                     (all_interactions["target"] == node2)]
-                interaction1 = interaction1.reset_index(drop=True)
+                # interaction1 = interaction1.reset_index(drop=True)
                 interaction2 = all_interactions.loc[(all_interactions["source"] == node2) &
                                                     (all_interactions["target"] == node1)]
-                interaction2 = interaction2.reset_index(drop=True)
+                # interaction2 = interaction2.reset_index(drop=True)
                 if not interaction1.empty:
                     self.add_edge(interaction1)
                 if not interaction2.empty:
@@ -155,7 +174,8 @@ class Network:
 
     def complete_connection(self,
                             maxlen: int = 2,
-                            mode: Literal['OUT', 'IN', 'ALL'] = 'ALL'):
+                            mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
+                            minimal: bool = True):
         """
         This function tries to connect all nodes of a network object using one of the methods presented in the Connection
         object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
@@ -164,14 +184,20 @@ class Network:
         TO COMPLETE STILL WORK IN PROGRESS
         """
         connect = Connections(self.resources)  # here we have the database where we look for the interactions
-
+        nodes = self.nodes.copy()
         connect_network = Connections(self.edges)  # here we have the edges dataframe of the network
-        for node1, node2 in combinations(self.nodes["Uniprot"], 2):
+        for node1, node2 in combinations(nodes["Uniprot"], 2):
             i = 0
+            if minimal:
+                connect_network = Connections(self.edges)  # here we have the edges dataframe of the network
             while i <= maxlen:
-                print("looking for paths in the network with length: ", i, " for node ", node1, " and ", node2)
-                paths = connect_network.find_paths(node1, node2, maxlen=i, mode="ALL")  # as first step, I make sure
+                print("looking for paths in the network with length: ", i, " for node ",
+                      self.mapping_node_identifier(node1)[1], " and ", self.mapping_node_identifier(node2)[1])
+                paths = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)  # as first step, I make sure
                 # that there is at least one path between two nodes in the network
+                if paths:
+                    print("Found a path!")
+                    print(self.translate_paths(paths))
                 if not paths and i < maxlen:  # if there is no path, look for another one until reach maxlen
                     i += 1
                     continue
@@ -180,18 +206,19 @@ class Network:
                     flag = False
                     i = 0
                     while not flag:
-                        print("Looking for paths with length: ", i, " for node ", node1, " and ", node2)
+                        print("Looking for paths with length: ", i, " for node ",
+                              self.mapping_node_identifier(node1)[1], " and ", self.mapping_node_identifier(node2)[1])
                         paths = connect.find_paths(node1, node2, maxlen=i, mode=mode)
                         if not paths:
                             i += 1
                         else:
-                            self.add_paths_to_edge_list(paths)
+                            print(self.translate_paths(paths))
+                            self.add_paths_to_edge_list(paths, mode)
                             flag = True
                     break
                 elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
                     # pair of nodes
                     break
-        self.edges = self.edges.drop_duplicates()
         return
 
     def convert_edgelist_into_genesymbol(self):
@@ -200,11 +227,27 @@ class Network:
         I am not sure if it can be useful, mainly because the edge list will contain many different entities that
         will not be possible to translate, and so it will be useless...
         """
-        # Convert the 'source' column of the edge DataFrame from UniProt to gene symbols
-        self.edges["source"] = self.edges["source"].apply(lambda x: mapping.label(x) or x)
+        self.edges.loc[:, "source"] = self.edges["source"].apply(
+            lambda x: self.mapping_node_identifier(x)[0] or self.mapping_node_identifier(x)[1])
 
-        # Convert the 'target' column of the edge DataFrame from UniProt to gene symbols
-        self.edges["target"] = self.edges["target"].apply(lambda x: mapping.label(x) or x)
+        self.edges.loc[:, "target"] = self.edges["target"].apply(
+            lambda x: self.mapping_node_identifier(x)[0] or self.mapping_node_identifier(x)[1])
 
         return
 
+    def translate_paths(self,
+                        paths):
+        translated_list = []
+
+        # If input_list is a list of strings
+        if isinstance(paths[0], str):
+            translated_list = [self.mapping_node_identifier(item)[1] or self.mapping_node_identifier(item)[0] for item
+                               in paths]
+        # If input_list is a list of lists of strings
+        elif isinstance(paths[0], list):
+            for sublist in paths:
+                translated_sublist = [self.mapping_node_identifier(item)[1] or self.mapping_node_identifier(item)[0] for
+                                      item in sublist]
+                translated_list.append(translated_sublist)
+
+        return translated_list

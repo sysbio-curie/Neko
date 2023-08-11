@@ -39,7 +39,7 @@ class Connections:
                        str | pd.DataFrame | list[str]
                    ),
                    end: (
-                       str | pd.DataFrame | None
+                       str | pd.DataFrame |  list[str] | None
                    ) = None,
                    maxlen: int = 2,
                    minlen: int = 1,

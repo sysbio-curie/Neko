@@ -9,14 +9,14 @@ class Resources():
     """
 
     def __init__(self):
-        self.all_omnipath_interactions = None
-        self.omnipath_interactions = None
+        self.interactions = None
+        self.filtered_interactions = None
 
     def load_all_omnipath_interactions(self):
         """
         loads into the Resources object the omnipath dataframe "all_interactions"
         """
-        self.all_omnipath_interactions = op.interactions.AllInteractions.get()
+        self.interactions = op.interactions.AllInteractions.get()
         return
 
     def translate_dataframe_from_uniprot_to_genesymbol(self):
@@ -28,5 +28,5 @@ class Resources():
         """
         loads into the Resources object the omnipath dataframe "Omnipath"
         """
-        self.omnipath_interactions = op.interactions.OmniPath.get()
+        self.interactions = op.interactions.OmniPath.get()
         return

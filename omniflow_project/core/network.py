@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pypath.utils import mapping
 import omnipath as op
 from itertools import combinations
@@ -25,7 +27,7 @@ class Network:
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect"])
         res = Resources()
         res.load_omnipath_interactions()
-        self.resources = res.omnipath_interactions  ### in future release, a string can determine which database to use/load
+        self.resources = res.interactions  ### in future release, a string can determine which database to use/load
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -172,10 +174,43 @@ class Network:
         """
         return False
 
+    def connect_subgroup(self,
+                         group: (
+                             str | pd.DataFrame | list[str]
+                         ),
+                         maxlen: int = 1,
+                         mode: Literal['OUT', 'IN', 'ALL'] = 'ALL'):
+        """
+        Function used to connect all the nodes in a particular subgroup.
+        """
+
+        connect = Connections(self.resources)  # here we have the database where we look for the interactions
+        if len(self.nodes) == 1:
+            print("Number of node insufficient to create connection")
+        else:
+            for node1, node2 in combinations(group, 2):
+                flag = False
+                i = 0
+                while not flag and i <= maxlen:
+                    print("looking for paths in the database with length: ", i, " for node ",
+                          self.mapping_node_identifier(node1)[1], " and ", self.mapping_node_identifier(node2)[1])
+                    paths = connect.find_paths(node1, node2, maxlen=i, mode=mode)  #looking for a short path in the database
+                    if not paths:  # if there is no path, look for another one until reach maxlen
+                        i += 1
+                        continue
+                    if paths:
+                        print("Found a path!")
+                        print(self.translate_paths(paths))
+                        self.add_paths_to_edge_list(paths, mode)
+                        flag = True
+        return
+
+
     def complete_connection(self,
                             maxlen: int = 2,
                             mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
-                            minimal: bool = True):
+                            minimal: bool = True,
+                            k_mean: Literal['tight', 'extensive'] = 'tight'):
         """
         This function tries to connect all nodes of a network object using one of the methods presented in the Connection
         object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
@@ -183,6 +218,11 @@ class Network:
 
         TO COMPLETE STILL WORK IN PROGRESS
         """
+        if k_mean == 'tight' :
+            i_search = 3
+        elif k_mean == 'extensive' :
+            i_search = 4
+
         connect = Connections(self.resources)  # here we have the database where we look for the interactions
         nodes = self.nodes.copy()
         connect_network = Connections(self.edges)  # here we have the edges dataframe of the network
@@ -205,7 +245,8 @@ class Network:
                     # until we find a new one
                     flag = False
                     i = 0
-                    while not flag:
+                    while not flag and i<=i_search:
+                        print("i_search = ",i_search)
                         print("Looking for paths with length: ", i, " for node ",
                               self.mapping_node_identifier(node1)[1], " and ", self.mapping_node_identifier(node2)[1])
                         paths = connect.find_paths(node1, node2, maxlen=i, mode=mode)
@@ -219,6 +260,34 @@ class Network:
                 elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
                     # pair of nodes
                     break
+        return
+
+    def connect_component(self,
+                          comp_A: (
+                              str | list[str]
+                          ),
+                          comp_B: (
+                              str  | list[str]
+                          ),
+                          maxlen: int = 2,
+                          mode: Literal['OUT', 'IN', 'ALL'] = 'OUT'):
+        """
+        This function tries to connect subcomponents of a network object using one of the methods presented in the Connection
+        object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
+        the user should have the possibility to choose different methods to enrich its Network object.
+
+        TO COMPLETE STILL WORK IN PROGRESS
+        """
+        connect = Connections(self.resources)
+        paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
+        self.add_paths_to_edge_list(paths, mode)
+        all_nodes = set(self.nodes['Uniprot'].values)
+        set_a = set(comp_A)
+        set_b = set(comp_B)
+        set_c = all_nodes.difference(set_a)
+        set_c = set_c.difference(set_b)
+        set_c = list(set_c)
+        self.connect_subgroup(set_c)
         return
 
     def convert_edgelist_into_genesymbol(self):

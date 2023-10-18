@@ -1,12 +1,12 @@
 [paths]
 source =
     project_name
-    */site-packages/omniflow_project
+    */site-packages/omniflow
 
 [run]
 branch = true
 parallel = true
-source = omniflow_project
+source = omniflow
 omit = */__init__.py
 
 [report]

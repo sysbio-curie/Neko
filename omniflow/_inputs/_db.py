@@ -4,6 +4,18 @@ import logging
 import pypath
 from pypath.utils import mapping
 
+"""
+Access to network databases.
+"""
+
+
+def omnipath_universe(**kwargs):
+    """
+    Access generic networks from OmniPath.
+    """
+
+    return op.interactions.PostTranslationalInteractions.get(**kwargs)
+
 
 class Resources():
     """
@@ -41,7 +53,7 @@ class Resources():
         """
         loads into the Resources object the omnipath dataframe "all_interactions"
         """
-        self.interactions = op.interactions.AllInteractions.get()
+        self.interactions = op.interactions.PostTranslationalInteractions.get()
         return
 
     def translate_dataframe_from_uniprot_to_genesymbol(self):

@@ -101,6 +101,7 @@ class Network:
                  sif_file=None):
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect"])
+        self.initial_nodes = initial_nodes
         res = Resources()
         res.load_omnipath_interactions()
         self.resources = res.interactions  ### in future release, a string can determine which database to use/load
@@ -186,6 +187,7 @@ class Network:
             node_list.append(interaction[2])
 
         node_list = list(dict.fromkeys(node_list))
+        self.initial_nodes = node_list
         for node in node_list:
             self.add_node(node)
 

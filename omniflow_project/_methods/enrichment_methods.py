@@ -15,31 +15,26 @@ class Connections:
         self.resources = database
         return
 
-    def find_neighbours(self,
-                        node: str,
-                        mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
-        """
-        Optimized helper function that finds the neighbors of the target node.
-        """
-
+    def find_neighbours(self, node: str, mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
         db = self.resources
 
-        target_nodes = set(db.loc[db["source"] == node]["target"])
-        source_nodes = set(db.loc[db["target"] == node]["source"])
-
-        if mode == "IN":
-            return list(source_nodes)
-        elif mode == "OUT":
-            return list(target_nodes)
+        if mode == 'IN':
+            neighbors = db.loc[db["target"] == node]["source"].tolist()
+        elif mode == 'OUT':
+            neighbors = db.loc[db["source"] == node]["target"].tolist()
         else:
-            return list(source_nodes | target_nodes)
+            in_neighbors = db.loc[db["target"] == node]["source"].tolist()
+            out_neighbors = db.loc[db["source"] == node]["target"].tolist()
+            neighbors = list(set(in_neighbors + out_neighbors))
+
+        return neighbors
 
     def find_paths(self,
                    start: (
                        str | pd.DataFrame | list[str]
                    ),
                    end: (
-                       str | pd.DataFrame |  list[str] | None
+                       str | pd.DataFrame | list[str] | None
                    ) = None,
                    maxlen: int = 2,
                    minlen: int = 1,
@@ -64,67 +59,34 @@ class Connections:
             else:
                 raise ValueError("Invalid type for 'start' variable")
 
-        def find_all_paths_aux(start,
-                               end,
-                               path,
-                               maxlen=None):
-
+        def find_all_paths_aux(start, end, path, maxlen):
             path = path + [start]
 
-            if (
-                len(path) >= minlen + 1 and
-                (
-                    start == end or
-                    (
-                        end is None and
-                        not loops and
-                        len(path) == maxlen + 1
-                    ) or
-                    (
-                        loops and
-                        path[0] == path[-1]
-                    )
-                )
-            ):
+            if len(path) >= minlen + 1 and (start == end or (end is None and not loops and len(path) == maxlen + 1) or (
+                loops and path[0] == path[-1])):
                 return [path]
 
             paths = []
 
             if len(path) <= maxlen:
+                next_steps = self.find_neighbours(start, mode)
 
-                next_steps = set(
-                    self.find_neighbours(
-                        start,
-                        mode
-
-                    )
-                )
-
-                next_steps = next_steps if loops else next_steps - set(path)
+                if not loops:
+                    next_steps = list(set(next_steps) - set(path))
 
                 for node in next_steps:
-                    paths.extend(
-                        find_all_paths_aux(
-                            node,
-                            end,
-                            path, maxlen
-                        )
-                    )
+                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
 
             return paths
 
-        minlen = max(1, minlen)
+        start_nodes = convert_to_string_list(start)
+        end_nodes = convert_to_string_list(end) if end else [None]
 
+        minlen = max(1, minlen)
         all_paths = []
 
-        start = convert_to_string_list(start)
-
-        end = convert_to_string_list(end) if end else (None,)
-
-        for s in start:
-
-            for e in end:
-
+        for s in start_nodes:
+            for e in end_nodes:
                 all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
 
         return all_paths

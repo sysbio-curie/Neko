@@ -322,7 +322,8 @@ class Network:
                             minimal: bool = True,
                             k_mean: Literal['tight', 'extensive'] = 'tight',
                             only_signed: bool = False,
-                            consensus: bool = False):
+                            consensus: bool = False,
+                            connect_node_when_first_introduced: bool = True):
         """
         This function tries to connect all nodes of a network object using one of the methods presented in the Connection
         object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
@@ -372,11 +373,17 @@ class Network:
                         else:
                             print(translate_paths(paths))
                             self.add_paths_to_edge_list(paths, mode)
+                            if connect_node_when_first_introduced:
+                                self.connect_nodes(only_signed, consensus)
+                                self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
                             flag = True
                     break
                 elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
                     # pair of nodes
                     break
+        if not connect_node_when_first_introduced:
+            self.connect_nodes(only_signed, consensus)
+            self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
         return
 
     def connect_component(self,

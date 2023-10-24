@@ -18,6 +18,10 @@ class Connections:
     def find_neighbours(self, node: str, mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
         db = self.resources
 
+        """
+        Optimized helper function that finds the neighbors of the target node.
+        """
+
         if mode == 'IN':
             neighbors = db.loc[db["target"] == node]["source"].tolist()
         elif mode == 'OUT':

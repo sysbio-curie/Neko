@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 import collections
 
 from pypath_common import misc as common
@@ -13,7 +14,10 @@ class Noi:
     def __init__(
             self,
             noi: Noi | list[str] | list[list[str]] | dict[str, list[str]],
-            groups: list[str] | dict[str, str],
+            groups: list[str] | dict[str, str] | None = None,
+            id_type: str | None = 'uniprot',
+            entity_type: str | None = 'protein',
+            organism: int | str | None = 9606,
         ):
         """
         Nodes of interest.
@@ -28,26 +32,29 @@ class Noi:
                       nodes, group names can be specified by ``groups``
         """
 
-        self._setup(noi, groups)
+        self._setup(noi, groups, id_type, entity_type, organism)
 
 
     def _setup(
             self,
             noi: Noi | list[str] | list[list[str]] | dict[str, list[str]],
-            groups: list[str] | dict[str, str],
+            groups: list[str] | dict[str, str] | None = None,
+            id_type: str | None = 'uniprot',
+            entity_type: str | None = 'protein',
+            organism: int | str | None = 9606,
         ):
 
-        self.nodes = self._parse(noi, groups)
+        self.nodes = self._parse(noi, groups, id_type, entity_type, organism)
 
 
     @staticmethod
     def _parse(
             noi: Noi | list[str] | list[list[str]] | dict[str, list[str]],
-            groups: list[str] | dict[str, str],
+            groups: list[str] | dict[str, str] | None = None,
+            id_type: str | None = 'uniprot',
+            entity_type: str | None = 'protein',
+            organism: int | str | None = 9606,
         ) -> dict[str, list[str]]:
-
-        # later, we can convert str to omniflow.core._node.Node instances
-        # this will enable to have non-protein nodes, multiple organisms, etc
 
         if isinstance(noi, Noi):
 
@@ -55,28 +62,60 @@ class Noi:
 
         if isinstance(noi, dict):
 
-            return noi
+            groups, noi = zip(*(
+                (grp, n)
+                for grp, nodes in noi.items()
+                for n in nodes
+            ))
+            groups = list(groups)
 
         noi = common.to_list(noi)
 
-        if all(isinstance(n, str) for it in noi):
+        def wrong_node(n: Any):
 
-            if isinstance(dict, groups):
+            raise ValueError(
+                f'Nodes must be Node, string or tuple, got `{n}`.',
+            )
 
-                groups = [groups[n] for n in noi]
+        noi = [
+            n
+                if isinstance(n, Node) else
+            Node(
+                n,
+                id_type = id_type,
+                entity_type = entity_type,
+                organism = organism,
+            )
+                if isinstance(n, str) else
+            Node(*(
+                from_node or from_arg
+                for from_node, from_arg in
+                zip(
+                    n + (None,) * 3,
+                    (None, id_type, entity_type, organism),
+                )
+            ))
+                if isinstance(n, tuple) else
+            wrong_node(n)
+            for n in noi
+        ]
 
-            if isinstance(list, groups):
+        if isinstance(groups, dict):
 
-                if len(noi) != len(groups):
+            groups = [groups[n] for n in noi]
 
-                    raise ValueError('Nodes and groups are not the same length')
+        if isinstance(groups, list):
 
-                _noi = collections.defaultdict(list)
-                [_noi[g].append(n) for n, g in zip(noi, groups))]
+            if len(noi) != len(groups):
 
-                return dict(_noi)
+                raise ValueError('Nodes and groups are not the same length')
 
-        return {groups or 'noi': noi}
+            _noi = collections.defaultdict(list)
+            [_noi[g].append(n) for n, g in zip(noi, groups))]
+
+            groups = dict(_noi)
+
+        return groups or {'noi': noi}
 
 
 

@@ -224,6 +224,7 @@ class Node:
     def as_organism(
             self,
             organism: str | int = 10090,
+        ) -> Generator[Node, None, None]:
         """
         Translate to another organism by orthologous gene pairs.
 
@@ -235,7 +236,6 @@ class Node:
             Due to potential ambiguous translation, a generator of nodes is
             returned.
         """
-        ) -> Generator[Node, None, None]:
 
         organsim = taxonomy.ensure_ncbi_taxid(organism)
 
@@ -326,3 +326,33 @@ class Node:
     def _attrs(cls) -> list[str]:
 
         return list(inspect.signature(cls.__init__).parameters.keys())[1:]
+
+
+    def match(self, *args, **kwargs) -> bool:
+        """
+        Match this node against a custom set of properties.
+        """
+
+        other = (
+            args[0].asdict()
+                if args and isinstance(args[0], Node) else
+            args[0]
+                if args and isinstance(args[0], dict) else
+            {**zip(self._attrs, args), **kwargs}
+        )
+
+        return all(
+            attr not in other or getattr(self, attr) == other[attr]
+            for attr in self._attrs[:4]
+        )
+
+
+    def __eq__(self, other) -> bool:
+
+        args, kwargs = (
+            ((), other)
+                if isinstance(other, dict) else
+            (_common.to_list(other), {})
+        )
+
+        return other == self.label or self.match(*args, **kwargs)

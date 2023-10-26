@@ -103,23 +103,47 @@ class Noi(collections.abc.Mapping):
             attrs: dict,
         ) -> Node:
 
+        return self.parse_node(node, self._defaults, attrs)
+
+
+    @classmethod
+    def parse_node(
+            cls,
+            node: str | Node | tuple | dict,
+            *attrs: dict,
+        ) -> Node:
+        """
+        Parse various node notations into Node object.
+
+        Args:
+            attrs:
+                A series of dicts with node properties, from lowest to highest
+                priority; elements with None values will be ignored.
+        """
+
         if not isinstance(node, Node):
 
-            _attrs = self._defaults.copy()
-            _attrs.update({
-                k: v
-                for k, v in (attrs or {}).items()
-                if k in self._defaults and v
-            })
-            _attrs.update(
-                node
-                    if isinstance(node, dict) else
-                {k: v for k, v in zip(Node._attrs, node) if v}
-                    if isinstance(node, tuple) else
-                {'identifier': node}
-                    if isinstance(node, str) else
-                {}
-            )
+            if isinstance(node, str):
+
+                node = (node,)
+
+            if isinstance(node, tuple):
+
+                node = dict(zip(Node._attrs, node))
+
+            if isinstance(node, dict):
+
+                attrs += (node,)
+
+            _attrs = cls._DEFAULTS.copy()
+
+            for a in attrs:
+
+                _attrs.update({
+                    k: v
+                    for k, v in (a or {}).items()
+                    if k in cls._DEFAULTS and v
+                })
 
             if 'identifier' not in _attrs:
 

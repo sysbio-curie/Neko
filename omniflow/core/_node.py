@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Literal, Sequence
 import re
+import inspect
 
 import pypath.utils.taxonomy as _taxonomy
 import pypath.utils.mapping as _mapping
@@ -43,6 +44,7 @@ class Node:
             organism: int | str = 'human',
             original_id: str | None = None,
             original_id_type: str | None = None,
+            label: str | None = None,
         ):
         """
         Node of a molecular interaction network to be used in queries.
@@ -56,12 +58,23 @@ class Node:
                 Type of the molecular entity.
             organism:
                 Name or NCBI Taxonomy ID of the organism.
+            original_id:
+                We use this slot to keep track of the identifier used in the
+                input data.
+            original_id_type:
+                Type of the identifier used in the input data.
+            label:
+                Provide a human readable label, anything that you like. If not
+                provided, we'll try to find one.
         """
 
         self.identifier = identifier
         self._id_type = id_type
         self.entity_type = entity_type
         self.organism = _taxonomy.ensure_ncbi_taxid(organism)
+        self.original_id = original_id or identifier
+        self.original_id_type = original_id_type or id_type
+        self._label = label
 
         self._bootstrap()
 
@@ -83,6 +96,7 @@ class Node:
 
         self._guess_entity_type()
         self._guess_id_type()
+        self._ensure_label()
 
 
     def _guess_entity_type(self):
@@ -200,14 +214,7 @@ class Node:
             ncbi_tax_id = self.organism,
         ):
 
-            yield Node(
-                _id,
-                id_type = id_type,
-                organism = self.organism,
-                entity_type = self.entity_type,
-                original_id = self.original_id,
-                original_id_type = self.original_id_type,
-            )
+            yield self.as(identifier = _id, id_type = id_type)
 
 
     def as_organism(
@@ -235,11 +242,83 @@ class Node:
             id_type = self.id_type,
         ):
 
-            yield Node(
-                _id,
-                id_type = self.id_type,
-                entity_type = self.entity_type,
-                organsim = organism,
-                original_id = self.original_id,
-                original_id_type = self.original_id_type,
-            )
+            yield self.as(identifier = _id, organism = organism)
+
+
+    def asdict(self, **kwargs) -> dict:
+        """
+        Node properties as a dict.
+
+        Args:
+            kwargs:
+                Optionally override properties.
+        """
+
+        state = {
+            k: getattr(self, k)
+            for k in
+            list(
+                inspect.signature(self.__class__.__init__).
+                parameters.keys()
+            )[1:]
+        }
+        state.update(kwargs)
+
+        return state
+
+
+    def as(self, **kwargs) -> None:
+        """
+        A copy of this node with certain properties updated.
+
+        Args:
+            kwargs:
+                Properties to be updated.
+        """
+
+        return Node(**self.asdict(**kwargs))
+
+
+    def __str__(self) -> str:
+
+        return self.identifier
+
+
+    def _ensure_label(self):
+
+        if not self._label:
+
+            for _id, it in (
+                (self.identifier, self.id_type),
+                (self.original_id, self.original_id_type),
+            ):
+
+                self._label = mapping.label(
+                    _id,
+                    id_type = it,
+                    entity_type = self.entity_type,
+                    ncbi_tax_id = self.organism,
+                )
+                if self._label: break
+
+
+    def label(self) -> str:
+
+        return self._label or self.identifier
+
+
+    def __repr__(self) -> str:
+
+        return f'<{self.label}>'
+
+
+    @property
+    def organism_latin(self) -> str:
+
+        return _taxonomy.ensure_latin_name(self.organism)
+
+
+    @property
+    def organism_common(self) -> str:
+
+        return _taxonomy.ensure_common_name(self.organism)

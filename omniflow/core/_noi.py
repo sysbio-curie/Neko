@@ -1,15 +1,21 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Hashable
 import collections
 
-from pypath_common import misc as common
+from pypath_common import misc as _common
 
 """
 Handling nodes of interest for network lookup queries.
 """
 
-class Noi:
+class Noi(collections.abc.Mapping):
+
+    _DEFAULTS = {
+        'id_type': 'uniprot',
+        'entity_type': 'protein',
+        'organism': 9606,
+    }
 
     def __init__(
             self,
@@ -32,19 +38,21 @@ class Noi:
                       nodes, group names can be specified by ``groups``
         """
 
-        self._setup(noi, groups, id_type, entity_type, organism)
+        self._defaults = {
+            'id_type': id_type,
+            'entity_type': entity_type,
+            'organism': organism,
+        }
+        self._setup(noi, groups)
 
 
     def _setup(
             self,
             noi: Noi | list[str] | list[list[str]] | dict[str, list[str]],
             groups: list[str] | dict[str, str] | None = None,
-            id_type: str | None = 'uniprot',
-            entity_type: str | None = 'protein',
-            organism: int | str | None = 9606,
         ):
 
-        self.nodes = self._parse(noi, groups, id_type, entity_type, organism)
+        self.nodes = self._parse(noi, groups)
 
 
     @staticmethod
@@ -69,36 +77,7 @@ class Noi:
             ))
             groups = list(groups)
 
-        noi = common.to_list(noi)
-
-        def wrong_node(n: Any):
-
-            raise ValueError(
-                f'Nodes must be Node, string or tuple, got `{n}`.',
-            )
-
-        noi = [
-            n
-                if isinstance(n, Node) else
-            Node(
-                n,
-                id_type = id_type,
-                entity_type = entity_type,
-                organism = organism,
-            )
-                if isinstance(n, str) else
-            Node(*(
-                from_node or from_arg
-                for from_node, from_arg in
-                zip(
-                    n + (None,) * 3,
-                    (None, id_type, entity_type, organism),
-                )
-            ))
-                if isinstance(n, tuple) else
-            wrong_node(n)
-            for n in noi
-        ]
+        noi = [self._parse_node(n, locals()) for n in _common.to_list(noi)]
 
         if isinstance(groups, dict):
 
@@ -118,5 +97,74 @@ class Noi:
         return groups or {'noi': noi}
 
 
+    def _parse_node(
+            self,
+            node: str | Node | tuple | dict,
+            attrs: dict,
+        ) -> Node:
+
+        if not isinstance(node, Node):
+
+            _attrs = self._defaults.copy()
+            _attrs.update({
+                k: v
+                for k, v in (attrs or {}).items()
+                if k in self._defaults and v
+            })
+            _attrs.update(
+                node
+                    if isinstance(node, dict) else
+                {k: v for k, v in zip(Node._attrs, node) if v}
+                    if isinstance(node, tuple) else
+                {'identifier': node}
+                    if isinstance(node, str) else
+                {}
+            )
+
+            if 'identifier' not in _attrs:
+
+                raise ValueError(
+                    'Nodes must have identifiers. '
+                    f'Could not find identifier for `{node}`.',
+                )
+
+            node = Node(**_attrs)
+
+        return node
+
+
+    def __getitem__(self, key: Hashable) -> Any:
+
+        return self.nodes[key]
+
+
+    def __iter__(self):
+
+        return self.nodes.__iter__()
+
+
+    def __len__(self) -> int:
+
+        return len(self.nodes)
+
+
+    def __delitem__(self, key: Hashable):
+
+        del self.nodes[key]
+
+
+    def __setitem__(self, key: Hashable, value: Any):
+
+        self.nodes[key] = value
+
+
+    def as_idtype(self, id_type: str, entity_type: str = 'protein') -> Noi:
+
+        return Noi(
+            {
+                grp:
+                for grp, nodes in self.nodes.items()
+            }
+        )
 
 

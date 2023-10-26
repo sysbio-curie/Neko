@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any, Callable, Hashable
 import collections
 import itertools
+import json
+import yaml
 
 from pypath_common import misc as _common
 
@@ -255,3 +257,43 @@ class Noi(collections.abc.Mapping):
             grp: [n for n in nodes if op(n.match(*args, **kwargs))]
             for grp, nodes in self.nodes.items()
         })
+
+
+    @classmethod
+    def from_json(cls, path: str) -> Noi:
+        """
+        Read nodes of interest from JSON.
+
+        The JSON contents should result a valid object for the ``noi``
+        argument or all arguments of the class.
+        """
+
+        return cls._from_file(path, json.load)
+
+
+    @classmethod
+    def from_yaml(cls, path: str) -> Noi:
+        """
+        Read nodes of interest from YAML (YML).
+
+        The YAML contents should result a valid object for the ``noi``
+        argument or all arguments of the class.
+        """
+
+        return cls._from_file(path, yaml.safe_load)
+
+
+    @classmethod
+    def _from_file(cls, path: str, module: Callable) -> Noi:
+
+        with open(path, 'r') as fp:
+
+            contents = module.load(fp)
+
+        param = set(list(inspect.signature(cls.__init__).parameters)[1:])
+
+        if not (isinstance(contents, dict) and set(contents.keys()) & param):
+
+            contents = {'noi': contents}
+
+        return cls(**contents)

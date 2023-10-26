@@ -254,14 +254,7 @@ class Node:
                 Optionally override properties.
         """
 
-        state = {
-            k: getattr(self, k)
-            for k in
-            list(
-                inspect.signature(self.__class__.__init__).
-                parameters.keys()
-            )[1:]
-        }
+        state = {k: getattr(self, k) for k in self._attrs}
         state.update(kwargs)
 
         return state
@@ -322,3 +315,10 @@ class Node:
     def organism_common(self) -> str:
 
         return _taxonomy.ensure_common_name(self.organism)
+
+
+    @property
+    @classmethod
+    def _attrs(cls) -> list[str]:
+
+        return list(inspect.signature(cls.__init__).parameters.keys())[1:]

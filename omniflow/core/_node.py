@@ -149,6 +149,10 @@ class Node:
         ):
             self.id_type = 'uniprot'
 
+        else:
+            # fall back to default, to be improved later
+            self.id_type = 'genesymbol'
+
 
     def _guess_mirna_id_type(self):
 

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Hashable
+from typing import Any, Callable, Hashable
 import collections
+import itertools
 
 from pypath_common import misc as _common
 
@@ -183,12 +184,74 @@ class Noi(collections.abc.Mapping):
 
 
     def as_idtype(self, id_type: str, entity_type: str = 'protein') -> Noi:
+        """
+        Translate nodes to a certain ID type.
+
+        The translation applies to one entity type in one call, the rest of
+        the nodes will be included unchanged.
+        """
+
+        return self.apply(
+            lambda n: n.as_idtype(id_type),
+            entity_type = entity_type,
+        )
+
+
+    def as_organism(
+            self,
+            organism: str | int = 10090,
+            source_organism: str | int = 9606,
+        ) -> Noi:
+        """
+        Translate nodes to a certain ID type.
+
+        The translation applies to one entity type in one call, the rest of
+        the nodes will be included unchanged.
+        """
+
+        return self.apply(
+            lambda n: n.as_idtype(id_type),
+            entity_type = entity_type,
+        )
+
+
+    def apply(self, proc: Callable, *args, **kwargs) -> Noi:
+        """
+        Apply a certain processing step to all matching nodes.
+
+        Non matching nodes will be included unchanged.
+        """
 
         return Noi(
             {
-                grp:
+                grp: list(itertools.chain(*(
+                    proc(n) if n.match(*args, **kwargs) else (n,)
+                    for n in nodes
+                )))
                 for grp, nodes in self.nodes.items()
             }
         )
 
 
+    def keep(self, *args, **kwargs) -> Noi:
+        """
+        Keep only matching nodes.
+        """
+
+        return self._filter(_common.identity, *args, **kwargs)
+
+
+    def drop(self, *args, **kwargs) -> Noi:
+        """
+        Drop matching nodes.
+        """
+
+        return self._filter(_common.negate, *args, **kwargs)
+
+
+    def _filter(self, op: Callable, *args, **kwargs) -> Noi:
+
+        return Noi({
+            grp: [n for n in nodes if op(n.match(*args, **kwargs))]
+            for grp, nodes in self.nodes.items()
+        })

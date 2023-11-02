@@ -5,6 +5,8 @@ import typing
 from typing import Callable
 import functools
 
+import pypath_common._misc as _common
+
 """
 Define, access and process fields from network inputs.
 """
@@ -112,7 +114,7 @@ class Field:
             else:
 
                 # use custom python code
-                definition = eval(definition)
+                definition = _common.code_to_func(definition)
 
         elif isinstance(definition, tuple):
 

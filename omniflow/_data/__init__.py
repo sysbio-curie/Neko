@@ -1,1 +1,1 @@
-from ._data import load, buitins
+from ._data import *

@@ -52,6 +52,7 @@ class NetworkVisualizer:
     def add_nodes_to_graph(self):
         for _, row in self.dataframe_nodes.iterrows():
             node = row['Genesymbol']
+            #add function to set color
             node_color = self.node_colors.get(node, 'lightgray')
             wrapped_node = self.wrap_node_name(node)
             self.graph.node(wrapped_node, style='filled', fillcolor=node_color)

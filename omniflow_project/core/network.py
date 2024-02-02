@@ -7,7 +7,7 @@ import pandas as pd
 from .._inputs.resources import Resources
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
-
+from multiprocessing import Pool
 import copy
 
 
@@ -98,13 +98,18 @@ class Network:
 
     def __init__(self,
                  initial_nodes: list[str] = None,
-                 sif_file=None):
+                 sif_file=None,
+                 resources=None):
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
-        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect"])
+        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
-        res = Resources()
-        res.load_omnipath_interactions()
-        self.resources = res.interactions  ### in future release, a string can determine which database to use/load
+        if resources:
+            self.resources = resources.interactions
+        else:
+            print("Loading deafault omnipath all interactions")
+            res = Resources()
+            res.load_omnipath_interactions()
+            self.resources = res.interactions  ### in future release, a string can determine which database to use/load
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -139,7 +144,7 @@ class Network:
         print(edge["source"].values[0], edge["target"].values[0])
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         effect = check_sign(edge)
-
+        references = edge["references"].values[0]
         # Get the type value from the edge DataFrame or set it to None
         edge_type = edge["type"].values[0] if "type" in edge.columns else None
 
@@ -148,7 +153,8 @@ class Network:
             "source": edge["source"],
             "target": edge["target"],
             "Type": edge_type,
-            "Effect": effect
+            "Effect": effect,
+            "References": references
         })
 
         # add the new nodes to the nodes dataframe
@@ -159,6 +165,7 @@ class Network:
 
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
+        self.edges = self.edges.drop_duplicates()
         return
 
     def load_network_from_sif(self, sif_file):

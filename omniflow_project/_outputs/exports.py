@@ -66,8 +66,20 @@ class Exports:
         f.close  # good to go
         return
 
-    def export_sif(self):
+    def export_sif(self, file_name="logic_model.sif"):
         """
         Function to export the network in SIF format
         """
+
+        with open(file_name, 'w') as file:
+            for index, row in self.interactions.iterrows():
+                # Use the Effect column directly assuming it contains "activate" or "inhibit"
+                interaction_type = row['Effect']
+
+                # It's a good idea to validate or map the interaction types as necessary
+                # This is where you could add logic to translate or validate effect names
+
+                # Write the formatted interaction to the .sif file
+                file.write(f"{row['source']}\t{interaction_type}\t{row['target']}\n")
+
         return

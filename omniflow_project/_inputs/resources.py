@@ -73,3 +73,35 @@ class Resources():
             if reset_index:
                 self.interactions.reset_index(drop=True, inplace=True)
         return
+
+    def import_signor_tsv(self, signor_file):
+        df_signor = pd.read_table(signor_file)
+        # Substitute "up-regulates" with "stimulation" and "down-regulates" with "inhibition" in the EFFECT column
+
+        # Function to determine if the effect is stimulation
+        def is_stimulation(effect):
+            return 'up-regulates' in effect
+
+        # Function to determine if the effect is inhibition
+        def is_inhibition(effect):
+            return 'down-regulates' in effect
+
+        # First, filter out the rows where EFFECT is "form complex" or "unknown"
+        filtered_df = df_signor[~df_signor['EFFECT'].isin(["form complex", "unknown"])]
+
+        # Transform the original dataframe
+        transformed_df = pd.DataFrame({
+            'source': filtered_df['IDA'],
+            'target': filtered_df['IDB'],
+            'is_directed': filtered_df['DIRECT'],
+            'is_stimulation': filtered_df['EFFECT'].apply(is_stimulation),
+            'is_inhibition': filtered_df['EFFECT'].apply(is_inhibition),
+            'consensus_direction': False,  # Assuming no data provided, set all to False
+            'consensus_stimulation': False,  # Assuming no data provided, set all to False
+            'consensus_inhibition': False,  # Assuming no data provided, set all to False
+            'curation_effort': filtered_df['ANNOTATOR'],
+            'references': filtered_df['PMID'],
+            'sources': filtered_df['SIGNOR_ID']
+        })
+        self.add_database(transformed_df)
+        return

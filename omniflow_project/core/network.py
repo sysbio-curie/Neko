@@ -309,8 +309,23 @@ class Network:
                 while not flag and i <= maxlen:
                     print("looking for paths in the database with length: ", i, " for node ",
                           mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
-                    paths = connect.find_paths(node1, node2, maxlen=i,
-                                               mode=mode)  # looking for a short path in the database
+                    if mode == "IN":
+                        paths_in = connect.find_paths(node1, node2, maxlen=i,
+                                               mode=mode)
+                        paths = paths_in
+                    elif mode == "OUT":
+                        paths_out = connect.find_paths(node1, node2, maxlen=i,
+                                               mode=mode)
+                        paths = paths_out
+                    elif mode == "ALL":
+                        paths_out = connect.find_paths(node1, node2, maxlen=i,
+                                               mode="OUT")
+                        paths_in = connect.find_paths(node1, node2, maxlen=i,
+                                               mode="IN")
+                        paths = paths_out + paths_in
+                    else:
+                        print("The only accepted modes are IN, OUT or ALL, please check the syntax")
+                        return
                     if only_signed:
                         paths = self.filter_unsigned_paths(paths, consensus)
                     if not paths:  # if there is no path, look for another one until reach maxlen
@@ -356,8 +371,21 @@ class Network:
             while i <= maxlen:
                 print("looking for paths in the network with length: ", i, " for node ",
                       mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
-                paths = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)  # as first step, I make sure
-                # that there is at least one path between two nodes in the network
+                # as first step, I make sure that there is at least one path between two nodes in the network
+                if mode == "IN":
+                    paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
+                    paths = paths_in
+                elif mode == "OUT":
+                    paths_out = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
+                    paths = paths_out
+                elif mode == "ALL":
+                    paths_out = connect_network.find_paths(node1, node2, maxlen=i, mode="OUT")
+                    paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode="IN")
+                    paths = paths_out + paths_in
+                else:
+                    print("The only accepted modes are IN, OUT or ALL, please check the syntax")
+                    return
+
                 if paths:
                     print("Found a path!")
                     print(translate_paths(paths))
@@ -372,7 +400,19 @@ class Network:
                         print("i_search = ", i_search)
                         print("Looking for paths with length: ", i, " for node ",
                               mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
-                        paths = connect.find_paths(node1, node2, maxlen=i, mode=mode)
+                        if mode == "IN":
+                            paths_in = connect.find_paths(node1, node2, maxlen=i, mode=mode)
+                            paths = paths_in
+                        elif mode == "OUT":
+                            paths_out = connect.find_paths(node1, node2, maxlen=i, mode=mode)
+                            paths = paths_out
+                        elif mode == "ALL":
+                            paths_out = connect.find_paths(node1, node2, maxlen=i, mode="OUT")
+                            paths_in = connect.find_paths(node1, node2, maxlen=i, mode="IN")
+                            paths = paths_out + paths_in
+                        else:
+                            print("The only accepted modes are IN, OUT or ALL, please check the syntax")
+                            return
                         if only_signed:
                             paths = self.filter_unsigned_paths(paths, consensus)
                         if not paths:
@@ -413,7 +453,19 @@ class Network:
         TO COMPLETE STILL WORK IN PROGRESS
         """
         connect = Connections(self.resources)
-        paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
+        if mode == "IN":
+            paths_in = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
+            paths = paths_in
+        elif mode == "OUT":
+            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
+            paths = paths_out
+        elif mode == "ALL":
+            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode="OUT")
+            paths_in = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode="IN")
+            paths = paths_out + paths_in
+        else:
+            print("The only accepted modes are IN, OUT or ALL, please check the syntax")
+            return
         if only_signed:
             paths = self.filter_unsigned_paths(paths, consensus)
         self.add_paths_to_edge_list(paths, mode)

@@ -15,7 +15,7 @@ class Connections:
         self.resources = database
         return
 
-    def find_neighbours(self, node: str, mode: Literal['OUT', 'IN', 'ALL'] = 'ALL') -> list[str]:
+    def find_neighbours(self, node: str, mode: Literal['OUT', 'IN']) -> list[str]:
         db = self.resources
 
         """
@@ -24,12 +24,8 @@ class Connections:
 
         if mode == 'IN':
             neighbors = db.loc[db["target"] == node]["source"].tolist()
-        elif mode == 'OUT':
-            neighbors = db.loc[db["source"] == node]["target"].tolist()
         else:
-            in_neighbors = db.loc[db["target"] == node]["source"].tolist()
-            out_neighbors = db.loc[db["source"] == node]["target"].tolist()
-            neighbors = list(set(in_neighbors + out_neighbors))
+            neighbors = db.loc[db["source"] == node]["target"].tolist()
 
         return neighbors
 
@@ -43,7 +39,7 @@ class Connections:
                    maxlen: int = 2,
                    minlen: int = 1,
                    loops: bool = False,
-                   mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
+                   mode: Literal['OUT', 'IN'] = "OUT",
                    ) -> list[tuple]:
         """
         Find paths or motifs in a network.

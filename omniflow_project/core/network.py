@@ -9,6 +9,7 @@ from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 from multiprocessing import Pool
 import copy
+from .._annotations.gene_ontology import Ontology
 
 
 def check_sign(interaction: pd.DataFrame,
@@ -85,6 +86,13 @@ def translate_paths(paths):
     return translated_list
 
 
+def join_unique(series):
+    # Filter out None values before converting to set and joining
+    filtered_series = [str(item) for item in series if item is not None]
+    unique_items = set(filtered_series)
+    return ', '.join(unique_items)
+
+
 class Network:
     """
     Main class of the Omniflow package, it stores nodes and edges and offers different methods for enrichment analysis.
@@ -103,8 +111,9 @@ class Network:
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
-        if resources:
-            self.resources = resources.interactions
+        self.ontology = Ontology()
+        if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
+            self.resources = resources
         else:
             print("Loading deafault omnipath all interactions")
             res = Resources()
@@ -177,9 +186,9 @@ class Network:
             interaction = line.split()
             print(interaction[1])
             # if interaction[1] == str(1) or "activate" or "stimulate" or "phosphorilate":
-            if interaction[1] in ["1", "activate", "stimulate", "phosphorilate"]:
+            if interaction[1] in ["1", "activate", "stimulate", "phosphorilate", "stimulation"]:
                 effect = "stimulation"
-            elif interaction[1] in ["-1", "inhibit", "block"]:
+            elif interaction[1] in ["-1", "inhibit", "block", "inhibition"]:
                 effect = "inhibition"
             else:
                 effect = "undefined"
@@ -311,17 +320,17 @@ class Network:
                           mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
                     if mode == "IN":
                         paths_in = connect.find_paths(node1, node2, maxlen=i,
-                                               mode=mode)
+                                                      mode=mode)
                         paths = paths_in
                     elif mode == "OUT":
                         paths_out = connect.find_paths(node1, node2, maxlen=i,
-                                               mode=mode)
+                                                       mode=mode)
                         paths = paths_out
                     elif mode == "ALL":
                         paths_out = connect.find_paths(node1, node2, maxlen=i,
-                                               mode="OUT")
+                                                       mode="OUT")
                         paths_in = connect.find_paths(node1, node2, maxlen=i,
-                                               mode="IN")
+                                                      mode="IN")
                         paths = paths_out + paths_in
                     else:
                         print("The only accepted modes are IN, OUT or ALL, please check the syntax")
@@ -475,7 +484,7 @@ class Network:
         set_c = all_nodes.difference(set_a)
         set_c = set_c.difference(set_b)
         set_c = list(set_c)
-        self.connect_subgroup(set_c)
+        self.connect_subgroup(set_c, only_signed=only_signed)
         return
 
     def convert_edgelist_into_genesymbol(self):
@@ -489,5 +498,56 @@ class Network:
 
         self.edges.loc[:, "target"] = self.edges["target"].apply(
             lambda x: mapping_node_identifier(x)[0] or mapping_node_identifier(x)[1])
+
+        return
+
+    def connect_genes_to_phenotype(self,
+                                   phenotype: str = None,
+                                   id_accession: str = None,
+                                   sub_genes: list[str] = None,
+                                   maxlen: int = 2,
+                                   only_signed: bool = False,
+                                   compress: bool = False
+                                   ):
+        phenotype_genes = self.ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
+        if not phenotype_genes:
+            print("Something went wrong while getting the markers for: ", phenotype, " and ", id_accession)
+            print("Check URL and try again")
+            return
+        uniprot_genes = [mapping_node_identifier(i)[2] for i in phenotype_genes]
+
+        print("Starting connecting network's nodes to: ", phenotype_genes)
+        if sub_genes:
+            unique_uniprot = set(uniprot_genes) - set(sub_genes)
+            unique_uniprot_list = list(unique_uniprot)
+            self.connect_component(sub_genes, unique_uniprot_list, mode="OUT", maxlen=maxlen, only_signed=only_signed)
+        else:
+            nodes = list(self.nodes["Uniprot"])
+            unique_uniprot = set(uniprot_genes) - set(nodes)
+            unique_uniprot_list = list(unique_uniprot)
+            self.connect_component(nodes, unique_uniprot_list, mode="OUT", maxlen=maxlen, only_signed=only_signed)
+
+        if compress:
+            if not phenotype and id_accession:
+                phenotype = self.ontology.accession_to_phenotype_dict[id_accession]
+
+            phenotype_modified = phenotype.replace(" ", "_")
+
+            # Substitute the specified genes with the phenotype name in the nodes dataframe
+            self.nodes['Uniprot'] = self.nodes['Uniprot'].apply(
+                lambda x: phenotype_modified if x in uniprot_genes else x)
+            self.nodes['Genesymbol'] = self.nodes['Genesymbol'].apply(
+                lambda x: phenotype_modified if x in phenotype_genes else x)
+
+            # Substitute the specified genes with the phenotype name in the edges dataframe
+            for column in ['source', 'target']:
+                self.edges[column] = self.edges[column].apply(lambda x: phenotype_modified if x in uniprot_genes else x)
+
+            # Group by source and target, and aggregate with the custom function for each column
+            self.edges = self.edges.groupby(['source', 'target']).agg({
+                'Type': join_unique,  # Aggregate types with the custom function
+                'Effect': join_unique,  # Aggregate effects with the custom function
+                'References': join_unique  # Aggregate references with the custom function
+            }).reset_index()
 
         return

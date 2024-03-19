@@ -179,32 +179,40 @@ class Network:
 
     def load_network_from_sif(self, sif_file):
         """Load a network object from sif file"""
-        node_list = []
-        with open(sif_file, "r") as f:
-            lines = f.readlines()
-        for line in lines:
-            interaction = line.split()
-            print(interaction[1])
-            # if interaction[1] == str(1) or "activate" or "stimulate" or "phosphorilate":
-            if interaction[1] in ["1", "activate", "stimulate", "phosphorilate", "stimulation"]:
-                effect = "stimulation"
-            elif interaction[1] in ["-1", "inhibit", "block", "inhibition"]:
-                effect = "inhibition"
-            else:
-                effect = "undefined"
-            df_edge = pd.DataFrame({
-                "source": interaction[0],
-                "target": interaction[2],
-                "Type": [interaction[3] if len(interaction) > 3 else None],
-                "Effect": effect
-            })
-            self.edges = pd.concat([self.edges, df_edge])
-            node_list.append(interaction[0])
-            node_list.append(interaction[2])
+        interactions = []
+        node_set = set()
 
-        node_list = list(dict.fromkeys(node_list))
-        self.initial_nodes = node_list
-        for node in node_list:
+        with open(sif_file, "r") as f:
+            for line in f:
+                if line.startswith('#'):  # Skip comment lines
+                    continue
+                interaction = line.strip().split()
+                if len(interaction) < 3:
+                    continue  # Skip malformed lines
+
+                # Determine the effect based on the interaction type
+                if interaction[1] in ["1", "activate", "stimulate", "phosphorilate", "stimulation"]:
+                    effect = "stimulation"
+                elif interaction[1] in ["-1", "inhibit", "block", "inhibition"]:
+                    effect = "inhibition"
+                else:
+                    effect = "undefined"
+
+                interactions.append({
+                    "source": interaction[0],
+                    "target": interaction[2],
+                    "Type": interaction[3] if len(interaction) > 3 else None,
+                    "Effect": effect
+                })
+                node_set.update([interaction[0], interaction[2]])
+
+        # Create or update the edges DataFrame
+        df_edge = pd.DataFrame(interactions)
+        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+
+        # Update the nodes list
+        self.initial_nodes = list(node_set)
+        for node in self.initial_nodes:
             self.add_node(node)
 
         return
@@ -461,6 +469,8 @@ class Network:
 
         TO COMPLETE STILL WORK IN PROGRESS
         """
+        print(comp_A)
+        print(comp_B)
         connect = Connections(self.resources)
         if mode == "IN":
             paths_in = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
@@ -484,7 +494,8 @@ class Network:
         set_c = all_nodes.difference(set_a)
         set_c = set_c.difference(set_b)
         set_c = list(set_c)
-        self.connect_subgroup(set_c, only_signed=only_signed)
+        print(set_c)
+        self.connect_subgroup(set_c, only_signed=only_signed, maxlen=maxlen)
         return
 
     def convert_edgelist_into_genesymbol(self):

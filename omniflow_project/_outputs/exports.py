@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class Exports:
     """
     This class implement many methods used to export the Network object in different format.
@@ -15,59 +18,62 @@ class Exports:
 
     def export_bnet(self, file_name="logic_model.bnet"):
         """
-        Function to export the network in bnet format
+        Function to export the network in bnet format.
         """
+        # Checks for nodes and interactions data
+        if not isinstance(self.nodes, pd.DataFrame) or self.nodes.empty:
+            print("Error: Nodes data is missing or empty.")
+            return
+        if not isinstance(self.interactions, pd.DataFrame) or self.interactions.empty:
+            print("Error: Interactions data is missing or empty.")
+            return
+
+        # Identify undefined interactions
+        undefined_interactions = self.interactions.query("Effect == 'undefined'")
+        if not undefined_interactions.empty:
+            print(f"Warning: The network has {len(undefined_interactions)} undefined interaction(s).")
+            print(f"References for review: {undefined_interactions['References'].unique().tolist()}")
+
+        # Pre-filter stimulations, inhibitions, and exclude undefined effects
+        stimulations = self.interactions.query("Effect == 'stimulation'")
+        inhibitions = self.interactions.query("Effect == 'inhibition'")
+
         with open(file_name, "w") as f:
             f.write("# model in BoolNet format\n")
-            f.write("# the header targets, factors is mandatory to be importable in the R package BoolNet\n")
-            f.write("\n")
-            f.write(
-                "targets, factors\n")  # this is the standard label that I found in the biolqm github, is it ok?
+            f.write("targets, factors\n")
+
             for entry in self.nodes.values:
                 node = entry[0]
-                formula_on = self.interactions.loc[self.interactions["target"] == node].query("Effect == 'stimulation'")["source"].to_list()
-                formula_off = self.interactions.loc[self.interactions["target"] == node].query("Effect == 'inhibition'")["source"].to_list()
-                formula_undefined = self.interactions.loc[self.interactions["target"] == node].query("Effect == 'inhibition'")["source"].to_list()
-                formula = formula_on + formula_off
-                commons = list(set(formula_on).intersection(set(formula_off)))
-                if formula_undefined:
-                    print("The network has some undefined interaction that will be ignored. WARNING: this can result in"
-                          "a disconnected model! ")
-                    print(formula_undefined)
-                # print(shared)
-                for common in commons:
-                    print("Two possible opposite interactions found for: ", common, " and ", node)
-                    formula_off.remove(common) #here I should insert something to create an ensamble of model
-                f.write(node + ",")
-                offset = 16 - len(node)  # nice offset so the visualization is understandable
-                f.write(" " * offset)
-                if not formula:
-                    f.write(" ( ")
-                    f.write(node)
-                    f.write(" ) ")
-                    f.write("\n")
-                if formula_on:
-                    f.write(" ( ")
-                    f.write(" | ".join(formula_on))  # writing the first parenthesis with all the positive interactions
-                    f.write(" ) ")
-                    if not formula_off:
-                        f.write("\n")
-                if formula_on != [] and formula_off != []:
-                    f.write(" & ")
-                    f.write(" !( ")
-                    f.write(" | ".join(formula_off))  # writing the first parenthesis with all the positive and negative interactions
-                    f.write(" ) ")
-                    f.write("\n")
-                if formula_on == [] and formula_off != []:
-                    f.write(" !( ")
-                    f.write(" | ".join(formula_off))  # writing the first parenthesis with all the negative interactions
-                    f.write(" ) ")
-                    f.write("\n")
-        f.close  # good to go
-        return
+                formula_on = stimulations[stimulations["target"] == node]["source"].to_list()
+                formula_off = inhibitions[inhibitions["target"] == node]["source"].to_list()
 
-    def export_sif(self):
+                # Constructing the formula
+                formula_parts = []
+                if formula_on:
+                    formula_parts.append(f"({' | '.join(formula_on)})")
+                if formula_off:
+                    formula_parts.append("!({})".format(" | ".join(formula_off)))
+
+                # Writing the node and its formula to the file
+                f.write(f"{node}, {' & '.join(formula_parts) if formula_parts else node}\n")
+
+    def export_sif(self, file_name="logic_model.sif"):
         """
         Function to export the network in SIF format
         """
+
+        with open(file_name, 'w') as file:
+            for index, row in self.interactions.iterrows():
+                # Use the Effect column directly assuming it contains "activate" or "inhibit"
+                interaction_type = row['Effect']
+
+                # Reference for the interaction
+                interaction_reference = row['References']  # Adjust column name if necessary
+
+                # Write a comment line with the interaction reference
+                file.write(f"# Reference PMID: {interaction_reference}\n")
+
+                # Write the formatted interaction to the .sif file
+                file.write(f"{row['source']}\t{interaction_type}\t{row['target']}\n")
+
         return

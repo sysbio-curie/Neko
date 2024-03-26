@@ -110,9 +110,9 @@ class Resources():
             'sources': filtered_df['SIGNOR_ID']
         })
         self.add_database(transformed_df)
+
         return
-<<<<<<< Updated upstream
-        
+
     def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
         """
         Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
@@ -120,10 +120,7 @@ class Resources():
         """
         kinase_int = pd.read_csv(kinase_int_file)
         phospho_effect = pd.read_csv(phospho_effect_file)
-=======
 
-    def process_interactions(self, kinase_int, phospho_effect, expand=False):
->>>>>>> Stashed changes
         # Filter kinase_int dataframe to include only interactions involving human organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
 
@@ -174,10 +171,7 @@ class Resources():
                 # Update the row with the flags
                 row['is_stimulation'] = is_stimulation
                 row['is_inhibition'] = is_inhibition
-  #          else:
-                # If the value is not a string, set both flags to 0
-  #              row['is_stimulation'] = 0
-  #              row['is_inhibition'] = 0
+
             return row
 
         # Update psp_interactions dataframe based on phospho_effect information
@@ -204,4 +198,3 @@ class Resources():
 
         self.add_database(psp_interactions)
         return psp_interactions
-

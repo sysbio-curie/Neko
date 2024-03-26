@@ -106,7 +106,13 @@ class Resources():
         self.add_database(transformed_df)
         return
         
-    def process_interactions(self, kinase_int, phospho_effect, expand=False):
+    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
+        """
+        Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
+        and creates an interaction dataframe based on the Omnipath interaction format.
+        """
+        kinase_int = pd.read_csv(kinase_int_file)
+        phospho_effect = pd.read_csv(phospho_effect_file)
         # Filter kinase_int dataframe to include only interactions involving human organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
 

@@ -106,7 +106,13 @@ class Resources():
         self.add_database(transformed_df)
         return
         
-    def process_interactions(self, kinase_int, phospho_effect, expand=False):
+    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
+        """
+        Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
+        and creates an interaction dataframe based on the Omnipath interaction format.
+        """
+        kinase_int = pd.read_csv(kinase_int_file)
+        phospho_effect = pd.read_csv(phospho_effect_file)
         # Filter kinase_int dataframe to include only interactions involving human organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
 
@@ -137,7 +143,7 @@ class Resources():
         psp_interactions['is_inhibition'] = 0
 
         # Function to update is_stimulation and is_inhibition columns based on ON_FUNCTION values
-        def update_interaction(row):
+        def update_phospho_effect(row):
             if isinstance(row['ON_FUNCTION'], str):  # Check if the value is a string
                 activities = []
                 # Split each value in ON_FUNCTION column
@@ -157,16 +163,16 @@ class Resources():
                 # Update the row with the flags
                 row['is_stimulation'] = is_stimulation
                 row['is_inhibition'] = is_inhibition
-            else:
+  #          else:
                 # If the value is not a string, set both flags to 0
-                row['is_stimulation'] = 0
-                row['is_inhibition'] = 0
+  #              row['is_stimulation'] = 0
+  #              row['is_inhibition'] = 0
             return row
 
         # Update psp_interactions dataframe based on phospho_effect information
         psp_interactions = psp_interactions.merge(phospho_effect_filtered[['Prot_site', 'ON_FUNCTION']], left_on='target', right_on='Prot_site', how='left')
         psp_interactions.fillna('', inplace=True)
-        psp_interactions = psp_interactions.apply(update_interaction, axis=1)
+        psp_interactions = psp_interactions.apply(update_phospho_effect, axis=1)
         psp_interactions.drop(columns=['Prot_site', 'ON_FUNCTION'], inplace=True)
         
         # If expand is True, expand each line to include a new interaction from phosphosite to respective protein

@@ -18,6 +18,7 @@ class Resources():
         logging.basicConfig(level=logging.INFO)
         # Define the required columns
         self.required_columns = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition',
+                                 'form_complex',
                                  'consensus_direction', 'consensus_stimulation', 'consensus_inhibition',
                                  'curation_effort', 'references', 'sources']
 
@@ -80,11 +81,15 @@ class Resources():
 
         # Function to determine if the effect is stimulation
         def is_stimulation(effect):
-            return 'up-regulates' in effect or 'form complex' in effect
+            return 'up-regulates' in effect
 
         # Function to determine if the effect is inhibition
         def is_inhibition(effect):
             return 'down-regulates' in effect
+
+        # Function to determine if the effect is form complex
+        def form_complex(effect):
+            return 'complex' in effect
 
         # First, filter out the rows where EFFECT is "form complex" or "unknown"
         filtered_df = df_signor[~df_signor['EFFECT'].isin(["unknown"])]
@@ -96,6 +101,7 @@ class Resources():
             'is_directed': filtered_df['DIRECT'],
             'is_stimulation': filtered_df['EFFECT'].apply(is_stimulation),
             'is_inhibition': filtered_df['EFFECT'].apply(is_inhibition),
+            'form_complex': filtered_df['EFFECT'].apply(form_complex),
             'consensus_direction': False,  # Assuming no data provided, set all to False
             'consensus_stimulation': False,  # Assuming no data provided, set all to False
             'consensus_inhibition': False,  # Assuming no data provided, set all to False
@@ -105,6 +111,7 @@ class Resources():
         })
         self.add_database(transformed_df)
         return
+<<<<<<< Updated upstream
         
     def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
         """
@@ -113,6 +120,10 @@ class Resources():
         """
         kinase_int = pd.read_csv(kinase_int_file)
         phospho_effect = pd.read_csv(phospho_effect_file)
+=======
+
+    def process_interactions(self, kinase_int, phospho_effect, expand=False):
+>>>>>>> Stashed changes
         # Filter kinase_int dataframe to include only interactions involving human organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
 
@@ -174,7 +185,7 @@ class Resources():
         psp_interactions.fillna('', inplace=True)
         psp_interactions = psp_interactions.apply(update_phospho_effect, axis=1)
         psp_interactions.drop(columns=['Prot_site', 'ON_FUNCTION'], inplace=True)
-        
+
         # If expand is True, expand each line to include a new interaction from phosphosite to respective protein
         if expand:
             expanded_rows = []

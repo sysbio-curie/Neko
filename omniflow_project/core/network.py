@@ -30,6 +30,8 @@ def check_sign(interaction: pd.DataFrame,
             return "stimulation"
         elif interaction["is_inhibition"].values[0]:
             return "inhibition"
+        elif interaction["form_complex"].values[0]:
+            return "form complex"
         else:
             return "undefined"
 
@@ -195,6 +197,8 @@ class Network:
                     effect = "stimulation"
                 elif interaction[1] in ["-1", "inhibit", "block", "inhibition"]:
                     effect = "inhibition"
+                elif interaction[1] in ["form complex", "form_complex", "form-complex", "complex formation"]:
+                    effect = "form complex"
                 else:
                     effect = "undefined"
 

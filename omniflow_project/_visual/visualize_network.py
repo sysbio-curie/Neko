@@ -22,6 +22,7 @@ class NetworkVisualizer:
         self.edge_colors = {
             'stimulation': 'green',
             'inhibition': 'red',
+            'form complex': 'blue',
             'undefined': 'gray',  # Adding the mapping for "undefined" effect
             # Add more custom mappings if needed
         }
@@ -61,6 +62,10 @@ class NetworkVisualizer:
             elif effect == 'inhibition':
                 arrowhead = 'tee'
                 color = 'red'
+                dir = 'forward'
+            elif effect == 'form complex':
+                arrowhead = 'dot'
+                color = 'blue'
                 dir = 'forward'
             else:
                 arrowhead = 'normal'  # Default arrow

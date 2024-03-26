@@ -80,14 +80,14 @@ class Resources():
 
         # Function to determine if the effect is stimulation
         def is_stimulation(effect):
-            return 'up-regulates' in effect
+            return 'up-regulates' in effect or 'form complex' in effect
 
         # Function to determine if the effect is inhibition
         def is_inhibition(effect):
             return 'down-regulates' in effect
 
         # First, filter out the rows where EFFECT is "form complex" or "unknown"
-        filtered_df = df_signor[~df_signor['EFFECT'].isin(["form complex", "unknown"])]
+        filtered_df = df_signor[~df_signor['EFFECT'].isin(["unknown"])]
 
         # Transform the original dataframe
         transformed_df = pd.DataFrame({

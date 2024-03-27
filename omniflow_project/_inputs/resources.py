@@ -113,7 +113,7 @@ class Resources():
 
         return
 
-    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
+    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, organism, expand=False):
         """
         Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
         and creates an interaction dataframe based on the Omnipath interaction format.
@@ -121,8 +121,8 @@ class Resources():
         kinase_int = pd.read_csv(kinase_int_file)
         phospho_effect = pd.read_csv(phospho_effect_file)
 
-        # Filter kinase_int dataframe to include only interactions involving human organisms
-        kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
+        # Filter kinase_int dataframe to include only interactions from specified organisms
+        kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]
 
         # Concatenate SUB_GENE and SUB_MOD_RSD columns separated by "_"
         kinase_int_filtered['target'] = kinase_int_filtered['SUB_GENE'] + '_' + kinase_int_filtered['SUB_MOD_RSD']
@@ -137,8 +137,8 @@ class Resources():
             'consensus_inhibition': False,  # Assuming no data provided, set all to False
         })
 
-        # Filter phospho_effect dataframe to include only interactions involving human organisms
-        phospho_effect_filtered = phospho_effect.loc[phospho_effect['ORGANISM'] == 'human']
+        # Filter phospho_effect dataframe to include only interactions from specified organisms
+        phospho_effect_filtered = phospho_effect.loc[phospho_effect['ORGANISM'] == organism]
 
         # Keep only MOD_RSD entries with "-p" suffix and remove it
         phospho_effect_filtered['MOD_RSD'] = phospho_effect_filtered['MOD_RSD'].apply(lambda x: x[:-2] if x.endswith('-p') else x)

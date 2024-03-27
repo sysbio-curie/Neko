@@ -18,6 +18,7 @@ class Resources():
         logging.basicConfig(level=logging.INFO)
         # Define the required columns
         self.required_columns = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition',
+                                 'form_complex',
                                  'consensus_direction', 'consensus_stimulation', 'consensus_inhibition',
                                  'curation_effort', 'references', 'sources']
 
@@ -80,11 +81,15 @@ class Resources():
 
         # Function to determine if the effect is stimulation
         def is_stimulation(effect):
-            return 'up-regulates' in effect or 'form complex' in effect
+            return 'up-regulates' in effect
 
         # Function to determine if the effect is inhibition
         def is_inhibition(effect):
             return 'down-regulates' in effect
+
+        # Function to determine if the effect is form complex
+        def form_complex(effect):
+            return 'complex' in effect
 
         # First, filter out the rows where EFFECT is "form complex" or "unknown"
         filtered_df = df_signor[~df_signor['EFFECT'].isin(["unknown"])]
@@ -96,6 +101,7 @@ class Resources():
             'is_directed': filtered_df['DIRECT'],
             'is_stimulation': filtered_df['EFFECT'].apply(is_stimulation),
             'is_inhibition': filtered_df['EFFECT'].apply(is_inhibition),
+            'form_complex': filtered_df['EFFECT'].apply(form_complex),
             'consensus_direction': False,  # Assuming no data provided, set all to False
             'consensus_stimulation': False,  # Assuming no data provided, set all to False
             'consensus_inhibition': False,  # Assuming no data provided, set all to False
@@ -104,17 +110,19 @@ class Resources():
             'sources': filtered_df['SIGNOR_ID']
         })
         self.add_database(transformed_df)
+
         return
-        
-    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, organism, expand=False):
+
+    def process_psp_interactions(self, kinase_int_file, phospho_effect_file, expand=False):
         """
         Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
         and creates an interaction dataframe based on the Omnipath interaction format.
         """
         kinase_int = pd.read_csv(kinase_int_file)
         phospho_effect = pd.read_csv(phospho_effect_file)
-        # Filter kinase_int dataframe to include only human interactions
-        kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]
+
+        # Filter kinase_int dataframe to include only interactions involving human organisms
+        kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
 
         # Concatenate SUB_GENE and SUB_MOD_RSD columns separated by "_"
         kinase_int_filtered['target'] = kinase_int_filtered['SUB_GENE'] + '_' + kinase_int_filtered['SUB_MOD_RSD']
@@ -129,8 +137,8 @@ class Resources():
             'consensus_inhibition': False,  # Assuming no data provided, set all to False
         })
 
-        # Filter phospho_effect dataframe to include only human interactions 
-        phospho_effect_filtered = phospho_effect.loc[phospho_effect['ORGANISM'] == organism]
+        # Filter phospho_effect dataframe to include only interactions involving human organisms
+        phospho_effect_filtered = phospho_effect.loc[phospho_effect['ORGANISM'] == 'human']
 
         # Keep only MOD_RSD entries with "-p" suffix and remove it
         phospho_effect_filtered['MOD_RSD'] = phospho_effect_filtered['MOD_RSD'].apply(lambda x: x[:-2] if x.endswith('-p') else x)
@@ -163,10 +171,7 @@ class Resources():
                 # Update the row with the flags
                 row['is_stimulation'] = is_stimulation
                 row['is_inhibition'] = is_inhibition
-  #          else:
-                # If the value is not a string, set both flags to 0
-  #              row['is_stimulation'] = 0
-  #              row['is_inhibition'] = 0
+
             return row
 
         # Update psp_interactions dataframe based on phospho_effect information
@@ -174,7 +179,7 @@ class Resources():
         psp_interactions.fillna('', inplace=True)
         psp_interactions = psp_interactions.apply(update_phospho_effect, axis=1)
         psp_interactions.drop(columns=['Prot_site', 'ON_FUNCTION'], inplace=True)
-        
+
         # If expand is True, expand each line to include a new interaction from phosphosite to respective protein
         if expand:
             expanded_rows = []
@@ -193,4 +198,3 @@ class Resources():
 
         self.add_database(psp_interactions)
         return psp_interactions
-

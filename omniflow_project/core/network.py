@@ -30,6 +30,8 @@ def check_sign(interaction: pd.DataFrame,
             return "stimulation"
         elif interaction["is_inhibition"].values[0]:
             return "inhibition"
+        elif interaction["form_complex"].values[0]:
+            return "form complex"
         else:
             return "undefined"
 
@@ -146,6 +148,21 @@ class Network:
         self.nodes = self.nodes.drop_duplicates()
         return
 
+    def remove_node(self,
+                    node: str):
+        """
+        Removes a node from the list of node and consequently in the edges list
+        """
+        self.nodes = self.nodes[self.nodes.Genesymbol != node]
+        self.nodes = self.nodes[self.nodes.Uniprot != node]
+
+        node = mapping_node_identifier(node)[2]
+        self.edges = self.edges[self.edges.source != node]
+        self.edges = self.edges[self.edges.target != node]
+
+        return
+
+
     def add_edge(self, edge: pd.DataFrame):
         """
         Add an interaction to the list of interactions while converting it to the Omniflow-network format
@@ -195,6 +212,8 @@ class Network:
                     effect = "stimulation"
                 elif interaction[1] in ["-1", "inhibit", "block", "inhibition"]:
                     effect = "inhibition"
+                elif interaction[1] in ["form complex", "form_complex", "form-complex", "complex formation"]:
+                    effect = "form complex"
                 else:
                     effect = "undefined"
 

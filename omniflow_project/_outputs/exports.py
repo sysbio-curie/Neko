@@ -37,6 +37,7 @@ class Exports:
         # Pre-filter stimulations, inhibitions, and exclude undefined effects
         stimulations = self.interactions.query("Effect == 'stimulation'")
         inhibitions = self.interactions.query("Effect == 'inhibition'")
+        complex_formation = self.interactions.query("Effect == 'form complex'")
 
         with open(file_name, "w") as f:
             f.write("# model in BoolNet format\n")
@@ -46,9 +47,12 @@ class Exports:
                 node = entry[0]
                 formula_on = stimulations[stimulations["target"] == node]["source"].to_list()
                 formula_off = inhibitions[inhibitions["target"] == node]["source"].to_list()
+                formula_complex = complex_formation[complex_formation["target"] == node]["source"].to_list()
 
                 # Constructing the formula
                 formula_parts = []
+                if formula_complex:
+                    formula_parts.append(f"({' & '.join(formula_complex)})")
                 if formula_on:
                     formula_parts.append(f"({' | '.join(formula_on)})")
                 if formula_off:

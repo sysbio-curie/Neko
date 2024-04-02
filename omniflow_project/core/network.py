@@ -130,7 +130,7 @@ class Network:
         if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
             self.resources = resources
         else:
-            print("Loading deafault omnipath all interactions")
+            print("Loading default omnipath all interactions")
             res = Resources()
             res.load_omnipath_interactions()
             self.resources = res.interactions  ### in future release, a string can determine which database to use/load

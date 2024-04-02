@@ -11,26 +11,39 @@ from multiprocessing import Pool
 import copy
 from .._annotations.gene_ontology import Ontology
 
+import pandas as pd
 
-def check_sign(interaction: pd.DataFrame,
-               consensus: bool = False) -> str:
+
+def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
     """
-    This function quickly check the sign of an interaction in the omnipath format (Pandas Series)
-    The attribute "consensus" check for the consistency of the sign of the interaction among the references.
+    This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
+    The attribute "consensus" checks for the consistency of the sign of the interaction among the references.
+
+    Parameters:
+    - interaction: A pandas DataFrame or Series representing the interaction.
+    - consensus: A boolean indicating whether to check for consensus among references.
+
+    Returns:
+    - A string indicating the sign of the interaction: "stimulation", "inhibition", "form complex", or "undefined".
     """
+    # Handle both DataFrame and Series input
+    if isinstance(interaction, pd.DataFrame):
+        interaction = interaction.iloc[0]
+
     if consensus:
-        if interaction["consensus_stimulation"].values[0]:
+        if interaction.get("consensus_stimulation", False):
             return "stimulation"
-        elif interaction["consensus_inhibition"].values[0]:
+        elif interaction.get("consensus_inhibition", False):
             return "inhibition"
         else:
             return "undefined"
     else:
-        if interaction["is_stimulation"].values[0]:
+        if interaction.get("is_stimulation", False):
             return "stimulation"
-        elif interaction["is_inhibition"].values[0]:
+        elif interaction.get("is_inhibition", False):
             return "inhibition"
-        elif interaction["form_complex"].values[0]:
+        # Check for "form_complex" column existence
+        elif interaction.get("form_complex", False):
             return "form complex"
         else:
             return "undefined"

@@ -49,17 +49,15 @@ with open('index.rst', 'w') as fp:
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-    'sphinx.ext.napoleon',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'sphinx.ext.mathjax',
-    'sphinx_last_updated_by_git',
-    'sphinxcontrib.fulltoc',
-    'sphinx_remove_toctrees',
-    'nbsphinx',
-    'IPython.sphinxext.ipython_console_highlighting',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "numpydoc",
+    "sphinx.ext.linkcode",
+    "sphinx.ext.autosectionlabel",
+    "sphinx_gallery.load_style",
+    "nbsphinx",
+    "add_toctree_functions",
 ]
 
 autosummary_generate = True

@@ -49,16 +49,11 @@ with open('index.rst', 'w') as fp:
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-    'myst_parser',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
-    'sphinx.ext.todo',  # not for output but to remove warnings
-    'sphinx.ext.githubpages',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
     'sphinx.ext.ifconfig',
-    'sphinxcontrib.bibtex',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
     'sphinx_copybutton',
     'sphinx_last_updated_by_git',

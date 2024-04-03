@@ -14,7 +14,7 @@ Reference
 project_name
 ============
 
-.. automodule:: project_name
+.. automodule:: omniflow_project
    :members:
 
 ###########################

@@ -10,10 +10,10 @@ formats:
 -   pdf
 
 build:
-    os: ubuntu-20.04
+    os: ubuntu-22.04
     tools:
-    -   poetry
-    -   python: "3.10"
+        python: "3.10"
+        poetry: "1.5.1"
 
 python:
     install:
@@ -21,4 +21,3 @@ python:
         path: .
         extra_requirements:
         -   docs
-        -   sphinx-autodoc-typehints

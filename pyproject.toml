@@ -37,7 +37,7 @@ pypath-omnipath = "0.15.4"
 jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
-pandas = "1.3.5"
+pandas = "*"
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"
 tox = ">=3.20.1"

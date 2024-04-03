@@ -1,25 +1,26 @@
-# omniflow_project
+omniflow_project
+================
 
-[![Tests][badge-tests]][link-tests]
-[![Documentation][badge-docs]][link-docs]
+.. image:: https://img.shields.io/github/actions/workflow/status/sysbio-curie/omniflow_project/test.yaml?branch=main
+   :target: https://github.com/sysbio-curie/omniflow_project/actions/workflows/test.yml
+   :alt: Tests
 
-[badge-tests]: https://img.shields.io/github/actions/workflow/status/sysbio-curie/omniflow_project/test.yaml?branch=main
-[link-tests]: https://github.com/sysbio-curie/omniflow_project/actions/workflows/test.yml
-[badge-docs]: https://img.shields.io/readthedocs/omniflow_project
-[link-docs]: https://omniflow_project.readthedocs.io
+.. image:: https://img.shields.io/readthedocs/omniflow_project
+   :target: https://omniflow_project.readthedocs.io
+   :alt: Documentation
 
 Package to extract, visualize, convert and study interactions from database into executable activity flow based model.
-Omniflow (temporary name), is based on Omnipath (https://github.com/saezlab/omnipath), pypath (https://github.com/saezlab/pypath) and Atopo (https://github.com/druglogics/atopo).
+Omniflow (temporary name), is based on `Omnipath <https://github.com/saezlab/omnipath>`_, `pypath <https://github.com/saezlab/pypath>`_ and `Atopo <https://github.com/druglogics/atopo>`_.
 
 This is a work-in-progress package made in collaboration with Dénes Turei and Asmund Flobak.
 
 ROADMAP:
 
 version 0.1.0
- <ul>
-  <li>Network core object to store nodes and edges</li>
-  <li>Inputs methods: list of nodes, sif file</li>
-  <li>Enrichment methods: Shortest path (pypath)</li>
-  <li>Resources: Omnipath (All interactions)</li>
-  <li>Output formats: bnet file</li>
-</ul>
+--------------
+
+- Network core object to store nodes and edges
+- Inputs methods: list of nodes, sif file
+- Enrichment methods: Shortest path (pypath)
+- Resources: Omnipath (All interactions)
+- Output formats: bnet file

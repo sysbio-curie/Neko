@@ -17,13 +17,13 @@ import pathlib
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
 
-import omniflow_project  # noqa: E402
+from omniflow_project._metadata import __version__, __author__  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
 project = 'omniflow_project'
-version = omniflow_project.__version__
-author = ', '.join(omniflow_project.__author__)
+version = __version__
+author = ', '.join(__author__)
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Saez Lab'
 repository_url = 'https://github.com/sysbio-curie/omniflow_project'

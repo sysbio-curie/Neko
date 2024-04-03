@@ -31,7 +31,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 toml = "*"
 notebook = "*"
-python = ">=3.6"
+python = ">=3.9,<4.0"
 omnipath = ">=1.0.7"
 pypath-omnipath = "0.15.4"
 jupyterlab = "*"

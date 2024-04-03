@@ -73,6 +73,8 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'en'
 
+# Add bibtex files
+bibtex_bibfiles = ['references.bib']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #

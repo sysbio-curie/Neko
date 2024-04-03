@@ -28,7 +28,7 @@ classifiers = [
 repository = "https://github.com/sysbio-curie/omniflow_project"
 homepage = "https://github.com/sysbio-curie/omniflow_project"
 documentation = "https://omniflow_project.readthedocs.io/"
-readme = "README.rt"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 toml = "*"

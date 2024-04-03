@@ -484,63 +484,100 @@ class Network:
 
     def connect_component(self,
                           comp_A: (
-                              str | list[str]
+                              str | pd.DataFrame | list[str]
                           ),
                           comp_B: (
-                              str | list[str]
+                              str | pd.DataFrame | list[str]
                           ),
                           maxlen: int = 2,
-                          mode: Literal['OUT', 'IN', 'ALL'] = 'OUT',
+                          mode: str = 'OUT',
                           only_signed: bool = False,
-                          consensus: bool = False
-                          ):
+                          consensus: bool = False):
         """
         This function tries to connect subcomponents of a network object using one of the methods presented in the Connection
-        object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
-        the user should have the possibility to choose different methods to enrich its Network object.
+        object. This should be a core characteristic of this package and the user should have the possibility to choose
+        different methods to enrich its Network object.
 
-        TO COMPLETE STILL WORK IN PROGRESS
+        Parameters:
+        - comp_A: The first component to connect.
+        - comp_B: The second component to connect.
+        - maxlen: The maximum length of the paths to be searched for.
+        - mode: The mode of connection, which can be 'IN', 'OUT', or 'ALL'.
+        - only_signed: A boolean flag to indicate whether to filter unsigned paths.
+        - consensus: A boolean flag to indicate whether to check for consensus among references.
+
+        Returns:
+        None. The function modifies the network object in-place.
         """
-        print(comp_A)
-        print(comp_B)
+        # Create a Connections object for the resources
         connect = Connections(self.resources)
-        if mode == "IN":
-            paths_in = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
-            paths = paths_in
-        elif mode == "OUT":
-            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
-            paths = paths_out
-        elif mode == "ALL":
-            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode="OUT")
-            paths_in = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode="IN")
-            paths = paths_out + paths_in
+
+        # Find paths based on the mode
+        if mode in ['IN', 'OUT']:
+            paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
+        elif mode == 'ALL':
+            paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode='OUT') + \
+                    connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode='IN')
         else:
             print("The only accepted modes are IN, OUT or ALL, please check the syntax")
             return
+
+        # Filter unsigned paths if only_signed is True
         if only_signed:
             paths = self.filter_unsigned_paths(paths, consensus)
+
+        # Add paths to edge list
         self.add_paths_to_edge_list(paths, mode)
-        all_nodes = set(self.nodes['Uniprot'].values)
-        set_a = set(comp_A)
-        set_b = set(comp_B)
-        set_c = all_nodes.difference(set_a)
-        set_c = set_c.difference(set_b)
-        set_c = list(set_c)
-        print(set_c)
+
+        # Calculate the difference between all nodes and comp_A and comp_B
+        set_c = list(set(self.nodes['Uniprot'].values) - set(comp_A) - set(comp_B))
+
+        # Connect the subgroup
         self.connect_subgroup(set_c, only_signed=only_signed, maxlen=maxlen)
+        return
+
+    def connect_to_upstream_nodes(self,
+                                  nodes_to_connect: Optional[List[str]] = None,
+                                  depth: int = 1,
+                                  rank: int = 1,
+                                  only_signed: bool = True,
+                                  consensus: bool = False) -> None:
+        """
+        Connects to upstream nodes based on the provided parameters.
+
+        Parameters:
+        - nodes_to_connect: A list of nodes to connect. If not provided, all nodes in the network are considered.
+        - depth: The depth of the search for upstream nodes.
+        - rank: The rank of the search for upstream nodes.
+
+        Returns:
+        None. The function modifies the network object in-place.
+        """
+        try:
+            # Initialize connections object
+            connect = Connections(self.resources)
+            if nodes_to_connect is None:
+                nodes_to_connect = self.nodes["Uniprot"].tolist()
+
+            cascades = connect.find_upstream_cascades(nodes_to_connect, depth, rank)
+            if only_signed:
+                cascades = self.filter_unsigned_paths(cascades, consensus)
+            self.add_cascade_to_edge_list(cascades)
+        except Exception as e:
+            print(f"An error occurred while connecting to upstream nodes: {e}")
         return
 
     def convert_edgelist_into_genesymbol(self):
         """
-        This function converts the edge dataframe from uniprot to genesymbol. This may be removed later,
-        I am not sure if it can be useful, mainly because the edge list will contain many different entities that
-        will not be possible to translate, and so it will be useless...
+        This function converts the edge dataframe from uniprot to genesymbol.
         """
-        self.edges.loc[:, "source"] = self.edges["source"].apply(
-            lambda x: mapping_node_identifier(x)[0] or mapping_node_identifier(x)[1])
 
-        self.edges.loc[:, "target"] = self.edges["target"].apply(
-            lambda x: mapping_node_identifier(x)[0] or mapping_node_identifier(x)[1])
+        def convert_identifier(x):
+            identifiers = mapping_node_identifier(x)
+            return identifiers[0] or identifiers[1]
+
+        self.edges["source"] = self.edges["source"].apply(convert_identifier)
+        self.edges["target"] = self.edges["target"].apply(convert_identifier)
 
         return
 

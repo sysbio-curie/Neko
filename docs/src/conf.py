@@ -59,7 +59,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.bibtex',
-    'sphinx_autodoc_typehints',
     'sphinx.ext.mathjax',
     'sphinx_copybutton',
     'sphinx_last_updated_by_git',

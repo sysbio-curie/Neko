@@ -25,7 +25,7 @@ project = 'omniflow_project'
 version = __version__
 author = ', '.join(__author__)
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
-copyright = f'{years}, Saez Lab'
+copyright = f'{years}, Sysbio-Curie'
 repository_url = 'https://github.com/sysbio-curie/omniflow_project'
 
 # thank you stupid sphinx, thank you stupid github :((( <-- directly taken from conf.py of Pypath XD
@@ -93,7 +93,7 @@ bibtex_bibfiles = ['references.bib']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'contents'

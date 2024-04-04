@@ -41,6 +41,7 @@ pycurl = "*"
 graphviz = "*"
 pandas = "*"
 myst-parser = "^2.0.0"
+numpydoc = "*"
 sphinx = "^7.2.6"
 sphinxcontrib-bibtex = "^2.6.2"
 [tool.poetry.dev-dependencies]

@@ -1,6 +1,7 @@
 import re
 import requests
-
+import pandas as pd
+import omnipath as op
 
 class Ontology:
     """
@@ -82,3 +83,36 @@ class Ontology:
             print("GO if accession used = ", id_accession)
             print("Phenotype description used = ", phenotype)
             return
+            
+    def check_tissue_annotations(self, genes_df, tissue):
+        """
+        Check if tissue annotations for each gene symbol contain the specified tissue.
+
+        Args:
+        genes_df (DataFrame): DataFrame containing gene symbols.
+        tissue (str): Tissue to check for in annotations.
+
+        Returns:
+        DataFrame: DataFrame with results indicating whether each gene symbol has tissue annotations containing the specified tissue.
+        """
+
+        results = []
+
+        # Iterate over each gene symbol
+        for genesymbol in genes_df['Genesymbol']:
+            # Fetch annotations for the gene symbol
+            annotations_df = op.requests.Annotations.get([genesymbol], force_full_download=True)
+
+            # Filter annotations for tissue annotations
+            tissue_annotations = annotations_df[annotations_df['label'] == 'tissue']
+
+            # Test if any tissue annotation contains the specified tissue
+            in_tissue = any(tissue.lower() in value.lower() for value in tissue_annotations['value'])
+
+            # Append result to list
+            results.append({'Genesymbol': genesymbol, 'in_tissue': in_tissue})
+
+        # Create DataFrame from results
+        results_df = pd.DataFrame(results)
+
+        return results_df

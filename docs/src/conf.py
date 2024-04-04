@@ -49,12 +49,15 @@ with open('index.rst', 'w') as fp:
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-    'sphinx.ext.napoleon',
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
+    'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel',
+    'numpydoc',
+    'nbsphinx',
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 
 autosummary_generate = True
@@ -104,11 +107,12 @@ pygments_style = 'manni'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = 'pydata_sphinx_theme'
-html_theme_options = {
-    'navigation_depth': 2,
-    'collapse_navigation': True,
-}
+html_theme = 'sphinx_rtd_theme'
+
+html_theme_options = dict(
+    logo_only=True,
+    display_version=True,
+)
 html_context = {
     'display_github': True,  # Integrate GitHub
     'github_user': 'sysbio-curie',  # Username

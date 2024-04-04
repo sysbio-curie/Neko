@@ -3,6 +3,25 @@ import requests
 import pandas as pd
 import omnipath as op
 
+
+def fetch_nodes_from_url(url):
+
+    """
+    fetch the nodes in a list from the given geneontology url
+    """
+    print("Start requesting genes from Gene Ontology")
+    print("Fetching from: ", url)
+    response = requests.get(url)
+    print("Done")
+    if not response:
+        print("Error fetching the genes, no entry found, please check the id accession code")
+        return
+    genes = response.text.split("\n")
+    genes = genes[:-1]
+    genes_unique = list(set(genes))
+    return genes_unique
+
+
 class Ontology:
     """
     class that stores some functionalities to connect phenotypes to nodes
@@ -43,47 +62,30 @@ class Ontology:
 
         return url
 
-    def fetch_nodes_from_url(self, url):
-
-        """
-        fetch the nodes in a list from the given geneontology url
-        """
-        print("Start requesting genes from Gene Ontology")
-        print("Fetching from: ", url)
-        response = requests.get(url)
-        print("Done")
-        if not response:
-            print("Error fetching the genes, no entry found, please check the id accession code")
-            return
-        genes = response.text.split("\n")
-        genes = genes[:-1]
-        genes_unique = list(set(genes))
-        return genes_unique
-
     def get_markers(self,
                     phenotype: str = None,
                     id_accession: str = None):
         if phenotype and id_accession:
             self.accession_to_phenotype_dict[id_accession] = phenotype
             url = self.modify_url_ontology(id_accession, phenotype)
-            genes = self.fetch_nodes_from_url(url)
+            genes = fetch_nodes_from_url(url)
             return genes
         elif phenotype and not id_accession:
             id_accession = {i for i in self.accession_to_phenotype_dict if self.accession_to_phenotype_dict[i]==phenotype}
             url = self.modify_url_ontology(id_accession, phenotype)
-            genes = self.fetch_nodes_from_url(url)
+            genes = fetch_nodes_from_url(url)
             return genes
         elif id_accession and not phenotype:
             phenotype = self.accession_to_phenotype_dict[id_accession]
             url = self.modify_url_ontology(id_accession, phenotype)
-            genes = self.fetch_nodes_from_url(url)
+            genes = fetch_nodes_from_url(url)
             return genes
         else:
             print("Invalid GO id accession or phenotype description:")
             print("GO if accession used = ", id_accession)
             print("Phenotype description used = ", phenotype)
             return
-            
+
     def check_tissue_annotations(self, genes_df, tissue):
         """
         Check if tissue annotations for each gene symbol contain the specified tissue.

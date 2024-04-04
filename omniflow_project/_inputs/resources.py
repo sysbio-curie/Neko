@@ -4,6 +4,7 @@ import logging
 import pypath
 from pypath.utils import mapping
 
+
 class Resources():
     """
     This class stores the actual databases to mine interesting interactions. The user can select different
@@ -77,6 +78,7 @@ class Resources():
 
     def import_signor_tsv(self, signor_file):
         df_signor = pd.read_table(signor_file)
+
         # Substitute "up-regulates" with "stimulation" and "down-regulates" with "inhibition" in the EFFECT column
 
         # Function to determine if the effect is stimulation
@@ -121,8 +123,14 @@ class Resources():
         kinase_int = pd.read_csv(kinase_int_file, sep = "\t")
         phospho_effect = pd.read_csv(phospho_effect_file, sep = "\t")
 
+<<<<<<< HEAD
         # Filter kinase_int dataframe to include only interactions from specified organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]
+=======
+        # Filter kinase_int dataframe to include only interactions involving human organisms
+        kinase_int_filtered = kinase_int.loc[
+            (kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
+>>>>>>> 82815780fa45644dc3c2f1fe13485f41e60e8274
 
         # Concatenate SUB_GENE and SUB_MOD_RSD columns separated by "_"
         kinase_int_filtered['target'] = kinase_int_filtered['SUB_GENE'] + '_' + kinase_int_filtered['SUB_MOD_RSD']
@@ -141,10 +149,12 @@ class Resources():
         phospho_effect_filtered = phospho_effect.loc[phospho_effect['ORGANISM'] == organism]
 
         # Keep only MOD_RSD entries with "-p" suffix and remove it
-        phospho_effect_filtered['MOD_RSD'] = phospho_effect_filtered['MOD_RSD'].apply(lambda x: x[:-2] if x.endswith('-p') else x)
+        phospho_effect_filtered['MOD_RSD'] = phospho_effect_filtered['MOD_RSD'].apply(
+            lambda x: x[:-2] if x.endswith('-p') else x)
 
         # Concatenate GENE and MOD_RSD columns into a new column 'Prot_site'
-        phospho_effect_filtered['Prot_site'] = phospho_effect_filtered['GENE'] + '_' + phospho_effect_filtered['MOD_RSD']
+        phospho_effect_filtered['Prot_site'] = phospho_effect_filtered['GENE'] + '_' + phospho_effect_filtered[
+            'MOD_RSD']
 
         # Initialize is_stimulation and is_inhibition columns with 0
         psp_interactions['is_stimulation'] = 0
@@ -175,7 +185,8 @@ class Resources():
             return row
 
         # Update psp_interactions dataframe based on phospho_effect information
-        psp_interactions = psp_interactions.merge(phospho_effect_filtered[['Prot_site', 'ON_FUNCTION']], left_on='target', right_on='Prot_site', how='left')
+        psp_interactions = psp_interactions.merge(phospho_effect_filtered[['Prot_site', 'ON_FUNCTION']],
+                                                  left_on='target', right_on='Prot_site', how='left')
         psp_interactions.fillna('', inplace=True)
         psp_interactions = psp_interactions.apply(update_phospho_effect, axis=1)
         psp_interactions.drop(columns=['Prot_site', 'ON_FUNCTION'], inplace=True)
@@ -186,11 +197,16 @@ class Resources():
             for index, row in psp_interactions.iterrows():
                 source, target = row['source'], row['target']
                 target_protein = target.split('_')[0]
-                expanded_rows.append({'source': target, 'target': target_protein, 'is_directed': True, 'is_stimulation': row['is_stimulation'], 'is_inhibition': row['is_inhibition'], 'consensus_direction': False, 'consensus_stimulation': False, 'consensus_inhibition': False, 'curation_effort': False, 'references': False, 'sources': False})
+                expanded_rows.append({'source': target, 'target': target_protein, 'is_directed': True,
+                                      'is_stimulation': row['is_stimulation'], 'is_inhibition': row['is_inhibition'],
+                                      'consensus_direction': False, 'consensus_stimulation': False,
+                                      'consensus_inhibition': False, 'curation_effort': False, 'references': False,
+                                      'sources': False})
             psp_interactions = pd.concat([psp_interactions, pd.DataFrame(expanded_rows)], ignore_index=True)
 
             # psp_interactions dataframe based on phospho_effect information
-        psp_interactions = psp_interactions[(psp_interactions['is_stimulation'] != 0) | (psp_interactions['is_inhibition'] != 0)]
+        psp_interactions = psp_interactions[
+            (psp_interactions['is_stimulation'] != 0) | (psp_interactions['is_inhibition'] != 0)]
 
         # If expand is False, remove duplicates from the DataFrame
         if not expand:

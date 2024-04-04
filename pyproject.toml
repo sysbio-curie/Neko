@@ -59,6 +59,7 @@ sphinx-copybutton = "*"
 myst-parser = "*"
 myst-nb = "*"
 pydata-sphinx-theme = "*"
+sphinx_rtd_theme = "*"
 sphinx-remove-toctrees = "*"
 jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
 nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }

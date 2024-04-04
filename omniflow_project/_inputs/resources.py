@@ -118,8 +118,8 @@ class Resources():
         Loads files from PhoshpositePlus (PSP), parses the files to create sign interactions based on the effect of phosphorylation on protein activities
         and creates an interaction dataframe based on the Omnipath interaction format.
         """
-        kinase_int = pd.read_csv(kinase_int_file)
-        phospho_effect = pd.read_csv(phospho_effect_file)
+        kinase_int = pd.read_csv(kinase_int_file, sep = "\t")
+        phospho_effect = pd.read_csv(phospho_effect_file, sep = "\t")
 
         # Filter kinase_int dataframe to include only interactions from specified organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]

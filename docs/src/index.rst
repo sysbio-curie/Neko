@@ -24,3 +24,6 @@ version 0.1.0
 - Enrichment methods: Shortest path (pypath)
 - Resources: Omnipath (All interactions)
 - Output formats: bnet file
+
+.. automodule:: network.py
+   :members:

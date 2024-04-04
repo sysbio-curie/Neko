@@ -5,6 +5,7 @@ Contents
    :maxdepth: 3
 
    index
+   api
    webservice
    release
    history

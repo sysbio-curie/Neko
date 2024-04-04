@@ -123,14 +123,13 @@ class Resources():
         kinase_int = pd.read_csv(kinase_int_file, sep = "\t")
         phospho_effect = pd.read_csv(phospho_effect_file, sep = "\t")
 
-<<<<<<< HEAD
+
         # Filter kinase_int dataframe to include only interactions from specified organisms
         kinase_int_filtered = kinase_int.loc[(kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]
-=======
-        # Filter kinase_int dataframe to include only interactions involving human organisms
+        # Filter kinase_int dataframe to include only interactions involving human 
         kinase_int_filtered = kinase_int.loc[
-            (kinase_int['KIN_ORGANISM'] == 'human') & (kinase_int['SUB_ORGANISM'] == 'human')]
->>>>>>> 82815780fa45644dc3c2f1fe13485f41e60e8274
+            (kinase_int['KIN_ORGANISM'] == organism) & (kinase_int['SUB_ORGANISM'] == organism)]
+
 
         # Concatenate SUB_GENE and SUB_MOD_RSD columns separated by "_"
         kinase_int_filtered['target'] = kinase_int_filtered['SUB_GENE'] + '_' + kinase_int_filtered['SUB_MOD_RSD']

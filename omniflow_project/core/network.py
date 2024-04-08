@@ -307,7 +307,7 @@ class Network:
         None. The function modifies the network object in-place by adding the interaction to the edges DataFrame and adding
         any new nodes to the nodes DataFrame.
         """
-        print(edge["source"].values[0], edge["target"].values[0])
+
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         effect = check_sign(edge)
         references = edge["references"].values[0]
@@ -598,9 +598,10 @@ class Network:
             for node1, node2 in combinations(group, 2):
                 flag = False
                 i = 0
+                print("looking for paths in the database for node ",
+                      mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
                 while not flag and i <= maxlen:
-                    print("looking for paths in the database with length: ", i, " for node ",
-                          mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                     if mode == "IN":
                         paths_in = connect.find_paths(node1, node2, maxlen=i,
                                                       mode=mode)
@@ -625,7 +626,6 @@ class Network:
                         continue
                     if paths:
                         print("Found a path!")
-                        print(translate_paths(paths))
                         self.add_paths_to_edge_list(paths, mode)
                         flag = True
         return
@@ -677,9 +677,10 @@ class Network:
             if minimal:
                 # Reset the object connect_network, updating the possible list of paths
                 connect_network = Connections(self.edges)
+            print("looking for paths in the network for node ",
+                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
             while i <= maxlen:
-                print("looking for paths in the network with length: ", i, " for node ",
-                      mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                 # As first step, make sure that there is at least one path between two nodes in the network
                 if mode == "IN":
                     paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
@@ -697,7 +698,6 @@ class Network:
 
                 if paths:
                     print("Found a path!")
-                    print(translate_paths(paths))
                 if not paths and i < maxlen:  # if there is no path, look for another one until reach maxlen
                     i += 1
                     continue
@@ -705,10 +705,10 @@ class Network:
                     # until we find a new one
                     flag = False
                     i = 0
+                    print("Looking for paths for node ",
+                          mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
                     while not flag and i <= i_search:
-                        print("i_search = ", i_search)
-                        print("Looking for paths with length: ", i, " for node ",
-                              mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                         if mode == "IN":
                             paths_in = connect.find_paths(node1, node2, maxlen=i, mode=mode)
                             paths = paths_in
@@ -727,7 +727,6 @@ class Network:
                         if not paths:
                             i += 1
                         else:
-                            print(translate_paths(paths))
                             self.add_paths_to_edge_list(paths, mode)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)

@@ -196,12 +196,56 @@ class Network:
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
+            self.drop_missing_nodes()
         elif sif_file:
             self.load_network_from_sif(sif_file)
 
     def copy(self):
         new_instance = copy.deepcopy(self)
         return new_instance
+
+    def check_nodes(self, nodes: list[str]) -> list[str]:
+        """
+        This function checks if the nodes exist in the resources database and returns the nodes that are present.
+
+        Parameters:
+        - nodes: A list of node identifiers (strings). These are the nodes to be checked.
+
+        Returns:
+        - A list of node identifiers (strings) that exist in the resources database. If a node from the input list does not exist in the resources database, it is not included in the output list.
+
+        The function works by iterating over the input list of nodes. For each node, it checks if the node exists in the 'source' or 'target' columns of the resources database. If the node exists, it is added to the output list.
+        """
+        return [node for node in nodes if
+                node in self.resources["source"].unique() or node in self.resources["target"].unique()]
+
+    def drop_missing_nodes(self):
+        """
+        This function drops the nodes that are not present in the resources database and print a warning with the name of the missing nodes.
+
+        The function works as follows:
+        1. It first calls the `check_nodes` function to get a list of nodes that exist in the resources' database.
+        2. It then finds the nodes in the network that are not in this list, and removes them from the network.
+        3. If there are any missing nodes, it prints a warning with their names.
+
+        This function does not return anything. It modifies the `nodes` attribute of the `Network` object in-place.
+        """
+        # Get the list of nodes that exist in the resources database
+        existing_nodes = self.check_nodes(self.nodes["Uniprot"].tolist())
+
+        # Find the nodes in the network that are not in the list of existing nodes
+        missing_nodes = [node for node in self.nodes["Uniprot"].tolist() if node not in existing_nodes]
+
+        # Remove the missing nodes from the network
+        self.nodes = self.nodes[~self.nodes["Uniprot"].isin(missing_nodes)]
+
+        # Print a warning with the name of the missing nodes
+        if missing_nodes:
+            print(
+                "Warning: The following nodes were not found in the resources database and have been removed from the "
+                "network:",
+                ", ".join(missing_nodes))
+        return
 
     def add_node(self, node: str):
         """
@@ -263,7 +307,7 @@ class Network:
         None. The function modifies the network object in-place by adding the interaction to the edges DataFrame and adding
         any new nodes to the nodes DataFrame.
         """
-        print(edge["source"].values[0], edge["target"].values[0])
+
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         effect = check_sign(edge)
         references = edge["references"].values[0]
@@ -554,9 +598,10 @@ class Network:
             for node1, node2 in combinations(group, 2):
                 flag = False
                 i = 0
+                print("looking for paths in the database for node ",
+                      mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
                 while not flag and i <= maxlen:
-                    print("looking for paths in the database with length: ", i, " for node ",
-                          mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                     if mode == "IN":
                         paths_in = connect.find_paths(node1, node2, maxlen=i,
                                                       mode=mode)
@@ -581,7 +626,6 @@ class Network:
                         continue
                     if paths:
                         print("Found a path!")
-                        print(translate_paths(paths))
                         self.add_paths_to_edge_list(paths, mode)
                         flag = True
         return
@@ -633,9 +677,10 @@ class Network:
             if minimal:
                 # Reset the object connect_network, updating the possible list of paths
                 connect_network = Connections(self.edges)
+            print("looking for paths in the network for node ",
+                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
             while i <= maxlen:
-                print("looking for paths in the network with length: ", i, " for node ",
-                      mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                 # As first step, make sure that there is at least one path between two nodes in the network
                 if mode == "IN":
                     paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
@@ -653,7 +698,6 @@ class Network:
 
                 if paths:
                     print("Found a path!")
-                    print(translate_paths(paths))
                 if not paths and i < maxlen:  # if there is no path, look for another one until reach maxlen
                     i += 1
                     continue
@@ -661,10 +705,10 @@ class Network:
                     # until we find a new one
                     flag = False
                     i = 0
+                    print("Looking for paths for node ",
+                          mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
                     while not flag and i <= i_search:
-                        print("i_search = ", i_search)
-                        print("Looking for paths with length: ", i, " for node ",
-                              mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
                         if mode == "IN":
                             paths_in = connect.find_paths(node1, node2, maxlen=i, mode=mode)
                             paths = paths_in
@@ -683,7 +727,6 @@ class Network:
                         if not paths:
                             i += 1
                         else:
-                            print(translate_paths(paths))
                             self.add_paths_to_edge_list(paths, mode)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
@@ -779,6 +822,7 @@ class Network:
             if only_signed:
                 cascades = self.filter_unsigned_paths(cascades, consensus)
             self.add_cascade_to_edge_list(cascades)
+            self.edges.drop_duplicates()
         except Exception as e:
             print(f"An error occurred while connecting to upstream nodes: {e}")
         return
@@ -830,7 +874,8 @@ class Network:
 
         print("Starting connecting network's nodes to: ", phenotype_genes)
         unique_uniprot = set(uniprot_genes) - set(sub_genes if sub_genes else self.nodes["Uniprot"])
-        self.connect_component(sub_genes if sub_genes else self.nodes["Uniprot"].tolist(), list(unique_uniprot), mode="OUT",
+        self.connect_component(sub_genes if sub_genes else self.nodes["Uniprot"].tolist(), list(unique_uniprot),
+                               mode="OUT",
                                maxlen=maxlen, only_signed=only_signed)
 
         if compress:

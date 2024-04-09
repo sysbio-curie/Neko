@@ -110,23 +110,17 @@ class Connections:
         self.resources = database
         return
 
-    def find_neighbours(self, node: str, mode: Literal['OUT', 'IN']) -> list[str]:
+    def find_neighbours(self,
+                        node: str) -> list[str]:
         """
-        Find the neighbours of a node in the network.
-        Parameters:
-        - node: Node for which to find neighbours.
-        - mode: Direction of interactions to consider ('OUT' or 'IN').
-        Returns:
-        - neighbors: List of neighbouring nodes.
+        Optimized helper function that finds the neighbors of the target node.
         """
+
         db = self.resources
 
-        if mode == 'IN':
-            neighbors = db.loc[db["target"] == node]["source"].tolist()
-        else:
-            neighbors = db.loc[db["source"] == node]["target"].tolist()
+        neigh = set(db.loc[db["source"] == node]["target"])
 
-        return neighbors
+        return list(neigh)
 
     def find_paths(self,
                    start: (
@@ -138,7 +132,6 @@ class Connections:
                    maxlen: int = 2,
                    minlen: int = 1,
                    loops: bool = False,
-                   mode: Literal['OUT', 'IN'] = "OUT",
                    ) -> list[tuple]:
         """
         Find paths or motifs in a network.
@@ -149,9 +142,6 @@ class Connections:
         """
 
         def convert_to_string_list(start):
-            """
-            Convert the 'start' variable to a list of strings.
-            """
             if isinstance(start, str):
                 return [start]
             elif isinstance(start, pd.DataFrame):
@@ -162,16 +152,6 @@ class Connections:
                 raise ValueError("Invalid type for 'start' variable")
 
         def find_all_paths_aux(start, end, path, maxlen):
-            """
-            Recursive function to find all paths between two nodes.
-            Parameters:
-            - start: Starting node.
-            - end: Ending node.
-            - path: Current path.
-            - maxlen: Maximum length of paths to consider.
-            Returns:
-            - paths: List of all paths found.
-            """
             path = path + [start]
 
             if len(path) >= minlen + 1 and (start == end or (end is None and not loops and len(path) == maxlen + 1) or (
@@ -181,13 +161,13 @@ class Connections:
             paths = []
 
             if len(path) <= maxlen:
-                next_steps = self.find_neighbours(start, mode)
+                next_steps = self.find_neighbours(start)
 
                 if not loops:
                     next_steps = list(set(next_steps) - set(path))
 
                 for node in next_steps:
-                    paths.extend(find_all_paths_aux(node, end, path, maxlen, mode))
+                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
 
             return paths
 
@@ -199,7 +179,7 @@ class Connections:
 
         for s in start_nodes:
             for e in end_nodes:
-                all_paths.extend(find_all_paths_aux(s, e, [], maxlen, mode))
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
 
         return all_paths
 

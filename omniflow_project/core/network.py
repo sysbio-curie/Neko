@@ -49,6 +49,24 @@ def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
             return "undefined"
 
 
+def check_gene_list_format(gene_list: list[str]) -> list[str]:
+    """
+    This function checks the format of the gene list and returns True if the gene list is in Uniprot format, False if the gene list is in genesymbol format.
+
+    Parameters:
+    - gene_list: A list of gene identifiers. The gene identifiers can be either Uniprot identifiers or genesymbols.
+
+    Returns:
+    - A boolean indicating whether the gene list is in Uniprot format (True) or genesymbol format (False).
+    """
+    # Check if the gene list contains Uniprot identifiers
+    if all(mapping.id_from_label0(gene) for gene in gene_list):
+        return True
+    # Check if the gene list contains genesymbols
+    elif all(mapping.label(gene) for gene in gene_list):
+        return False
+
+
 def mapping_node_identifier(node: str) -> list[str]:
     """
     This function takes a node identifier and returns a list containing the possible identifiers for the node.
@@ -168,12 +186,12 @@ class Network:
         remove_node(node: str): Removes a node from the network.
         add_edge(edge: pd.DataFrame): Adds an edge to the network.
         load_network_from_sif(sif_file): Loads a network from a SIF (Simple Interaction Format) file.
-        add_paths_to_edge_list(paths, mode): Adds paths to the edge list of the network.
+        add_paths_to_edge_list(paths): Adds paths to the edge list of the network.
         connect_nodes(only_signed: bool = False, consensus_only: bool = False): Connects all the nodes in the network.
         is_connected(): Checks if all the nodes in the network are connected.
         filter_unsigned_paths(paths: list[tuple], consensus: bool): Filters out unsigned paths from the provided list of paths.
-        connect_subgroup(group: (str | pd.DataFrame | list[str]), maxlen: int = 1, mode: Literal['OUT', 'IN', 'ALL'] = 'ALL', only_signed: bool = False, consensus: bool = False): Connects all the nodes in a particular subgroup.
-        complete_connection(maxlen: int = 2, mode: Literal['OUT', 'IN', 'ALL'] = 'ALL', minimal: bool = True, k_mean: Literal['tight', 'extensive'] = 'tight', only_signed: bool = False, consensus: bool = False, connect_node_when_first_introduced: bool = True): Connects all nodes of a network object.
+        connect_subgroup(group: (str | pd.DataFrame | list[str]), maxlen: int = 1, only_signed: bool = False, consensus: bool = False): Connects all the nodes in a particular subgroup.
+        complete_connection(maxlen: int = 2, minimal: bool = True, k_mean: Literal['tight', 'extensive'] = 'tight', only_signed: bool = False, consensus: bool = False, connect_node_when_first_introduced: bool = True): Connects all nodes of a network object.
         connect_component(comp_A: (str | pd.DataFrame | list[str]), comp_B: (str | pd.DataFrame | list[str]), maxlen: int = 2, mode: str = 'OUT', only_signed: bool = False, compress: bool = False): Connects subcomponents of a network object.
         convert_edgelist_into_genesymbol(): Converts the edge dataframe from uniprot to genesymbol.
         connect_genes_to_phenotype(phenotype: str = None, id_accession: str = None, sub_genes: list[str] = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False): Connects genes to a phenotype.
@@ -403,48 +421,21 @@ class Network:
 
         return
 
-    def add_paths_to_edge_list(self, paths, mode):
-        """
-        Adds paths to the edge list of the network. The paths are added based on the provided mode.
-
-        Parameters:
-        - paths: A list of paths, where each path is a sequence of nodes.
-        - mode: A string indicating the mode of connection. It can be 'ALL', 'IN', or 'OUT'.
-
-        Returns:
-        None. The function modifies the network object in-place.
-        """
+    def add_paths_to_edge_list(self, paths):
         database = self.resources
-
-        def add_edge_if_not_empty_and_mode(path, i, mode):
-            """
-            Helper function to add an edge to the network if the interaction is not empty and matches the provided mode.
-
-            Parameters:
-            - path: A sequence of nodes representing a path in the network.
-            - i: The index of the current node in the path.
-            - mode: A string indicating the mode of connection. It can be 'ALL', 'IN', or 'OUT'.
-
-            Returns:
-            None. The function modifies the network object in-place.
-            """
-            interaction_in = database.loc[(database["source"] == path[i]) &
-                                          (database["target"] == path[i + 1])]
-            interaction_out = database.loc[(database["target"] == path[i]) &
-                                           (database["source"] == path[i + 1])]
-
-            if not interaction_in.empty and (mode in ["ALL", "IN"]):
-                self.add_edge(interaction_in)
-            elif not interaction_out.empty and (mode in ["ALL", "OUT"]):
-                self.add_edge(interaction_out)
 
         for path in paths:  # Iterate through the list of paths
             if isinstance(path, (str, tuple)):  # Handle single string or tuple
                 path = [path]
 
-            for i in range(len(path) - 1):
-                add_edge_if_not_empty_and_mode(path, i, mode)
+            for i in range(0, len(path)):
+                if i == len(path) - 1:
+                    break
+                interaction = database.loc[(database["source"] == path[i]) &
+                                              (database["target"] == path[i + 1])]
 
+                if not interaction.empty:
+                    self.add_edge(interaction)
         self.edges = self.edges.drop_duplicates()
         return
 
@@ -557,13 +548,9 @@ class Network:
             for i in range(0, len(path)):
                 if i == len(path) - 1:
                     break
-                interaction_in = interactions.loc[(interactions["source"] == path[i]) &
+                interaction = interactions.loc[(interactions["source"] == path[i]) &
                                                   (interactions["target"] == path[i + 1])]
-                interaction_out = interactions.loc[(interactions["target"] == path[i]) &
-                                                   (interactions["source"] == path[i + 1])]
-                if not interaction_in.empty and check_sign(interaction_in, consensus) == "undefined":
-                    is_full_signed = False
-                if not interaction_out.empty and check_sign(interaction_out, consensus) == "undefined":
+                if not interaction.empty and check_sign(interaction, consensus) == "undefined":
                     is_full_signed = False
             if is_full_signed:
                 filtered_paths.append(path)
@@ -572,19 +559,17 @@ class Network:
     def connect_subgroup(self,
                          group: (str | pd.DataFrame | list[str]),
                          maxlen: int = 1,
-                         mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
                          only_signed: bool = False,
                          consensus: bool = False
                          ):
         """
         This function is used to connect all the nodes in a particular subgroup. It iterates over all pairs of nodes in the
         subgroup and finds paths between them in the resources database. If a path is found, it is added to the edge list of
-        the network. The function can operate in different modes ('IN', 'OUT', 'ALL') and can filter out unsigned paths.
+        the network. The function also filters out unsigned paths if the `only_signed` flag is set to True.
 
         Parameters:
         - group: A list of nodes representing the subgroup to connect. Nodes can be represented as strings, pandas DataFrame, or list of strings.
         - maxlen: The maximum length of the paths to be searched for in the resources database. Default is 1.
-        - mode: The mode of connection, which can be 'IN', 'OUT', or 'ALL'. Default is 'ALL'.
         - only_signed: A boolean flag indicating whether to only add signed interactions to the network. Default is False.
         - consensus: A boolean flag indicating whether to only add signed interactions with consensus among references to the network. Default is False.
 
@@ -592,47 +577,36 @@ class Network:
         None. The function modifies the network object in-place.
         """
         connect = Connections(self.resources)  # here we have the database where we look for the interactions
-        if len(self.nodes) == 1:
+        if not check_gene_list_format(group):
+            uniprot_gene_list = group
+        else:
+            uniprot_gene_list = [mapping_node_identifier(i)[2] for i in group]
+        if len(uniprot_gene_list) == 1:
             print("Number of node insufficient to create connection")
         else:
-            for node1, node2 in combinations(group, 2):
-                flag = False
+            for node1, node2 in combinations(uniprot_gene_list, 2):
                 i = 0
-                print("looking for paths in the database for node ",
-                      mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
-                while not flag and i <= maxlen:
-
-                    if mode == "IN":
-                        paths_in = connect.find_paths(node1, node2, maxlen=i,
-                                                      mode=mode)
-                        paths = paths_in
-                    elif mode == "OUT":
-                        paths_out = connect.find_paths(node1, node2, maxlen=i,
-                                                       mode=mode)
-                        paths = paths_out
-                    elif mode == "ALL":
-                        paths_out = connect.find_paths(node1, node2, maxlen=i,
-                                                       mode="OUT")
-                        paths_in = connect.find_paths(node1, node2, maxlen=i,
-                                                      mode="IN")
-                        paths = paths_out + paths_in
-                    else:
-                        print("The only accepted modes are IN, OUT or ALL, please check the syntax")
-                        return
-                    if only_signed:
-                        paths = self.filter_unsigned_paths(paths, consensus)
-                    if not paths:  # if there is no path, look for another one until reach maxlen
+                paths_in = []
+                paths_out = []
+                while i <= maxlen:
+                    if not paths_out:
+                        paths_out = connect.find_paths(node1, node2, maxlen=i)
+                        if only_signed:
+                            paths_out = self.filter_unsigned_paths(paths_out, consensus)
+                    if not paths_in:
+                        paths_in = connect.find_paths(node2, node1, maxlen=i)
+                        if only_signed:
+                            paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                    if not paths_in or not paths_out and i <= maxlen:
                         i += 1
-                        continue
-                    if paths:
-                        print("Found a path!")
-                        self.add_paths_to_edge_list(paths, mode)
-                        flag = True
+                    if (paths_in or paths_out) and i > maxlen or (paths_in and paths_out):
+                        paths = paths_out + paths_in
+                        self.add_paths_to_edge_list(paths)
+                        break
         return
 
     def complete_connection(self,
                             maxlen: int = 2,
-                            mode: Literal['OUT', 'IN', 'ALL'] = 'ALL',
                             minimal: bool = True,
                             k_mean: Literal['tight', 'extensive'] = 'tight',
                             only_signed: bool = False,
@@ -645,7 +619,6 @@ class Network:
 
         Parameters:
         - maxlen: The maximum length of the paths to be searched for. Default is 2.
-        - mode: The mode of connection, which can be 'IN', 'OUT', or 'ALL'. Default is 'ALL'.
         - minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list of
           paths. Default is True.
         - k_mean: The search mode, which can be 'tight' or 'extensive'. Default is 'tight'.
@@ -677,65 +650,52 @@ class Network:
             if minimal:
                 # Reset the object connect_network, updating the possible list of paths
                 connect_network = Connections(self.edges)
-            print("looking for paths in the network for node ",
-                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+
             while i <= maxlen:
-
                 # As first step, make sure that there is at least one path between two nodes in the network
-                if mode == "IN":
-                    paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
-                    paths = paths_in
-                elif mode == "OUT":
-                    paths_out = connect_network.find_paths(node1, node2, maxlen=i, mode=mode)
-                    paths = paths_out
-                elif mode == "ALL":
-                    paths_out = connect_network.find_paths(node1, node2, maxlen=i, mode="OUT")
-                    paths_in = connect_network.find_paths(node1, node2, maxlen=i, mode="IN")
-                    paths = paths_out + paths_in
-                else:
-                    print("The only accepted modes are IN, OUT or ALL, please check the syntax")
-                    return
+                paths_in = connect_network.find_paths(node2, node1, maxlen=i)
 
-                if paths:
+                paths_out = connect_network.find_paths(node1, node2, maxlen=i)
+
+                if paths_in and paths_out:
                     print("Found a path!")
-                if not paths and i < maxlen:  # if there is no path, look for another one until reach maxlen
+                    break
+                if not (paths_in and paths_out) and i < maxlen:  # if there is no path, look for another one until reach maxlen
                     i += 1
                     continue
-                elif not paths and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
+                if not paths_in and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
                     # until we find a new one
                     flag = False
-                    i = 0
-                    print("Looking for paths for node ",
-                          mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
-                    while not flag and i <= i_search:
-
-                        if mode == "IN":
-                            paths_in = connect.find_paths(node1, node2, maxlen=i, mode=mode)
-                            paths = paths_in
-                        elif mode == "OUT":
-                            paths_out = connect.find_paths(node1, node2, maxlen=i, mode=mode)
-                            paths = paths_out
-                        elif mode == "ALL":
-                            paths_out = connect.find_paths(node1, node2, maxlen=i, mode="OUT")
-                            paths_in = connect.find_paths(node1, node2, maxlen=i, mode="IN")
-                            paths = paths_out + paths_in
-                        else:
-                            print("The only accepted modes are IN, OUT or ALL, please check the syntax")
-                            return
+                    j = 0
+                    while not flag and j <= i_search:
+                        paths_in = connect.find_paths(node2, node1, maxlen=j)
                         if only_signed:
-                            paths = self.filter_unsigned_paths(paths, consensus)
-                        if not paths:
-                            i += 1
+                            paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                        if not paths_in:
+                            j += 1
                         else:
-                            self.add_paths_to_edge_list(paths, mode)
+                            self.add_paths_to_edge_list(paths_in)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
                                 self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
                             flag = True
-                    break
-                elif paths:  # if there is a path, there is no need to connect the node, so we iterate through another
-                    # pair of nodes
-                    break
+                if not paths_out and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
+                    # until we find a new one
+                    flag = False
+                    j = 0
+                    while not flag and j <= i_search:
+                        paths_out = connect.find_paths(node1, node2, maxlen=j)
+                        if only_signed:
+                            paths_out = self.filter_unsigned_paths(paths_out, consensus)
+                        if not paths_out:
+                            j += 1
+                        else:
+                            self.add_paths_to_edge_list(paths_out)
+                            if connect_node_when_first_introduced:
+                                self.connect_nodes(only_signed, consensus)
+                                self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
+                            flag = True
+                break
         if not connect_node_when_first_introduced:
             self.connect_nodes(only_signed, consensus)
             self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
@@ -743,56 +703,51 @@ class Network:
 
     def connect_component(self,
                           comp_A: (
-                              str | pd.DataFrame | list[str]
+                              str | list[str]
                           ),
                           comp_B: (
-                              str | pd.DataFrame | list[str]
+                              str | list[str]
                           ),
                           maxlen: int = 2,
-                          mode: str = 'OUT',
+                          mode: Literal['OUT', 'IN', 'ALL'] = 'OUT',
                           only_signed: bool = False,
-                          consensus: bool = False):
+                          consensus: bool = False
+                          ):
         """
         This function tries to connect subcomponents of a network object using one of the methods presented in the Connection
-        object. This should be a core characteristic of this package and the user should have the possibility to choose
-        different methods to enrich its Network object.
+        object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
+        the user should have the possibility to choose different methods to enrich its Network object.
 
-        Parameters:
-        - comp_A: The first component to connect.
-        - comp_B: The second component to connect.
-        - maxlen: The maximum length of the paths to be searched for.
-        - mode: The mode of connection, which can be 'IN', 'OUT', or 'ALL'.
-        - only_signed: A boolean flag to indicate whether to filter unsigned paths.
-        - consensus: A boolean flag to indicate whether to check for consensus among references.
-
-        Returns:
-        None. The function modifies the network object in-place.
+        TO COMPLETE STILL WORK IN PROGRESS
         """
-        # Create a Connections object for the resources
+        print(comp_A)
+        print(comp_B)
         connect = Connections(self.resources)
-
-        # Find paths based on the mode
-        if mode in ['IN', 'OUT']:
-            paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode=mode)
-        elif mode == 'ALL':
-            paths = connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode='OUT') + \
-                    connect.find_paths(comp_A, comp_B, maxlen=maxlen, mode='IN')
+        if mode == "IN":
+            paths_in = connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths = paths_in
+        elif mode == "OUT":
+            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths = paths_out
+        elif mode == "ALL":
+            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths_in = connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths = paths_out + paths_in
         else:
             print("The only accepted modes are IN, OUT or ALL, please check the syntax")
             return
-
-        # Filter unsigned paths if only_signed is True
         if only_signed:
             paths = self.filter_unsigned_paths(paths, consensus)
 
-        # Add paths to edge list
-        self.add_paths_to_edge_list(paths, mode)
-
-        # Calculate the difference between all nodes and comp_A and comp_B
-        set_c = list(set(self.nodes['Uniprot'].values) - set(comp_A) - set(comp_B))
-
-        # Connect the subgroup
-        self.connect_subgroup(set_c, only_signed=only_signed, maxlen=maxlen)
+        self.add_paths_to_edge_list(paths)
+        all_nodes = set(self.nodes['Uniprot'].values)
+        set_a = set(comp_A)
+        set_b = set(comp_B)
+        set_c = all_nodes.difference(set_a)
+        set_c = set_c.difference(set_b)
+        set_c = list(set_c)
+        if len(set_c) > 0:
+            self.connect_subgroup(set_c, only_signed=only_signed, maxlen=maxlen)
         return
 
     def connect_to_upstream_nodes(self,
@@ -865,16 +820,27 @@ class Network:
         Returns:
         None. The function modifies the network object in-place.
         """
+        uniprot_gene_list = []
+        genesymbols_genes = []
+
         phenotype_genes = self.ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
         if not phenotype_genes:
             print("Something went wrong while getting the markers for: ", phenotype, " and ", id_accession)
             print("Check URL and try again")
             return
         uniprot_genes = [mapping_node_identifier(i)[2] for i in phenotype_genes]
+        if sub_genes:
+            if check_gene_list_format(sub_genes):
+                uniprot_gene_list = sub_genes
+                genesymbols_genes = [mapping_node_identifier(i)[2] for i in sub_genes]
+            else:
+                uniprot_gene_list = [mapping_node_identifier(i)[2] for i in sub_genes]
+                genesymbols_genes = sub_genes
 
         print("Starting connecting network's nodes to: ", phenotype_genes)
-        unique_uniprot = set(uniprot_genes) - set(sub_genes if sub_genes else self.nodes["Uniprot"])
-        self.connect_component(sub_genes if sub_genes else self.nodes["Uniprot"].tolist(), list(unique_uniprot),
+        unique_uniprot = set(uniprot_genes) - set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"])
+        unique_genesymbol = set(phenotype_genes) - set(genesymbols_genes if genesymbols_genes else self.nodes["Genesymbol"])
+        self.connect_component(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"].tolist(), list(unique_uniprot),
                                mode="OUT",
                                maxlen=maxlen, only_signed=only_signed)
 
@@ -883,15 +849,14 @@ class Network:
             phenotype_modified = phenotype.replace(" ", "_")
 
             # Substitute the specified genes with the phenotype name in the nodes dataframe
-            # Substitute the specified genes with the phenotype name in the nodes dataframe
             self.nodes['Uniprot'] = self.nodes['Uniprot'].apply(
-                lambda x: phenotype_modified if x in uniprot_genes else x)
+                lambda x: phenotype_modified if x in unique_uniprot else x)
             self.nodes['Genesymbol'] = self.nodes['Genesymbol'].apply(
-                lambda x: phenotype_modified if x in phenotype_genes else x)
+                lambda x: phenotype_modified if x in unique_genesymbol else x)
 
             # Substitute the specified genes with the phenotype name in the edges dataframe
             for column in ['source', 'target']:
-                self.edges[column] = self.edges[column].apply(lambda x: phenotype_modified if x in uniprot_genes else x)
+                self.edges[column] = self.edges[column].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
 
             # Group by source and target, and aggregate with the custom function for each column
             self.edges = self.edges.groupby(['source', 'target']).agg({
@@ -899,4 +864,9 @@ class Network:
                 'Effect': join_unique,  # Aggregate effects with the custom function
                 'References': join_unique  # Aggregate references with the custom function
             }).reset_index()
+
+            common_genes = set(uniprot_genes).intersection(set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"]))
+            for gene in common_genes:
+                new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation", "References": "Gene Ontology"}
+                self.edges = self.edges.append(new_edge, ignore_index=True)
         return

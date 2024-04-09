@@ -187,7 +187,7 @@ class Connections:
                     next_steps = list(set(next_steps) - set(path))
 
                 for node in next_steps:
-                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
+                    paths.extend(find_all_paths_aux(node, end, path, maxlen, mode))
 
             return paths
 
@@ -199,7 +199,7 @@ class Connections:
 
         for s in start_nodes:
             for e in end_nodes:
-                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen, mode))
 
         return all_paths
 

@@ -8,12 +8,15 @@ __all__ = ['TestAlgorithms']
 
 class TestAlgorithms:
 
-    def test_complete_connection(self, ca1_network: pd.DataFrame):
+    def test_complete_connection(
+        self,
+        ca1_network: pd.DataFrame,
+        genes0: list[str],
+    ):
 
-        genes = ['SRC', 'NOTCH1', 'PTK2']
         res = resources.Resources()
         res.add_database(ca1_network)
-        net = network.Network(genes, res)
+        net = network.Network(genes0, res)
 
         net.complete_connection(
             maxlen = 6,
@@ -24,3 +27,7 @@ class TestAlgorithms:
         )
 
         assert net.edges.shape == (12, 5)
+        assert not (
+            set(net.edges.Effect.unique()) -
+            {'inhibition', 'stimulation'}
+        )

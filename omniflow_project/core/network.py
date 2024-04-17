@@ -352,6 +352,95 @@ class Network:
         self.edges = self.edges.drop_duplicates()
         return
 
+    def remove_edge(self, node1: str, node2: str):
+        """
+        This function removes an edge from the network. It takes the source node and target node as input and removes
+        the edge from the edges DataFrame.
+
+        Parameters:
+        - node1: A string representing the source node of the edge.
+        - node2: A string representing the target node of the edge.
+
+        Returns:
+        None. The function modifies the network object in-place by removing the edge from the edges DataFrame.
+        """
+        # check if node1 and node2 are in genesymbol format or uniprot format
+        if check_gene_list_format([node1]):
+            node1 = mapping_node_identifier(node1)[2]
+        if check_gene_list_format([node2]):
+            node2 = mapping_node_identifier(node2)[2]
+
+        # Remove the edge from the edges DataFrame, if the effect or the nodes are not present, print a warning
+        if not self.edges[(self.edges["source"] == node1) & (self.edges["target"] == node2)].empty:
+            self.edges = self.edges[~((self.edges["source"] == node1) & (self.edges["target"] == node2))]
+        else:
+            print("Warning: The edge does not exist in the network, check syntax for ", mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+        return
+
+    def print_my_paths(self, node1: str, node2: str, maxlen: int = 2, genesymbol: bool = True):
+        """
+        This function prints all the paths between two nodes in the network. It uses the `find_paths` method from the
+        `Connections` class to find all the paths between the two nodes in the Network object. If no paths are found,
+        it prints a warning message. If one of the selected nodes is not present in the network, it prints an error message.
+
+        Parameters:
+        - node1: A string representing the source node.
+        - node2: A string representing the target node.
+        - maxlen: An integer representing the maximum length of the paths to be searched for. Default is 2.
+        - genesymbol: A boolean flag indicating whether to print the paths in genesymbol format. Default is True.
+
+        Returns:
+        None. The function prints the paths between the two nodes in the network.
+        """
+
+        # check if node1 and node2 are in genesymbol format or uniprot format
+        if check_gene_list_format([node1]):
+            node1 = mapping_node_identifier(node1)[2]
+        if check_gene_list_format([node2]):
+            node2 = mapping_node_identifier(node2)[2]
+
+        # Check if the nodes exist in the network
+        if node1 not in self.nodes["Uniprot"].tolist() or node2 not in self.nodes["Uniprot"].tolist():
+            print("Error: One or both of the selected nodes are not present in the network.")
+            return
+        connect = Connections(self.edges)
+        paths = connect.find_paths(node1, node2, maxlen=maxlen)
+
+        if not paths:
+            print("Warning: No paths found between source: ", node1, " and target: ", node2)
+            return
+
+        if genesymbol:
+            paths = translate_paths(paths)
+
+        # Print all the paths
+        for path in paths:
+            print(path)
+
+        return
+
+    def remove_path(self, path: list[str]):
+        """
+        This function removes a path from the network. It takes a list of nodes representing the path and removes all the edges
+        between the nodes in the path.
+
+        Parameters:
+        - path: A list of nodes representing the path to be removed. The nodes can be represented as strings or tuples.
+
+        Returns:
+        None. The function modifies the network object in-place by removing the edges between the nodes in the path.
+        """
+        # check if node1 and node2 are in genesymbol format or uniprot format
+        if check_gene_list_format(path):
+            path = [mapping_node_identifier(node)[2] for node in path]
+
+        # Iterate through the nodes in the path and remove the edges between them
+        for i in range(0, len(path)):
+            if i == len(path) - 1:
+                break
+            self.remove_edge(path[i], path[i + 1])
+        return
+
     def load_network_from_sif(self, sif_file):
         """
         Load a network object from a SIF (Simple Interaction Format) file.
@@ -381,6 +470,8 @@ class Network:
                 "stimulate": "stimulation",
                 "phosphorilate": "stimulation",
                 "stimulation": "stimulation",
+                "->": "stimulation",
+                "-|": "inhibition",
                 "-1": "inhibition",
                 "inhibit": "inhibition",
                 "block": "inhibition",
@@ -403,10 +494,11 @@ class Network:
                 effect = determine_effect(interaction[1])
 
                 interactions.append({
-                    "source": interaction[0],
-                    "target": interaction[2],
+                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format([interaction[0]]) else interaction[0],
+                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format([interaction[2]]) else interaction[2],
                     "Type": interaction[3] if len(interaction) > 3 else None,
-                    "Effect": effect
+                    "Effect": effect,
+                    "References": "SIF file"
                 })
                 node_set.update([interaction[0], interaction[2]])
 
@@ -422,21 +514,43 @@ class Network:
         return
 
     def add_paths_to_edge_list(self, paths):
+        """
+        This method adds paths to the edge list of the network. A path is a sequence of nodes where each node is
+        connected to the next node in the sequence. The function checks if there is an interaction between each pair of nodes
+        in the path in the resources' database. If an interaction exists, it is added to the edge list of the network.
+
+        Parameters:
+        - paths: A list of paths, where each path is a sequence of nodes. A node can be a string or a tuple.
+
+        Returns:
+        None. The function modifies the network object in-place by adding the interactions to the edges DataFrame.
+        """
+        # Access the resources database
         database = self.resources
 
-        for path in paths:  # Iterate through the list of paths
-            if isinstance(path, (str, tuple)):  # Handle single string or tuple
+        # Iterate through the list of paths
+        for path in paths:
+            # Handle single string or tuple
+            if isinstance(path, (str, tuple)):
                 path = [path]
 
+            # Iterate through the nodes in the path
             for i in range(0, len(path)):
+                # Break the loop if it's the last node in the path
                 if i == len(path) - 1:
                     break
-                interaction = database.loc[(database["source"] == path[i]) &
-                                              (database["target"] == path[i + 1])]
 
+                # Check if there is an interaction between the current node and the next node in the resources database
+                interaction = database.loc[(database["source"] == path[i]) &
+                                           (database["target"] == path[i + 1])]
+
+                # If an interaction exists, add it to the edge list of the network
                 if not interaction.empty:
                     self.add_edge(interaction)
+
+        # Remove duplicate edges from the edge list
         self.edges = self.edges.drop_duplicates()
+
         return
 
     def add_cascade_to_edge_list(self, cascades):
@@ -556,6 +670,18 @@ class Network:
                 filtered_paths.append(path)
         return filtered_paths
 
+    def check_node_existence(self, node: str) -> bool:
+        """
+        This function checks if a node exists in the resources' database.
+
+        Parameters:
+        - node: A string representing the node to be checked.
+
+        Returns:
+        - A boolean indicating whether the node exists in the resources' database.
+        """
+        return node in self.resources["source"].unique() or node in self.resources["target"].unique()
+
     def connect_subgroup(self,
                          group: (str | pd.DataFrame | list[str]),
                          maxlen: int = 1,
@@ -564,12 +690,12 @@ class Network:
                          ):
         """
         This function is used to connect all the nodes in a particular subgroup. It iterates over all pairs of nodes in the
-        subgroup and finds paths between them in the resources database. If a path is found, it is added to the edge list of
+        subgroup and finds paths between them in the resources' database. If a path is found, it is added to the edge list of
         the network. The function also filters out unsigned paths if the `only_signed` flag is set to True.
 
         Parameters:
         - group: A list of nodes representing the subgroup to connect. Nodes can be represented as strings, pandas DataFrame, or list of strings.
-        - maxlen: The maximum length of the paths to be searched for in the resources database. Default is 1.
+        - maxlen: The maximum length of the paths to be searched for in the resources' database. Default is 1.
         - only_signed: A boolean flag indicating whether to only add signed interactions to the network. Default is False.
         - consensus: A boolean flag indicating whether to only add signed interactions with consensus among references to the network. Default is False.
 
@@ -630,6 +756,8 @@ class Network:
         Returns:
         None. The function modifies the network object in-place.
         """
+
+        # Set the search depth based on the k_mean parameter
         if k_mean == 'tight':
             i_search = 3
         elif k_mean == 'extensive':
@@ -646,41 +774,52 @@ class Network:
 
         # Iterate through all combinations of nodes
         for node1, node2 in combinations(nodes["Uniprot"], 2):
+            if not self.check_node_existence(node1) or not self.check_node_existence(node2):
+                print("Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(node1) else "Error: node %s is not present in the resources database" % node2)
+                continue
             i = 0
+            # Reset the object connect_network, updating the possible list of paths if minimal is True
             if minimal:
-                # Reset the object connect_network, updating the possible list of paths
                 connect_network = Connections(self.edges)
 
+            # Start a loop to find paths between nodes
             while i <= maxlen:
                 # As first step, make sure that there is at least one path between two nodes in the network
                 paths_in = connect_network.find_paths(node2, node1, maxlen=i)
-
                 paths_out = connect_network.find_paths(node1, node2, maxlen=i)
 
+                # If paths in both directions are found, break the loop
                 if paths_in and paths_out:
-                    print("Found a path!")
                     break
-                if not (paths_in and paths_out) and i < maxlen:  # if there is no path, look for another one until reach maxlen
+
+                # If no paths are found and the maximum length has not been reached, increment the length and continue the loop
+                if not (paths_in and paths_out) and i < maxlen:
                     i += 1
                     continue
-                if not paths_in and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
-                    # until we find a new one
+
+                # If no paths are found and the maximum length has been reached, search for new paths in the database
+                if not paths_in and i == maxlen:
                     flag = False
                     j = 0
+                    # Start a loop to find new paths in the database
                     while not flag and j <= i_search:
                         paths_in = connect.find_paths(node2, node1, maxlen=j)
+                        # Filter unsigned paths if only_signed is True
                         if only_signed:
                             paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                        # If no paths are found, increment the length and continue the loop
                         if not paths_in:
                             j += 1
                         else:
+                            # If a path is found, add it to the edge list and connect nodes if connect_node_when_first_introduced is True
                             self.add_paths_to_edge_list(paths_in)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
+                                self.edges = self.edges.drop_duplicates()
                             flag = True
-                if not paths_out and i == maxlen:  # if there is no path of maxlen, look for a new path in the database
-                    # until we find a new one
+
+                # Repeat the same process for paths in the opposite direction
+                if not paths_out and i == maxlen:
                     flag = False
                     j = 0
                     while not flag and j <= i_search:
@@ -693,36 +832,48 @@ class Network:
                             self.add_paths_to_edge_list(paths_out)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
+                                self.edges = self.edges.drop_duplicates()
                             flag = True
                 break
+
+        # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
         if not connect_node_when_first_introduced:
             self.connect_nodes(only_signed, consensus)
-            self.edges = self.edges.drop_duplicates()  # Just in case there are some duplicates
+            self.edges = self.edges.drop_duplicates()
         return
 
     def connect_component(self,
-                          comp_A: (
-                              str | list[str]
-                          ),
-                          comp_B: (
-                              str | list[str]
-                          ),
+                          comp_A: (str | list[str]),
+                          comp_B: (str | list[str]),
                           maxlen: int = 2,
                           mode: Literal['OUT', 'IN', 'ALL'] = 'OUT',
                           only_signed: bool = False,
-                          consensus: bool = False
-                          ):
+                          consensus: bool = False):
         """
-        This function tries to connect subcomponents of a network object using one of the methods presented in the Connection
-        object (in the methods folder, enrichment_methods.py). This should be a core characteristic of this package and
-        the user should have the possibility to choose different methods to enrich its Network object.
+        This function attempts to connect subcomponents of a network object using one of the methods presented in the Connection
+        object. This is a core characteristic of this package and the user should have the possibility to choose different
+        methods to enrich its Network object.
 
-        TO COMPLETE STILL WORK IN PROGRESS
+        Parameters:
+        - comp_A: A string or list of strings representing the first component to connect.
+        - comp_B: A string or list of strings representing the second component to connect.
+        - maxlen: The maximum length of the paths to be searched for. Default is 2.
+        - mode: The search mode, which can be 'OUT', 'IN', or 'ALL'. Default is 'OUT'.
+        - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
+        - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
+
+        Returns:
+        None. The function modifies the network object in-place.
+
         """
+        # Print the components for debugging purposes
         print(comp_A)
         print(comp_B)
+
+        # Create a Connections object for the resources
         connect = Connections(self.resources)
+
+        # Determine the search mode and find paths accordingly
         if mode == "IN":
             paths_in = connect.find_paths(comp_B, comp_A, maxlen=maxlen)
             paths = paths_in
@@ -736,18 +887,28 @@ class Network:
         else:
             print("The only accepted modes are IN, OUT or ALL, please check the syntax")
             return
+
+        # Filter unsigned paths if the only_signed flag is set
         if only_signed:
             paths = self.filter_unsigned_paths(paths, consensus)
 
+        # Add the paths to the edge list
         self.add_paths_to_edge_list(paths)
+
+        # Create sets of nodes for each component and the entire network
         all_nodes = set(self.nodes['Uniprot'].values)
         set_a = set(comp_A)
         set_b = set(comp_B)
+
+        # Find the nodes that are not in either component
         set_c = all_nodes.difference(set_a)
         set_c = set_c.difference(set_b)
         set_c = list(set_c)
+
+        # If there are nodes not in either component, connect them as a subgroup
         if len(set_c) > 0:
             self.connect_subgroup(set_c, only_signed=only_signed, maxlen=maxlen)
+
         return
 
     def connect_to_upstream_nodes(self,
@@ -820,15 +981,19 @@ class Network:
         Returns:
         None. The function modifies the network object in-place.
         """
+        # Initialize lists for Uniprot and genesymbol genes
         uniprot_gene_list = []
         genesymbols_genes = []
 
+        # Retrieve phenotype markers
         phenotype_genes = self.ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
         if not phenotype_genes:
             print("Something went wrong while getting the markers for: ", phenotype, " and ", id_accession)
             print("Check URL and try again")
             return
+        # Convert phenotype genes to Uniprot identifiers
         uniprot_genes = [mapping_node_identifier(i)[2] for i in phenotype_genes]
+        # If sub_genes are provided, check their format and convert to Uniprot or genesymbol as needed
         if sub_genes:
             if check_gene_list_format(sub_genes):
                 uniprot_gene_list = sub_genes
@@ -838,12 +1003,18 @@ class Network:
                 genesymbols_genes = sub_genes
 
         print("Starting connecting network's nodes to: ", phenotype_genes)
+        # Identify unique Uniprot genes not already in the network
         unique_uniprot = set(uniprot_genes) - set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"])
-        unique_genesymbol = set(phenotype_genes) - set(genesymbols_genes if genesymbols_genes else self.nodes["Genesymbol"])
-        self.connect_component(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"].tolist(), list(unique_uniprot),
+        # Identify unique genesymbols not already in the network
+        unique_genesymbol = set(phenotype_genes) - set(
+            genesymbols_genes if genesymbols_genes else self.nodes["Genesymbol"])
+        # Connect the network's nodes to the unique Uniprot genes
+        self.connect_component(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"].tolist(),
+                               list(unique_uniprot),
                                mode="OUT",
                                maxlen=maxlen, only_signed=only_signed)
 
+        # If compress is True, substitute specified genes with the phenotype name
         if compress:
             phenotype = phenotype or self.ontology.accession_to_phenotype_dict[id_accession]
             phenotype_modified = phenotype.replace(" ", "_")
@@ -856,7 +1027,8 @@ class Network:
 
             # Substitute the specified genes with the phenotype name in the edges dataframe
             for column in ['source', 'target']:
-                self.edges[column] = self.edges[column].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
+                self.edges[column] = self.edges[column].apply(
+                    lambda x: phenotype_modified if x in unique_uniprot else x)
 
             # Group by source and target, and aggregate with the custom function for each column
             self.edges = self.edges.groupby(['source', 'target']).agg({
@@ -865,8 +1037,12 @@ class Network:
                 'References': join_unique  # Aggregate references with the custom function
             }).reset_index()
 
-            common_genes = set(uniprot_genes).intersection(set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"]))
+            # Identify common genes between Uniprot genes and the network's nodes
+            common_genes = set(uniprot_genes).intersection(
+                set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"]))
+            # For each common gene, add a new edge connecting the gene to the phenotype
             for gene in common_genes:
-                new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation", "References": "Gene Ontology"}
+                new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation",
+                            "References": "Gene Ontology"}
                 self.edges = self.edges.append(new_edge, ignore_index=True)
         return

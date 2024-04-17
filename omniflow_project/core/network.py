@@ -3,14 +3,12 @@ from typing import List, Optional, Tuple
 from pypath.utils import mapping
 import omnipath as op
 from itertools import combinations
-import pandas as pd
 from .._inputs.resources import Resources
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
-from multiprocessing import Pool
 import copy
 from .._annotations.gene_ontology import Ontology
-
+from tqdm import tqdm
 import pandas as pd
 
 
@@ -374,7 +372,8 @@ class Network:
         if not self.edges[(self.edges["source"] == node1) & (self.edges["target"] == node2)].empty:
             self.edges = self.edges[~((self.edges["source"] == node1) & (self.edges["target"] == node2))]
         else:
-            print("Warning: The edge does not exist in the network, check syntax for ", mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+            print("Warning: The edge does not exist in the network, check syntax for ",
+                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
         return
 
     def print_my_paths(self, node1: str, node2: str, maxlen: int = 2, genesymbol: bool = True):
@@ -494,8 +493,10 @@ class Network:
                 effect = determine_effect(interaction[1])
 
                 interactions.append({
-                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format([interaction[0]]) else interaction[0],
-                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format([interaction[2]]) else interaction[2],
+                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format(
+                        [interaction[0]]) else interaction[0],
+                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format(
+                        [interaction[2]]) else interaction[2],
                     "Type": interaction[3] if len(interaction) > 3 else None,
                     "Effect": effect,
                     "References": "SIF file"
@@ -663,7 +664,7 @@ class Network:
                 if i == len(path) - 1:
                     break
                 interaction = interactions.loc[(interactions["source"] == path[i]) &
-                                                  (interactions["target"] == path[i + 1])]
+                                               (interactions["target"] == path[i + 1])]
                 if not interaction.empty and check_sign(interaction, consensus) == "undefined":
                     is_full_signed = False
             if is_full_signed:
@@ -773,9 +774,12 @@ class Network:
         connect_network = Connections(self.edges)
 
         # Iterate through all combinations of nodes
-        for node1, node2 in combinations(nodes["Uniprot"], 2):
+        for node1, node2 in tqdm(combinations(nodes["Uniprot"], 2), desc="Connecting nodes"):
+            print("Connecting nodes %s and %s" % (node1, node2))
             if not self.check_node_existence(node1) or not self.check_node_existence(node2):
-                print("Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(node1) else "Error: node %s is not present in the resources database" % node2)
+                print(
+                    "Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(
+                        node1) else "Error: node %s is not present in the resources database" % node2)
                 continue
             i = 0
             # Reset the object connect_network, updating the possible list of paths if minimal is True
@@ -803,6 +807,7 @@ class Network:
                     j = 0
                     # Start a loop to find new paths in the database
                     while not flag and j <= i_search:
+                        print("Searching for paths from %s to %s with length %s" % (node2, node1, j))
                         paths_in = connect.find_paths(node2, node1, maxlen=j)
                         # Filter unsigned paths if only_signed is True
                         if only_signed:
@@ -823,6 +828,7 @@ class Network:
                     flag = False
                     j = 0
                     while not flag and j <= i_search:
+                        print("Searching for paths from %s to %s with length %s" % (node1, node2, j))
                         paths_out = connect.find_paths(node1, node2, maxlen=j)
                         if only_signed:
                             paths_out = self.filter_unsigned_paths(paths_out, consensus)
@@ -835,6 +841,110 @@ class Network:
                                 self.edges = self.edges.drop_duplicates()
                             flag = True
                 break
+
+        # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
+        if not connect_node_when_first_introduced:
+            self.connect_nodes(only_signed, consensus)
+            self.edges = self.edges.drop_duplicates()
+        return
+
+    def complete_connection_2(self,
+                              maxlen: int = 2,
+                              k_mean: int = None,
+                              minimal: bool = True,
+                              only_signed: bool = False,
+                              consensus: bool = False,
+                              connect_node_when_first_introduced: bool = True):
+        """
+        This function attempts to connect all nodes of a network object using one of the methods presented in the Connection
+        object. This is a core characteristic of this package and the user should have the possibility to choose different
+        methods to enrich its Network object.
+
+        Parameters:
+        - maxlen: The maximum length of the paths to be searched for. Default is 2.
+        - minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list of
+          paths. Default is True.
+        - k_mean: The search mode, which can be 'tight' or 'extensive'. Default is 'tight'.
+        - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
+        - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
+        - connect_node_when_first_introduced: A boolean flag indicating whether to connect nodes when first introduced.
+          Default is True.
+
+        Returns:
+        None. The function modifies the network object in-place.
+        """
+
+        # Create a Connections object for the resources
+        connect = Connections(self.resources)
+
+        # Copy the nodes
+        nodes = self.nodes.copy()
+
+        # Create a Connections object for the edges
+        connect_network = Connections(self.edges)
+
+        i = 0
+        while i <= maxlen:
+            # Iterate through all combinations of nodes
+            for node1, node2 in tqdm(combinations(nodes["Uniprot"], 2), desc="Connecting nodes"):
+                print("Connecting nodes %s and %s" % (node1, node2))
+                if not self.check_node_existence(node1) or not self.check_node_existence(node2):
+                    print(
+                        "Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(
+                            node1) else "Error: node %s is not present in the resources database" % node2)
+                    continue
+
+                # Reset the object connect_network, updating the possible list of paths if minimal is True
+                if minimal:
+                    connect_network = Connections(self.edges)
+
+                paths_in = []
+                paths_out = []
+
+                # As first step, make sure that there is at least one path between two nodes in the network within the k mean
+                if k_mean:
+                    for j in range(k_mean):
+                        paths_in = connect_network.find_paths(node2, node1, maxlen=j)
+                        paths_out = connect_network.find_paths(node1, node2, maxlen=j)
+                else:
+                    paths_in = connect_network.find_paths(node2, node1, maxlen=i)
+                    paths_out = connect_network.find_paths(node1, node2, maxlen=i)
+
+                # If paths in both directions are found, break the loop
+                if paths_in and paths_out:
+                    continue
+
+                # If no paths are found and the maximum length has been reached, search for new paths in the database
+                if not paths_out:
+                    print("Searching for paths from %s to %s with length %s" % (node1, node2, i))
+                    paths_out = connect.find_paths(node1, node2, maxlen=i)
+                    # Filter unsigned paths if only_signed is True
+                    if only_signed:
+                        paths_out = self.filter_unsigned_paths(paths_out, consensus)
+                    # If no paths are found, increment the length and continue the loop
+                    if paths_out:
+                        # If a path is found, add it to the edge list and connect nodes if connect_node_when_first_introduced is True
+                        self.add_paths_to_edge_list(paths_out)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates()
+
+                # If no paths are found and the maximum length has been reached, search for new paths in the database
+                if not paths_in:
+                    print("Searching for paths from %s to %s with length %s" % (node2, node1, i))
+                    paths_in = connect.find_paths(node2, node1, maxlen=i)
+                    # Filter unsigned paths if only_signed is True
+                    if only_signed:
+                        paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                    # If no paths are found, increment the length and continue the loop
+                    if paths_in:
+                        # If a path is found, add it to the edge list and connect nodes if connect_node_when_first_introduced is True
+                        self.add_paths_to_edge_list(paths_in)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates()
+
+            i = i + 1
 
         # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
         if not connect_node_when_first_introduced:
@@ -1045,4 +1155,5 @@ class Network:
                 new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation",
                             "References": "Gene Ontology"}
                 self.edges = self.edges.append(new_edge, ignore_index=True)
+            self.edges.drop_duplicates()
         return

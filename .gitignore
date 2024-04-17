@@ -9,7 +9,6 @@ __pycache__/
 *.egg
 *.prof
 *.coverage
-*.pickle
 /out/
 *.log
 /dist/

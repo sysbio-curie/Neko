@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture(scope="session")
 def ca1_network() -> pd.DataFrame:
 
-    with open(pl.Path("tests") / "_data" / "interactions.pickle", "rb") as fin:
+    with open(pl.Path("tests") / "_data" / "ca1.pickle", "rb") as fin:
         data: pd.DataFrame = pickle.load(fin)
 
     return data

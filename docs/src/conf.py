@@ -100,9 +100,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 autodoc_mock_imports = []
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -113,6 +110,7 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = dict(
     logo_only=True,
     display_version=True,
+    pygment_light_style="manni",
 )
 html_context = {
     'display_github': True,  # Integrate GitHub

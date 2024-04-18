@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# This file is part of the `omniflow_project` Python module
+# This file is part of the `neko` Python module
 #
 # Copyright 2023
 # Insitut Curie

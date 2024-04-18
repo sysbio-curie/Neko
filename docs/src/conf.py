@@ -17,16 +17,16 @@ import pathlib
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
 
-import omniflow_project  # noqa: E402
+import neko  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
-project = 'omniflow_project'
-version = omniflow_project.__version__
-author = ', '.join(omniflow_project.__author__)
+project = 'neko'
+version = neko.__version__
+author = ', '.join(neko.__author__)
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Saez Lab'
-repository_url = 'https://github.com/sysbio-curie/omniflow_project'
+repository_url = 'https://github.com/sysbio-curie/neko'
 
 # -- General configuration ---------------------------------------------------
 

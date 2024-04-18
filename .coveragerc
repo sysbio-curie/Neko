@@ -1,12 +1,12 @@
 [paths]
 source =
     project_name
-    */site-packages/omniflow
+    */site-packages/neko
 
 [run]
 branch = true
 parallel = true
-source = omniflow
+source = neko
 omit = */__init__.py
 
 [report]

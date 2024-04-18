@@ -3,7 +3,7 @@ requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "omniflow"
+name = "neko"
 version = "0.1.0"
 description = "Package to extract, visualize, convert and study interactions from database into executable activity flow based model"
 license = "GNU General Public License Version 3"
@@ -11,7 +11,7 @@ authors = [
     "Marco Ruscone <marco.ruscone@curie.fr>"
 ]
 packages = [
-    { include = "omniflow" }
+    { include = "neko" }
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -23,9 +23,9 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
-repository = "https://github.com/sysbio-curie/omniflow"
-homepage = "https://github.com/sysbio-curie/omniflow"
-documentation = "https://omniflow.readthedocs.io/"
+repository = "https://github.com/sysbio-curie/neko"
+homepage = "https://github.com/sysbio-curie/neko"
+documentation = "https://neko.readthedocs.io/"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -59,7 +59,7 @@ jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contr
 nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/sysbio-curie/omniflow/issues"
+"Bug Tracker" = "https://github.com/sysbio-curie/neko/issues"
 
 [tool.black]
 line-length = 80
@@ -135,7 +135,7 @@ ignore_roles = ["ref"]
 ignore_messages = '(Unknown target name:.*|No (directive|role) entry for "(auto)?(class|method|property|function|func|mod|attr)" in module "docutils\.parsers\.rst\.languages\.en"\.)'
 
 [tool.coverage.run]
-source = ["omniflow"]
+source = ["neko"]
 omit = [
 	"**/test_*.py",
 ]

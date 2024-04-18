@@ -1,5 +1,5 @@
-import omniflow_project.core.network as network
-import omniflow_project._inputs.resources as resources
+import neko.core.network as network
+import neko._inputs.resources as resources
 
 import pandas as pd
 

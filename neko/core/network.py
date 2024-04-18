@@ -12,7 +12,10 @@ from tqdm import tqdm
 import pandas as pd
 
 
-def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
+def check_sign(
+        interaction: pd.DataFrame | dict,
+        consensus: bool = False
+    ) -> Literal['stimulation', 'inhibition', 'form_complex', 'undefined']:
     """
     This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
     The attribute "consensus" checks for the consistency of the sign of the interaction among the references.
@@ -28,23 +31,14 @@ def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
     if isinstance(interaction, pd.DataFrame):
         interaction = interaction.iloc[0]
 
-    if consensus:
-        if interaction.get("consensus_stimulation", False):
-            return "stimulation"
-        elif interaction.get("consensus_inhibition", False):
-            return "inhibition"
-        else:
-            return "undefined"
-    else:
-        if interaction.get("is_stimulation", False):
-            return "stimulation"
-        elif interaction.get("is_inhibition", False):
-            return "inhibition"
-        # Check for "form_complex" column existence
-        elif interaction.get("form_complex", False):
-            return "form complex"
-        else:
-            return "undefined"
+    signs = ('stimulation', 'inhibition', 'form_complex', 'undefined')
+    prefix = 'consensus' if consensus else 'is'
+
+    for sign in signs:
+
+        if interaction.get(f'{prefix}_{sign}', False):
+
+            return sign
 
 
 def check_gene_list_format(gene_list: list[str]) -> list[str]:
@@ -65,7 +59,7 @@ def check_gene_list_format(gene_list: list[str]) -> list[str]:
         return False
 
 
-def mapping_node_identifier(node: str) -> list[str]:
+def translate_id(node: str) -> list[str]:
     """
     This function takes a node identifier and returns a list containing the possible identifiers for the node.
     The identifiers include a complex string, a genesymbol, and a uniprot identifier. The function uses the
@@ -127,7 +121,7 @@ def translate_paths(paths):
 
     def handle_complex_identifier(item):
         """
-        This helper function translates a node identifier using the `mapping_node_identifier` function.
+        This helper function translates a node identifier using the `translate_id` function.
         It checks all possible identifiers (complex, genesymbol, uniprot) and returns the first non-None value.
 
         Parameters:
@@ -136,7 +130,7 @@ def translate_paths(paths):
         Returns:
         - The translated node identifier.
         """
-        identifiers = mapping_node_identifier(item)
+        identifiers = translate_id(item)
         return identifiers[0] or identifiers[1] or identifiers[2]
 
     # If input_list is a list of strings
@@ -202,7 +196,7 @@ class Network:
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
-        self.ontology = Ontology()
+        self.ontology = None
         if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
             self.resources = resources
         else:
@@ -215,6 +209,18 @@ class Network:
             self.drop_missing_nodes()
         elif sif_file:
             self.load_network_from_sif(sif_file)
+
+
+    def _ensure_go(self):
+
+        if not self.ontology:
+
+            self._load_go()
+
+    def _load_go(self):
+
+        self.ontology = Ontology()
+
 
     def copy(self):
         new_instance = copy.deepcopy(self)
@@ -232,8 +238,14 @@ class Network:
 
         The function works by iterating over the input list of nodes. For each node, it checks if the node exists in the 'source' or 'target' columns of the resources database. If the node exists, it is added to the output list.
         """
-        return [node for node in nodes if
-                node in self.resources["source"].unique() or node in self.resources["target"].unique()]
+        return [
+            node
+            for node in nodes
+            if (
+                node in self.resources["source"].unique() or
+                node in self.resources["target"].unique()
+            )
+        ]
 
     def drop_missing_nodes(self):
         """
@@ -263,6 +275,34 @@ class Network:
                 ", ".join(missing_nodes))
         return
 
+    def __iadd__(self, other):
+
+        if isinstance(other, str):
+
+            self.add_node(other)
+
+        else:
+
+            raise ValueError('We can add only strings (node IDs).')
+
+
+    def __isub__(self, other):
+
+        if isinstance(other, str):
+
+            self.remove_node(other)
+
+        else:
+
+            raise ValueError('We can remove only strings (node IDs).')
+
+
+    def __add__(self, other) -> Network:
+
+        self.__iadd__(other)
+        return self
+
+
     def add_node(self, node: str):
         """
         Adds a node to the network. The node is added to the nodes DataFrame of the network. The function checks the syntax
@@ -276,7 +316,7 @@ class Network:
         Returns:
         None. The function modifies the network object in-place by adding the node to the nodes DataFrame.
         """
-        complex_string, genesymbol, uniprot = mapping_node_identifier(node)
+        complex_string, genesymbol, uniprot = translate_id(node)
 
         if complex_string:
             new_entry = {"Genesymbol": complex_string, "Uniprot": node, "Type": "NaN"}
@@ -301,7 +341,7 @@ class Network:
         self.nodes = self.nodes[(self.nodes.Genesymbol != node) & (self.nodes.Uniprot != node)]
 
         # Translate the node identifier to Uniprot
-        node = mapping_node_identifier(node)[2]
+        node = translate_id(node)[2]
 
         # Remove any edges associated with the node from the edges DataFrame
         self.edges = self.edges[~self.edges[['source', 'target']].isin([node]).any(axis=1)]
@@ -364,16 +404,16 @@ class Network:
         """
         # check if node1 and node2 are in genesymbol format or uniprot format
         if check_gene_list_format([node1]):
-            node1 = mapping_node_identifier(node1)[2]
+            node1 = translate_id(node1)[2]
         if check_gene_list_format([node2]):
-            node2 = mapping_node_identifier(node2)[2]
+            node2 = translate_id(node2)[2]
 
         # Remove the edge from the edges DataFrame, if the effect or the nodes are not present, print a warning
         if not self.edges[(self.edges["source"] == node1) & (self.edges["target"] == node2)].empty:
             self.edges = self.edges[~((self.edges["source"] == node1) & (self.edges["target"] == node2))]
         else:
             print("Warning: The edge does not exist in the network, check syntax for ",
-                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+                  translate_id(node1)[1], " and ", translate_id(node2)[1])
         return
 
     def print_my_paths(self, node1: str, node2: str, maxlen: int = 2, genesymbol: bool = True):
@@ -394,9 +434,9 @@ class Network:
 
         # check if node1 and node2 are in genesymbol format or uniprot format
         if check_gene_list_format([node1]):
-            node1 = mapping_node_identifier(node1)[2]
+            node1 = translate_id(node1)[2]
         if check_gene_list_format([node2]):
-            node2 = mapping_node_identifier(node2)[2]
+            node2 = translate_id(node2)[2]
 
         # Check if the nodes exist in the network
         if node1 not in self.nodes["Uniprot"].tolist() or node2 not in self.nodes["Uniprot"].tolist():
@@ -431,7 +471,7 @@ class Network:
         """
         # check if node1 and node2 are in genesymbol format or uniprot format
         if check_gene_list_format(path):
-            path = [mapping_node_identifier(node)[2] for node in path]
+            path = [translate_id(node)[2] for node in path]
 
         # Iterate through the nodes in the path and remove the edges between them
         for i in range(0, len(path)):
@@ -440,7 +480,8 @@ class Network:
             self.remove_edge(path[i], path[i + 1])
         return
 
-    def load_network_from_sif(self, sif_file):
+    @classmethod
+    def from_sif(cls, path: str):
         """
         Load a network object from a SIF (Simple Interaction Format) file.
 
@@ -493,9 +534,9 @@ class Network:
                 effect = determine_effect(interaction[1])
 
                 interactions.append({
-                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format(
+                    "source": translate_id(interaction[0])[2] if check_gene_list_format(
                         [interaction[0]]) else interaction[0],
-                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format(
+                    "target": translate_id(interaction[2])[2] if check_gene_list_format(
                         [interaction[2]]) else interaction[2],
                     "Type": interaction[3] if len(interaction) > 3 else None,
                     "Effect": effect,
@@ -505,14 +546,14 @@ class Network:
 
         # Create or update the edges DataFrame
         df_edge = pd.DataFrame(interactions)
-        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
 
-        # Update the nodes list
-        self.initial_nodes = list(node_set)
-        for node in self.initial_nodes:
-            self.add_node(node)
+        new = cls()
+        new.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+        new.initial_nodes = list(node_set)
+        for node in new.initial_nodes:
+            new.add_node(node)
 
-        return
+        return new
 
     def add_paths_to_edge_list(self, paths):
         """
@@ -707,7 +748,7 @@ class Network:
         if not check_gene_list_format(group):
             uniprot_gene_list = group
         else:
-            uniprot_gene_list = [mapping_node_identifier(i)[2] for i in group]
+            uniprot_gene_list = [translate_id(i)[2] for i in group]
         if len(uniprot_gene_list) == 1:
             print("Number of node insufficient to create connection")
         else:
@@ -1059,7 +1100,7 @@ class Network:
         """
 
         def convert_identifier(x):
-            identifiers = mapping_node_identifier(x)
+            identifiers = translate_id(x)
             return identifiers[0] or identifiers[1]
 
         self.edges["source"] = self.edges["source"].apply(convert_identifier)
@@ -1096,20 +1137,21 @@ class Network:
         genesymbols_genes = []
 
         # Retrieve phenotype markers
+        self._ensure_go()
         phenotype_genes = self.ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
         if not phenotype_genes:
             print("Something went wrong while getting the markers for: ", phenotype, " and ", id_accession)
             print("Check URL and try again")
             return
         # Convert phenotype genes to Uniprot identifiers
-        uniprot_genes = [mapping_node_identifier(i)[2] for i in phenotype_genes]
+        uniprot_genes = [translate_id(i)[2] for i in phenotype_genes]
         # If sub_genes are provided, check their format and convert to Uniprot or genesymbol as needed
         if sub_genes:
             if check_gene_list_format(sub_genes):
                 uniprot_gene_list = sub_genes
-                genesymbols_genes = [mapping_node_identifier(i)[2] for i in sub_genes]
+                genesymbols_genes = [translate_id(i)[2] for i in sub_genes]
             else:
-                uniprot_gene_list = [mapping_node_identifier(i)[2] for i in sub_genes]
+                uniprot_gene_list = [translate_id(i)[2] for i in sub_genes]
                 genesymbols_genes = sub_genes
 
         print("Starting connecting network's nodes to: ", phenotype_genes)

@@ -62,20 +62,10 @@ class Network:
             self.load_network_from_sif(sif_file)
 
 
-    def _ensure_go(self):
-
-        if not self.ontology:
-
-            self._load_go()
-
-    def _load_go(self):
-
-        self.ontology = Ontology()
-
-
     def copy(self):
         new_instance = copy.deepcopy(self)
         return new_instance
+
 
     def check_nodes(self, nodes: list[str]) -> list[str]:
         """

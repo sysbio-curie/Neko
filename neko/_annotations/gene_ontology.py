@@ -118,3 +118,12 @@ class Ontology:
         results_df = pd.DataFrame(results)
 
         return results_df
+
+
+def ontology():
+
+    if not '_ontology' in globals():
+
+        globals()['_ontology'] = Ontology()
+
+    return globals()['_ontology']

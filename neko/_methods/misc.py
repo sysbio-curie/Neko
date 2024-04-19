@@ -145,3 +145,31 @@ def remove_path(network, path: list[str]):
         network.remove_edge(path[i], path[i + 1])
     return
 
+
+def drop_missing_nodes(network):
+    """
+    This function drops the nodes that are not present in the resources database and print a warning with the name of the missing nodes.
+
+    The function works as follows:
+    1. It first calls the `check_nodes` function to get a list of nodes that exist in the resources' database.
+    2. It then finds the nodes in the network that are not in this list, and removes them from the network.
+    3. If there are any missing nodes, it prints a warning with their names.
+
+    This function does not return anything. It modifies the `nodes` attribute of the `Network` object in-place.
+    """
+    # Get the list of nodes that exist in the resources database
+    existing_nodes = network.check_nodes(network.nodes["Uniprot"].tolist())
+
+    # Find the nodes in the network that are not in the list of existing nodes
+    missing_nodes = [node for node in network.nodes["Uniprot"].tolist() if node not in existing_nodes]
+
+    # Remove the missing nodes from the network
+    network.nodes = network.nodes[~network.nodes["Uniprot"].isin(missing_nodes)]
+
+    # Print a warning with the name of the missing nodes
+    if missing_nodes:
+        print(
+            "Warning: The following nodes were not found in the resources database and have been removed from the "
+            "network:",
+            ", ".join(missing_nodes))
+    return

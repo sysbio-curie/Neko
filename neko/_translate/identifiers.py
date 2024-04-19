@@ -82,3 +82,19 @@ def translate_paths(paths):
             translated_list.append(translated_sublist)
 
     return translated_list
+
+
+
+def convert_edgelist_into_genesymbol(network):
+    """
+    This function converts the edge dataframe from uniprot to genesymbol.
+    """
+
+    def convert_identifier(x):
+        identifiers = translate_id(x)
+        return identifiers[0] or identifiers[1]
+
+    network.edges["source"] = network.edges["source"].apply(convert_identifier)
+    network.edges["target"] = network.edges["target"].apply(convert_identifier)
+
+    return

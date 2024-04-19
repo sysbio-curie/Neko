@@ -12,36 +12,6 @@ from tqdm import tqdm
 import pandas as pd
 
 
-def check_sign(
-        interaction: pd.DataFrame | dict,
-        consensus: bool = False
-    ) -> Literal['stimulation', 'inhibition', 'form_complex', 'undefined']:
-    """
-    This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
-    The attribute "consensus" checks for the consistency of the sign of the interaction among the references.
-
-    Parameters:
-    - interaction: A pandas DataFrame or Series representing the interaction.
-    - consensus: A boolean indicating whether to check for consensus among references.
-
-    Returns:
-    - A string indicating the sign of the interaction: "stimulation", "inhibition", "form complex", or "undefined".
-    """
-    # Handle both DataFrame and Series input
-    if isinstance(interaction, pd.DataFrame):
-        interaction = interaction.iloc[0]
-
-    signs = ('stimulation', 'inhibition', 'form_complex', 'undefined')
-    prefix = 'consensus' if consensus else 'is'
-
-    for sign in signs:
-
-        if interaction.get(f'{prefix}_{sign}', False):
-
-            return sign
-
-
-
 class Network:
     """
     The Network class is the main class of the Omniflow package. It is designed to store nodes and edges of a network and offers various methods for enrichment analysis. The class takes a list of nodes as the main argument and a series of optional filters and other options such as inputs/outputs, specific tissues, type of interactions, prune inputs/outputs, etc.
@@ -535,18 +505,3 @@ class Network:
         - A boolean indicating whether the node exists in the resources' database.
         """
         return node in self.resources["source"].unique() or node in self.resources["target"].unique()
-
-
-    def convert_edgelist_into_genesymbol(self):
-        """
-        This function converts the edge dataframe from uniprot to genesymbol.
-        """
-
-        def convert_identifier(x):
-            identifiers = translate_id(x)
-            return identifiers[0] or identifiers[1]
-
-        self.edges["source"] = self.edges["source"].apply(convert_identifier)
-        self.edges["target"] = self.edges["target"].apply(convert_identifier)
-
-        return

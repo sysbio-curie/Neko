@@ -54,3 +54,94 @@ def check_sign(
         if interaction.get(f'{prefix}_{sign}', False):
 
             return sign
+
+
+def add_cascade_to_edge_list(network, cascades):
+    """
+    This function adds cascades to the edge list of the network. A cascade is a sequence of nodes where each node is
+    connected to the next node in the sequence. The function checks if there is an interaction between each pair of nodes
+    in the cascade in the resources' database. If an interaction exists, it is added to the edge list of the network.
+
+    Parameters:
+    - cascades: A list of cascades, where each cascade is a sequence of nodes.
+
+    Returns:
+    None. The function modifies the network object in-place.
+    """
+    database = network.resources
+
+    for cascade in cascades:
+        interaction_in = database.loc[(database["source"] == cascade[0]) &
+                                      (database["target"] == cascade[1])]
+        if interaction_in.empty:
+            print("Empty interaction for node ", cascade[0], " and ", cascade[1])
+        else:
+            network.add_edge(interaction_in)
+    network.edges = network.edges.drop_duplicates()
+
+    return
+
+
+def add_paths_to_edge_list(network, paths):
+    """
+    This method adds paths to the edge list of the network. A path is a sequence of nodes where each node is
+    connected to the next node in the sequence. The function checks if there is an interaction between each pair of nodes
+    in the path in the resources' database. If an interaction exists, it is added to the edge list of the network.
+
+    Parameters:
+    - paths: A list of paths, where each path is a sequence of nodes. A node can be a string or a tuple.
+
+    Returns:
+    None. The function modifies the network object in-place by adding the interactions to the edges DataFrame.
+    """
+    # Access the resources database
+    database = network.resources
+
+    # Iterate through the list of paths
+    for path in paths:
+        # Handle single string or tuple
+        if isinstance(path, (str, tuple)):
+            path = [path]
+
+        # Iterate through the nodes in the path
+        for i in range(0, len(path)):
+            # Break the loop if it's the last node in the path
+            if i == len(path) - 1:
+                break
+
+            # Check if there is an interaction between the current node and the next node in the resources database
+            interaction = database.loc[(database["source"] == path[i]) &
+                                       (database["target"] == path[i + 1])]
+
+            # If an interaction exists, add it to the edge list of the network
+            if not interaction.empty:
+                network.add_edge(interaction)
+
+    # Remove duplicate edges from the edge list
+    network.edges = network.edges.drop_duplicates()
+
+    return
+
+
+def remove_path(network, path: list[str]):
+    """
+    This function removes a path from the network. It takes a list of nodes representing the path and removes all the edges
+    between the nodes in the path.
+
+    Parameters:
+    - path: A list of nodes representing the path to be removed. The nodes can be represented as strings or tuples.
+
+    Returns:
+    None. The function modifies the network object in-place by removing the edges between the nodes in the path.
+    """
+    # check if node1 and node2 are in genesymbol format or uniprot format
+    if check_gene_list_format(path):
+        path = [translate_id(node)[2] for node in path]
+
+    # Iterate through the nodes in the path and remove the edges between them
+    for i in range(0, len(path)):
+        if i == len(path) - 1:
+            break
+        network.remove_edge(path[i], path[i + 1])
+    return
+

@@ -26,3 +26,31 @@ def filter_unsigned_paths(network, paths: list[tuple], consensus: bool) -> list[
             filtered_paths.append(path)
     return filtered_paths
 
+
+def check_sign(
+        interaction: pd.DataFrame | dict,
+        consensus: bool = False
+    ) -> Literal['stimulation', 'inhibition', 'form_complex', 'undefined']:
+    """
+    This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
+    The attribute "consensus" checks for the consistency of the sign of the interaction among the references.
+
+    Parameters:
+    - interaction: A pandas DataFrame or Series representing the interaction.
+    - consensus: A boolean indicating whether to check for consensus among references.
+
+    Returns:
+    - A string indicating the sign of the interaction: "stimulation", "inhibition", "form complex", or "undefined".
+    """
+    # Handle both DataFrame and Series input
+    if isinstance(interaction, pd.DataFrame):
+        interaction = interaction.iloc[0]
+
+    signs = ('stimulation', 'inhibition', 'form_complex', 'undefined')
+    prefix = 'consensus' if consensus else 'is'
+
+    for sign in signs:
+
+        if interaction.get(f'{prefix}_{sign}', False):
+
+            return sign

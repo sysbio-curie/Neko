@@ -60,22 +60,6 @@ def check_gene_list_format(gene_list: list[str]) -> list[str]:
 
 
 
-def join_unique(series):
-    """
-    This function takes a pandas Series, filters out None values, and returns a string of unique values joined by a comma.
-
-    Parameters:
-    - series: A pandas Series object.
-
-    Returns:
-    - A string of unique values in the series, joined by a comma. If a value in the series is None, it is not included in the output string.
-    """
-    # Filter out None values before converting to set and joining
-    filtered_series = [str(item) for item in series if item is not None]
-    unique_items = set(filtered_series)
-    return ', '.join(unique_items)
-
-
 class Network:
     """
     The Network class is the main class of the Omniflow package. It is designed to store nodes and edges of a network and offers various methods for enrichment analysis. The class takes a list of nodes as the main argument and a series of optional filters and other options such as inputs/outputs, specific tissues, type of interactions, prune inputs/outputs, etc.

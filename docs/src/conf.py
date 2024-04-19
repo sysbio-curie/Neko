@@ -111,6 +111,7 @@ html_theme_options = dict(
     logo_only=True,
     display_version=True,
     pygment_light_style="manni",
+    pygment_dark_style="material",
 )
 html_context = {
     'display_github': True,  # Integrate GitHub
@@ -124,6 +125,10 @@ html_context = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_show_sphinx = False
+html_logo = 'neko_logo.png'
+html_favicon = 'neko_logo.png'
 
 nitpick_ignore = [
     # If building the documentation fails because

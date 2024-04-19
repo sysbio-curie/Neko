@@ -1,4 +1,4 @@
-def connect_groups(network,
+def within_group(network,
                      group: (str | pd.DataFrame | list[str]),
                      maxlen: int = 1,
                      only_signed: bool = False,

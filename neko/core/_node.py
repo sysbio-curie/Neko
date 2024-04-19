@@ -117,8 +117,11 @@ class Node:
 
         if self.id_type is None:
 
-            entity_type = 'smol' if self._is_smol else
-            getattr(self, f'_guess_{entity_type}_id_type')()
+            entity_type = (
+                'smol'
+                    if self._is_smol else
+                getattr(self, f'_guess_{entity_type}_id_type')()
+            )
 
 
     @property
@@ -177,7 +180,7 @@ class Node:
             self,
             regex: Sequence[re.compile],
             id_types: Sequence[str],
-            entity_types: = Sequence[str] | None = None,
+            entity_types: Sequence[str] | None = None,
         ):
 
         entity_types = entity_types or (self.entity_type,) * len(regex)
@@ -189,7 +192,8 @@ class Node:
                 self.id_type = it
                 self.entity_type = et
                 break
-        for rex, it in zip((_RECBL, _RECBI)), ('chembl', 'chebi')):
+
+        for rex, it in zip((_RECBL, _RECBI), ('chembl', 'chebi')):
 
                 if rex.match(self.identifier):
 

@@ -1,4 +1,4 @@
-from ._db import omnipath_universe
+from ._db.omnipath import omnipath_universe
 from ._universe import network_universe, Universe
 
 """

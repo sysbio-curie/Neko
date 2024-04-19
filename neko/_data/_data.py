@@ -2,7 +2,7 @@ from typing import Any, Callable
 import os
 import pathlib as pl
 
-import pypath_common.misc as _common
+import pypath_common._misc as _common
 
 """
 Built-in data of the module.

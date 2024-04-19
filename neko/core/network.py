@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 from pypath.utils import mapping
 import omnipath as op
 from itertools import combinations
-from .._inputs.resources import Resources
+from .._inputs._db.omnipath import Resources
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 import copy

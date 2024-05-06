@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Literal
 
-from ._db import omnipath_universe
+from ._db.omnipath import omnipath_universe
 
 """
 Access to generic networks from databases, files and standard formats.

@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def signor(self, path: str) -> pd.DataFrame:
+def signor(path: str) -> pd.DataFrame:
     """
     SIGNOR database from TSV.
 

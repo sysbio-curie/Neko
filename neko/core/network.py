@@ -40,10 +40,12 @@ class Network:
         connect_genes_to_phenotype(phenotype: str = None, id_accession: str = None, sub_genes: list[str] = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False): Connects genes to a phenotype.
     """
 
-    def __init__(self,
-                 initial_nodes: list[str] = None,
-                 sif_file=None,
-                 resources=None):
+    def __init__(
+            self,
+            initial_nodes: list[str] = None,
+            sif_file=None,
+            resources=None
+    ):
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
@@ -79,14 +81,7 @@ class Network:
 
         The function works by iterating over the input list of nodes. For each node, it checks if the node exists in the 'source' or 'target' columns of the resources database. If the node exists, it is added to the output list.
         """
-        return [
-            node
-            for node in nodes
-            if (
-                node in self.resources["source"].unique() or
-                node in self.resources["target"].unique()
-            )
-        ]
+        return self.resources & set(nodes)
 
 
     def __iadd__(self, other):

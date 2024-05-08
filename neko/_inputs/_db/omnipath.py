@@ -68,8 +68,14 @@ class Resources():
         self.interactions = op.interactions.OmniPath.get()
         return
 
-    def add_database(self, database: pd.DataFrame, column_mapping: dict = None, axis=0, ignore_index=True,
-                     reset_index=False):
+    def add_database(
+            self,
+            database: pd.DataFrame,
+            column_mapping: dict = None,
+            axis=0,
+            ignore_index=True,
+            reset_index=False,
+        ):
         """
         This function concatenates the provided database with the existing one in the resources object,
         aligning columns and filling in missing data with NaN.
@@ -134,83 +140,6 @@ class Resources():
             self.interactions = pd.concat([self.interactions, database], axis=axis, ignore_index=ignore_index)
             if reset_index:
                 self.interactions.reset_index(drop=True, inplace=True)
-        return
-
-    def import_signor_tsv(self, signor_file):
-        """
-        This function imports a SIGNOR database file in TSV format, processes it, and adds it to the existing database.
-
-        Parameters:
-        signor_file (str): The path to the SIGNOR database file in TSV format.
-
-        Returns:
-        None
-        """
-
-        # Read the SIGNOR database file into a pandas DataFrame
-        df_signor = pd.read_table(signor_file)
-
-        # Define a function to determine if the effect is stimulation
-        def is_stimulation(effect):
-            """
-            This function checks if the effect is stimulation.
-
-            Parameters:
-            effect (str): The effect to check.
-
-            Returns:
-            bool: True if the effect is stimulation, False otherwise.
-            """
-            return 'up-regulates' in effect
-
-        # Define a function to determine if the effect is inhibition
-        def is_inhibition(effect):
-            """
-            This function checks if the effect is inhibition.
-
-            Parameters:
-            effect (str): The effect to check.
-
-            Returns:
-            bool: True if the effect is inhibition, False otherwise.
-            """
-            return 'down-regulates' in effect
-
-        # Define a function to determine if the effect is form complex
-        def form_complex(effect):
-            """
-            This function checks if the effect is form complex.
-
-            Parameters:
-            effect (str): The effect to check.
-
-            Returns:
-            bool: True if the effect is form complex, False otherwise.
-            """
-            return 'complex' in effect
-
-        # Filter out the rows where EFFECT is "form complex" or "unknown"
-        filtered_df = df_signor[~df_signor['EFFECT'].isin(["unknown"])]
-
-        # Transform the original dataframe into the desired format
-        transformed_df = pd.DataFrame({
-            'source': filtered_df['IDA'],
-            'target': filtered_df['IDB'],
-            'is_directed': filtered_df['DIRECT'],
-            'is_stimulation': filtered_df['EFFECT'].apply(is_stimulation),
-            'is_inhibition': filtered_df['EFFECT'].apply(is_inhibition),
-            'form_complex': filtered_df['EFFECT'].apply(form_complex),
-            'consensus_direction': False,  # Assuming no data provided, set all to False
-            'consensus_stimulation': False,  # Assuming no data provided, set all to False
-            'consensus_inhibition': False,  # Assuming no data provided, set all to False
-            'curation_effort': filtered_df['ANNOTATOR'],
-            'references': filtered_df['PMID'],
-            'sources': filtered_df['SIGNOR_ID']
-        })
-
-        # Add the transformed DataFrame to the existing database
-        self.add_database(transformed_df)
-
         return
 
     def process_psp_interactions(self, kinase_int_file, phospho_effect_file, organism, expand=False):
@@ -329,3 +258,22 @@ class Resources():
         self.add_database(psp_interactions)
 
         return psp_interactions
+
+
+    @property
+    def nodes(self) -> set[str]:
+
+        return (
+            set(self.interactions['source']) |
+            set(self.interactions['target'])
+        )
+
+
+    def __contains__(self, other) -> bool:
+
+        return other in self.nodes
+
+
+    def __and__(self, other: set) -> set:
+
+        return self.nodes & other

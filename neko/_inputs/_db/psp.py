@@ -51,8 +51,8 @@ def psp(kinase_substrate: str,
     # Concatenate the GENE and MOD_RSD columns to create the Prot_site column
     rs['target'] = rs['GENE'] + '_' + rs['MOD_RSD']
 
-    rs['is_stimulation'] = rs['ON_FUNCTION'].str.contains('activity, induced').astype(int)
-    rs['is_inhibition'] = rs['ON_FUNCTION'].str.contains('activity, inhibited').astype(int)
+    rs['is_stimulation'] = rs['ON_FUNCTION'].str.contains('activity, induced')
+    rs['is_inhibition'] = rs['ON_FUNCTION'].str.contains('activity, inhibited')
 
     # Update the ks dataframe based on the phosphorylation effect information
     ks = ks.merge(rs[['target', 'is_inhibition', 'is_stimulation']], how='left')
@@ -66,10 +66,7 @@ def psp(kinase_substrate: str,
         ks = pd.concat([ks, pd.DataFrame(ptm_protein)], ignore_index=True)
 
     # Filter the ks dataframe based on the is_stimulation and is_inhibition columns
-    ks = ks[
-        (ks['is_stimulation'] != 0) |
-        (ks['is_inhibition'] != 0)
-    ]
+    ks = ks[ks['is_stimulation'] | ks['is_inhibition']]
 
     # If expand is False, remove duplicates from the dataframe
     if not expand:

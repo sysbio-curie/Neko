@@ -4,6 +4,8 @@ import logging
 import pypath
 from pypath.utils import mapping
 
+import ._misc as _misc
+
 """
 Access to network databases.
 """
@@ -15,6 +17,16 @@ def omnipath_universe(**kwargs):
     """
 
     return op.interactions.PostTranslationalInteractions.get(**kwargs)
+
+
+MANDATORY_COLUMNS = [
+    'source',
+    'target',
+    'is_directed',
+    'is_inhibition',
+    'is_stimulation',
+    'form_complex',
+]
 
 
 class Resources():
@@ -43,11 +55,6 @@ class Resources():
         # Set up logging configuration
         logging.basicConfig(level=logging.INFO)
 
-        # Define the required columns for the interactions DataFrame
-        self.required_columns = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition',
-                                 'form_complex',
-                                 'consensus_direction', 'consensus_stimulation', 'consensus_inhibition',
-                                 'curation_effort', 'references', 'sources']
 
     def load_all_omnipath_interactions(self):
         """
@@ -70,77 +77,61 @@ class Resources():
 
     def add_database(
             self,
-            database: pd.DataFrame,
-            column_mapping: dict = None,
-            axis=0,
-            ignore_index=True,
-            reset_index=False,
+            df: pd.DataFrame,
+            columns: dict = None,
         ):
         """
-        This function concatenates the provided database with the existing one in the resources object,
+        This function concatenates the provided df with the existing one in the resources object,
         aligning columns and filling in missing data with NaN.
 
         Parameters:
-        database (pd.DataFrame): The DataFrame to be added.
-        column_mapping (dict, optional): A dictionary mapping column names in the incoming database to column names in the resources object.
-        axis (int, optional): 0 to concatenate row-wise, 1 to concatenate column-wise. Default is 0.
-        ignore_index (bool, optional): If True, the resulting axis will be labeled 0, 1, …, n - 1. Default is True.
-        reset_index (bool, optional): If True, reset the index of the concatenated DataFrame. Default is False.
+            df (pd.DataFrame): The DataFrame to be added.
+            columns (dict, optional):
+                A dictionary of column name mappings to be applied on the
+                provided data frame. Mandatory columns: source, target, is_directed,
+                is_inhibition, is_stimulation, form_complex.
 
         Raises:
-        ValueError: If the 'database' parameter is not a pandas DataFrame.
+            ValueError: If the 'df' parameter is not a pandas DataFrame.
 
         Returns:
-        None
+            None
         """
 
-        # Check if the provided database is a pandas DataFrame
-        if not isinstance(database, pd.DataFrame):
-            raise ValueError("The 'database' parameter must be a pandas DataFrame.")
+        # If columns is provided, rename the columns of the incoming df
+        if columns:
+            df = df.rename(columns=columns)
 
-        # If column_mapping is provided, rename the columns of the incoming database
-        if column_mapping is not None:
-            database = database.rename(columns=column_mapping)
+        if 'effect' in df.columns:
 
-            # If only one of is_inhibition or is_activation is specified in the column_mapping, assign the values
-            # from the specified column to both is_inhibition and is_activation, and then invert the values for one
-            # of them
-            if 'is_inhibition' in column_mapping and 'is_activation' not in column_mapping:
-                if 'is_inhibition' in database.columns and database['is_inhibition'].nunique() > 1:
-                    database['is_inhibition'] = database['is_inhibition'].replace(
-                        {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
-                    database['is_activation'] = ~database['is_inhibition']
-            elif 'is_activation' in column_mapping and 'is_inhibition' not in column_mapping:
-                if 'is_activation' in database.columns and database['is_activation'].nunique() > 1:
-                    database['is_activation'] = database['is_activation'].replace(
-                        {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
-                    database['is_inhibition'] = ~database['is_activation']
+            df = _misc.split_effect(df)
 
-        # Convert is_inhibition and is_activation columns to boolean values
-        for column in ['is_inhibition', 'is_activation']:
-            if column in database.columns:
-                database[column] = database[column].replace({1: True, -1: False}).astype(bool)
 
-        # Check if the database contains the required columns
-        missing_columns = set(self.required_columns) - set(database.columns)
+        df = _misc.bool_col(df, 'is_stimulation')
+        df = _misc.bool_col(df, 'is_inhibition')
+
+        # Check if the df contains the required columns
+        missing_columns = set(MANDATORY_COLUMNS) - set(df.columns)
+
         if missing_columns:
-            logging.warning("The incoming database is missing some required columns: %s", missing_columns)
+
+            logging.warning("The incoming df is missing some required columns: %s", missing_columns)
             logging.warning("This might lead to issues in running the package.")
 
-        # Align columns of both dataframes, filling missing columns with NaN
         if self.interactions is not None:
-            all_columns = set(self.interactions.columns).union(set(database.columns))
-            self.interactions = self.interactions.reindex(columns=all_columns, fill_value=None)
-            database = database.reindex(columns=all_columns, fill_value=None)
 
-        # If self.interactions is None, initialize it with the incoming database
-        if self.interactions is None:
-            self.interactions = database
-        else:
-            self.interactions = pd.concat([self.interactions, database], axis=axis, ignore_index=ignore_index)
-            if reset_index:
-                self.interactions.reset_index(drop=True, inplace=True)
-        return
+            # Align columns of both dataframes, filling missing columns with NaN
+            all_columns = set(self.interactions.columns).union(set(df.columns))
+            self.interactions = self.interactions.reindex(columns=all_columns, fill_value=None)
+            df = df.reindex(columns=all_columns, fill_value=None)
+            self.interactions = pd.concat([self.interactions, df])
+
+        else self.interactions is None:
+            # If self.interactions is None, initialize it with the incoming df
+            self.interactions = df
+
+        self.interactions.reset_index(drop=True, inplace=True)
+
 
     @property
     def nodes(self) -> set[str]:

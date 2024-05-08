@@ -5,9 +5,25 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
+def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:
+
+    mappings = mappings or {
+        "True": True,
+        "False": False,
+        "true": True,
+        "false": False,
+        1: True,
+        -1: False,
+        0: False,
+    }
+    df[col] = df[col].replace(mappings).astype(bool)
+
+    return df
+
+
 def split_effect(
         df: pd.DataFrame,
-        col: str,
+        col: str = 'effect',
         mappings: dict = None,
         inhibition: bool = False,
     ) -> pd.DataFrame:
@@ -27,16 +43,7 @@ def split_effect(
         columns added.
     """
 
-    mappings = mapping or {
-        "True": True,
-        "False": False,
-        "true": True,
-        "false": False,
-        1: True,
-        -1: False,
-        0: False,
-    }
-    df[col] = df[col].replace(mappings).astype(bool)
+    df = bool_col(df, col, mappings)
 
     if inhibition:
         df[col] = ~df[col]

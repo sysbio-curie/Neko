@@ -4,10 +4,10 @@ from pypath.utils import mapping
 import omnipath as op
 from itertools import combinations
 from .._inputs._db.omnipath import Resources
-from .._methods.enrichment_methods import Connections
+import .._methods.enrichment
 from typing_extensions import Literal
 import copy
-from .._annotations.gene_ontology import Ontology
+import .._annotations.go
 from tqdm import tqdm
 import pandas as pd
 

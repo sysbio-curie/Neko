@@ -29,7 +29,7 @@ MANDATORY_COLUMNS = [
 ]
 
 
-class Resources():
+class Resources(_nbase.NetworkBase):
     """
     This class is used to store and manage databases for mining interactions.
     The user can select different database formats from omnipath, pypath or load one of their own.

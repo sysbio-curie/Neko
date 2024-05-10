@@ -4,7 +4,7 @@ import logging
 import pypath
 from pypath.utils import mapping
 
-import ._misc as _misc
+import _misc as _misc
 
 """
 Access to network databases.
@@ -126,7 +126,7 @@ class Resources():
             df = df.reindex(columns=all_columns, fill_value=None)
             self.interactions = pd.concat([self.interactions, df])
 
-        else self.interactions is None:
+        elif self.interactions is None:
             # If self.interactions is None, initialize it with the incoming df
             self.interactions = df
 

@@ -4,3 +4,5 @@ from ._universe import network_universe, Universe
 """
 Access to generic networks from databases, files and standard formats.
 """
+
+from _universe import omnipath, signor, psp

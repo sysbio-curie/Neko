@@ -3,16 +3,16 @@ from typing import List, Optional, Tuple
 from pypath.utils import mapping
 import omnipath as op
 from itertools import combinations
-from .._inputs._db.omnipath import Resources
-from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 import copy
 from .._annotations.gene_ontology import Ontology
 from tqdm import tqdm
 import pandas as pd
 
+from .._inputs._db.omnipath import Resources
+from .._methods.enrichment_methods import Connections
 
-class Network:
+class Network(_nbase.NetworkBase):
     """
     The Network class is the main class of the Omniflow package. It is designed to store nodes and edges of a network and offers various methods for enrichment analysis. The class takes a list of nodes as the main argument and a series of optional filters and other options such as inputs/outputs, specific tissues, type of interactions, prune inputs/outputs, etc.
 

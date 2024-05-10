@@ -1,16 +1,19 @@
 from __future__ import annotations
 from typing import List, Optional, Tuple
-from pypath.utils import mapping
-import omnipath as op
 from itertools import combinations
 from typing_extensions import Literal
 import copy
-from .._annotations.gene_ontology import Ontology
+
 from tqdm import tqdm
 import pandas as pd
+from pypath.utils import mapping
+import omnipath as op
 
 from .._inputs._db.omnipath import Resources
 from .._methods.enrichment_methods import Connections
+from .._annotations import go
+import _networkbase as _nbase
+
 
 class Network(_nbase.NetworkBase):
     """

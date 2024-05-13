@@ -31,12 +31,25 @@ class Exports:
         # Identify undefined interactions
         undefined_interactions = self.interactions.query("Effect == 'undefined'")
         if not undefined_interactions.empty:
-            print(f"Warning: The network has {len(undefined_interactions)} undefined interaction(s).")
-            print(f"References for review: {undefined_interactions['References'].unique().tolist()}")
+            print(f"Warning: The network has {len(undefined_interactions)} UNDEFINED interaction(s).")
+            # print source and target for each undefined interaction and relative references
+            print("Bimodal interactions:")
+            for index, row in undefined_interactions.iterrows():
+                print(f"{row['source']} -> {row['target']}")
+                print(f"Reference: {row['References']}")
+        # Identify bimodal interactions
+        bimodal_interactions = self.interactions.query("Effect == 'bimodal'")
+        if not bimodal_interactions.empty:
+            print(f"Warning: The network has {len(bimodal_interactions)} BIMODAL interaction(s).")
+            # print source and target for each bimodal interaction and relative references
+            print("Bimodal interactions:")
+            for index, row in bimodal_interactions.iterrows():
+                print(f"{row['source']} -> {row['target']}")
+                print(f"Reference: {row['References']}")
 
         # Pre-filter stimulations, inhibitions, and exclude undefined effects
-        stimulations = self.interactions.query("Effect == 'stimulation'")
-        inhibitions = self.interactions.query("Effect == 'inhibition'")
+        stimulations = self.interactions.query("Effect == 'stimulation' or Effect == 'bimodal'")
+        inhibitions = self.interactions.query("Effect == 'inhibition' or Effect == 'bimodal'")
         complex_formation = self.interactions.query("Effect == 'form complex'")
 
         with open(file_name, "w") as f:

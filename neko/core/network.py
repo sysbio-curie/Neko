@@ -31,6 +31,8 @@ def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
         interaction = interaction.iloc[0]
 
     if consensus:
+        if interaction.get("consensus_inhibition", True) and interaction.get("consensus_stimulation", True):
+            return "bimodal"
         if interaction.get("consensus_stimulation", False):
             return "stimulation"
         elif interaction.get("consensus_inhibition", False):
@@ -38,6 +40,9 @@ def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
         else:
             return "undefined"
     else:
+        # Check if it is both stimulation and inhibition
+        if interaction.get("is_stimulation", True) and interaction.get("is_inhibition", True):
+            return "bimodal"
         if interaction.get("is_stimulation", False):
             return "stimulation"
         elif interaction.get("is_inhibition", False):
@@ -468,7 +473,7 @@ class Network:
                 "1": "stimulation",
                 "activate": "stimulation",
                 "stimulate": "stimulation",
-                "phosphorilate": "stimulation",
+                "phosphorilate": "undefined",
                 "stimulation": "stimulation",
                 "->": "stimulation",
                 "-|": "inhibition",

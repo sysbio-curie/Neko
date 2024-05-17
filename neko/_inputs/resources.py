@@ -177,6 +177,18 @@ class Resources():
             """
             return 'complex' in effect
 
+        def is_directed(directed):
+            """
+            This function checks if the interaction is directed.
+
+            Parameters:
+            directed (str): The value to check.
+
+            Returns:
+            bool: True if the interaction is directed, False otherwise.
+            """
+            return True if directed == 'YES' else False
+
         # Filter out the rows where EFFECT is "form complex" or "unknown"
         filtered_df = df_signor[~df_signor['EFFECT'].isin(["unknown"])]
 
@@ -184,7 +196,7 @@ class Resources():
         transformed_df = pd.DataFrame({
             'source': filtered_df['IDA'],
             'target': filtered_df['IDB'],
-            'is_directed': filtered_df['DIRECT'],
+            'is_directed': filtered_df['DIRECT'].apply(is_directed),
             'is_stimulation': filtered_df['EFFECT'].apply(is_stimulation),
             'is_inhibition': filtered_df['EFFECT'].apply(is_inhibition),
             'form_complex': filtered_df['EFFECT'].apply(form_complex),
@@ -197,9 +209,82 @@ class Resources():
         })
 
         # Add the transformed DataFrame to the existing database
-        self.add_database(transformed_df)
+        grouped_database = self.group_by_source_target(transformed_df)
+        self.add_database(grouped_database)
 
         return
+
+    def group_by_source_target(self, df_ungrouped):
+        grouped = df_ungrouped.groupby(['source', 'target'])
+
+        def join_strings(series):
+            return '; '.join(set(series.astype(str)))
+
+        def majority_true(series):
+            # Count True values and compare to half the length of the series
+            return series.sum() >= (len(series) / 2)
+
+        def process_consensus(df):
+            new_df = pd.DataFrame({
+                'source': df['source'],
+                'target': df['target'],
+                'is_directed': df['is_directed'],
+                'is_stimulation': df['is_stimulation'],
+                'is_inhibition': df['is_inhibition'],
+                'form_complex': df['form_complex'],
+                'consensus_direction': True,
+                'consensus_stimulation': df['is_stimulation'],
+                'consensus_inhibition': df['is_inhibition'],
+                'curation_effort': df['curation_effort'],
+                'references': df['references'],
+                'sources': df['sources']
+            })
+            return new_df
+
+        def process_interaction(df):
+            new_df = pd.DataFrame({
+                'source': df['source'],
+                'target': df['target'],
+                'is_directed': df['is_directed'],
+                'is_stimulation': df['is_stimulation'],
+                'is_inhibition': df['is_inhibition'],
+                'form_complex': df['form_complex'],
+                'consensus_direction': True,
+                'consensus_stimulation': False,
+                'consensus_inhibition': False,
+                'curation_effort': df['curation_effort'],
+                'references': df['references'],
+                'sources': df['sources']
+            })
+            return new_df
+
+        new_groups = []
+
+        for (source, target), group_data in grouped:
+            if len(group_data) > 1:
+                aggregate_functions = {
+                    "is_stimulation": majority_true,
+                    "is_inhibition": majority_true,
+                    "form_complex": majority_true,
+                    "curation_effort": join_strings,
+                    "references": join_strings,
+                    "sources": join_strings
+                }
+                new_df = group_data.groupby(
+                    ["source", "target", "is_directed", "consensus_direction", "consensus_stimulation",
+                     "consensus_inhibition"]).aggregate(aggregate_functions).reset_index()
+                if len(group_data[group_data["is_stimulation"] == True]) == len(
+                    group_data[group_data["is_inhibition"] == True]):
+                    new_groups.append(process_interaction(new_df))
+                else:
+                    new_groups.append(process_consensus(new_df))
+            else:
+                new_groups.append(group_data)
+
+        # Concatenate all groups back into a single DataFrame
+        df_unique = pd.concat(new_groups, ignore_index=True)
+
+        return df_unique
 
     def process_psp_interactions(self, kinase_int_file, phospho_effect_file, organism, expand=False):
         """

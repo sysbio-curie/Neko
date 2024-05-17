@@ -122,6 +122,20 @@ class Connections:
 
         return list(neigh)
 
+    def find_all_neighbours(self,
+                        node: str) -> list[str]:
+        """
+        Optimized helper function that finds the neighbors of the target node.
+        """
+
+        db = self.resources
+
+        neigh_target = set(db.loc[db["source"] == node]["target"])
+        neigh_source = set(db.loc[db["target"] == node]["source"])
+        neigh = neigh_target.union(neigh_source)
+
+        return list(neigh)
+
     def find_paths(self,
                    start: (
                        str | pd.DataFrame | list[str]

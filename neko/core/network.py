@@ -31,11 +31,11 @@ def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
         interaction = interaction.iloc[0]
 
     if consensus:
-        if interaction.get("consensus_inhibition", True) and interaction.get("consensus_stimulation", True):
+        if interaction.get("consensus_inhibition") and interaction.get("consensus_stimulation"):
             return "bimodal"
-        if interaction.get("consensus_stimulation", False):
+        if interaction.get("consensus_stimulation"):
             return "stimulation"
-        elif interaction.get("consensus_inhibition", False):
+        elif interaction.get("consensus_inhibition"):
             return "inhibition"
         else:
             return "undefined"
@@ -220,6 +220,7 @@ class Network:
             for node in initial_nodes:
                 self.add_node(node)
             self.drop_missing_nodes()
+            self.nodes.reset_index(drop=True)
         elif sif_file:
             self.load_network_from_sif(sif_file)
 
@@ -291,7 +292,7 @@ class Network:
             new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
 
         self.nodes.loc[len(self.nodes)] = new_entry
-        self.nodes = self.nodes.drop_duplicates()
+        self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
         return
 
     def remove_node(self, node: str):
@@ -354,7 +355,7 @@ class Network:
 
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
-        self.edges = self.edges.drop_duplicates()
+        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
 
     def remove_edge(self, node1: str, node2: str):
@@ -554,7 +555,7 @@ class Network:
                     self.add_edge(interaction)
 
         # Remove duplicate edges from the edge list
-        self.edges = self.edges.drop_duplicates()
+        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
         return
 
@@ -579,7 +580,7 @@ class Network:
                 print("Empty interaction for node ", cascade[0], " and ", cascade[1])
             else:
                 self.add_edge(interaction_in)
-        self.edges = self.edges.drop_duplicates()
+        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
         return
 
@@ -820,7 +821,7 @@ class Network:
                             self.add_paths_to_edge_list(paths_in)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates()
+                                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
                             flag = True
 
                 # Repeat the same process for paths in the opposite direction
@@ -837,14 +838,14 @@ class Network:
                             self.add_paths_to_edge_list(paths_out)
                             if connect_node_when_first_introduced:
                                 self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates()
+                                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
                             flag = True
                 break
 
         # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
         if not connect_node_when_first_introduced:
             self.connect_nodes(only_signed, consensus)
-            self.edges = self.edges.drop_duplicates()
+            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
 
     def connect_component(self,
@@ -943,7 +944,7 @@ class Network:
             if only_signed:
                 cascades = self.filter_unsigned_paths(cascades, consensus)
             self.add_cascade_to_edge_list(cascades)
-            self.edges.drop_duplicates()
+            self.edges.drop_duplicates().reset_index(drop=True)
         except Exception as e:
             print(f"An error occurred while connecting to upstream nodes: {e}")
         return
@@ -1050,4 +1051,40 @@ class Network:
                 new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation",
                             "References": "Gene Ontology"}
                 self.edges = self.edges.append(new_edge, ignore_index=True)
+        return
+
+    def connect_as_atopo(self,
+                         outputs: list[str],
+                         ) -> None:
+        """ TO TEST """
+        self.complete_connection(minimal=True, only_signed=True, consensus=False, connect_node_when_first_introduced=False)
+
+        for node in outputs:
+            self.add_node(node)
+
+        outputs_uniprot = [mapping_node_identifier(i)[2] for i in outputs]
+
+        depth = 1
+
+        while not self.is_connected():
+            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=1, only_signed=True, consensus=True)
+            self.connect_nodes(only_signed=True, consensus_only=True)
+            # add function to remove nodes that are not connected at all (from the upstream)
+            print(depth)
+            depth += 1
+        self.edges.drop_duplicates().reset_index(drop=True)
+        # remove nodes from the network if the node has no source in the edge dataframe and is not in outputs
+        check = True
+        nodes_to_remove = []
+        while check is True:
+            # check if there are nodes to remove
+            for node in self.nodes["Uniprot"]:
+                if node not in self.edges["target"].unique():
+                    nodes_to_remove.append(node)
+            if len(nodes_to_remove) == 0:
+                check = False
+            else:
+                for node in nodes_to_remove:
+                    self.remove_node(node)
+                nodes_to_remove = []
         return

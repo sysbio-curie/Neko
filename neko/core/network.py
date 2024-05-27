@@ -1056,34 +1056,70 @@ class Network:
     def connect_as_atopo(self,
                          outputs: list[str],
                          ) -> None:
-        """ TO TEST """
-        self.complete_connection(minimal=True, only_signed=True, consensus=False, connect_node_when_first_introduced=False)
+        """
+            This method attempts to connect all nodes of a network object in a topological manner. It iteratively connects
+            upstream nodes and checks if the network is connected. If not, it increases the search depth and repeats the process.
+            It also removes any nodes that do not have a source in the edge dataframe and are not in the output nodes.
 
+            Parameters:
+            - outputs: A list of output nodes to be connected.
+
+            Returns:
+            None. The function modifies the network object in-place.
+        """
+        # Complete the connection with minimal=True, only_signed=True, consensus=False, and connect_node_when_first_introduced=False
+        self.complete_connection(minimal=True, only_signed=True, consensus=False,
+                                 connect_node_when_first_introduced=False)
+
+        # Add output nodes to the network
         for node in outputs:
             self.add_node(node)
 
+        # Convert output nodes to Uniprot identifiers
         outputs_uniprot = [mapping_node_identifier(i)[2] for i in outputs]
 
+        # Create a set of starting nodes
+        starting_nodes = set(self.nodes["Uniprot"].tolist()) | set(outputs_uniprot)
+
+        # Initialize depth
         depth = 1
 
+        # While the network is not connected, connect to upstream nodes and increase depth
         while not self.is_connected():
             self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=1, only_signed=True, consensus=True)
+            new_nodes = set(self.nodes["Uniprot"].tolist()) - starting_nodes
             self.connect_nodes(only_signed=True, consensus_only=True)
-            # add function to remove nodes that are not connected at all (from the upstream)
-            print(depth)
+
+            # Remove nodes that do not have a source in the edge dataframe
+            for node in new_nodes:
+                if node not in self.edges["target"].unique():
+                    self.remove_node(node)
+
+            # If depth reaches 4, stop the process
+            if depth == 4:
+                print("Current depth is 4, stopping the process")
+                break
+
+            # Increase depth
             depth += 1
+
+        # Remove duplicate edges
         self.edges.drop_duplicates().reset_index(drop=True)
-        # remove nodes from the network if the node has no source in the edge dataframe and is not in outputs
+
+        # Remove nodes from the network if the node has no source in the edge dataframe and is not in outputs
         check = True
         nodes_to_remove = []
         while check is True:
-            # check if there are nodes to remove
+            # Check if there are nodes to remove
             for node in self.nodes["Uniprot"]:
                 if node not in self.edges["target"].unique():
                     nodes_to_remove.append(node)
+
+            # If there are no nodes to remove, stop the process
             if len(nodes_to_remove) == 0:
                 check = False
             else:
+                # Remove nodes
                 for node in nodes_to_remove:
                     self.remove_node(node)
                 nodes_to_remove = []

@@ -1,5 +1,5 @@
 ==================
- Neko 
+Neko
 ==================
 
    :target: https://github.com/sysbio-curie/Neko/actions/workflows/test.yml
@@ -13,6 +13,16 @@ Package to extract, visualize, convert and study interactions from database into
 Neko, is based on `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_ and `Atopo <https://github.com/druglogics/atopo>`_.
 
 This is a work-in-progress package made in collaboration with Dénes Turei and Asmund Flobak.
+
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+
+Installation:
+
+All the dependencies are listed in the pyproject.toml file. To install the package, you can use the following command:
+
+.. code-block:: bash
+
+    pip install .
 
 CURRENT FEATURES:
 

@@ -17,16 +17,31 @@ import pathlib
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
 
-import omniflow_project  # noqa: E402
+from neko._metadata import __version__, __author__  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
-project = 'omniflow_project'
-version = omniflow_project.__version__
-author = ', '.join(omniflow_project.__author__)
+project = 'neko'
+version = __version__
+author = ', '.join(__author__)
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
-copyright = f'{years}, Saez Lab'
-repository_url = 'https://github.com/sysbio-curie/omniflow_project'
+copyright = f'{years}, Sysbio-Curie'
+repository_url = 'https://github.com/sysbio-curie/Neko'
+
+# thank you stupid sphinx, thank you stupid github :((( <-- directly taken from conf.py of Pypath XD
+readme_lines = []
+readme = pathlib.Path().absolute().parents[1].joinpath('README.rst')
+
+if readme.exists():
+
+    with readme.open('r') as fp:
+
+        readme_lines = fp.readlines()[4:]
+
+with open('index.rst', 'w') as fp:
+
+    fp.write('==================\n Neko \n==================\n\n')
+    fp.write(''.join(readme_lines))
 
 # -- General configuration ---------------------------------------------------
 
@@ -34,24 +49,15 @@ repository_url = 'https://github.com/sysbio-curie/omniflow_project'
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-    'myst_parser',
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.todo',  # not for output but to remove warnings
-    'sphinx.ext.githubpages',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.ifconfig',
-    'sphinxcontrib.bibtex',
-    'sphinx_autodoc_typehints',
-    'sphinx.ext.mathjax',
-    'sphinx_copybutton',
-    'sphinx_last_updated_by_git',
-    'sphinxcontrib.fulltoc',
-    'sphinx_remove_toctrees',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel',
+    'numpydoc',
     'nbsphinx',
-    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 
 autosummary_generate = True
@@ -59,10 +65,11 @@ autodoc_member_order = 'groupwise'
 default_role = 'literal'
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
+numpydoc_show_class_members = False # don't show class members in both class and __init__ docstrings
 napoleon_include_init_with_doc = False
 napoleon_use_rtype = True  # having a separate entry generally helps readability
 napoleon_use_param = True
-
+nbsphinx_execute = 'never'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -73,10 +80,12 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'en'
 
+# Add bibtex files
+bibtex_bibfiles = ['references.bib']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'contents'
@@ -91,19 +100,19 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 autodoc_mock_imports = []
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'manni'
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = 'pydata_sphinx_theme'
-html_theme_options = {
-    'navigation_depth': 2,
-    'collapse_navigation': True,
-}
+html_theme = 'sphinx_rtd_theme'
+
+html_theme_options = dict(
+    logo_only=True,
+    display_version=True,
+    pygment_light_style="manni",
+    pygment_dark_style="material",
+)
 html_context = {
     'display_github': True,  # Integrate GitHub
     'github_user': 'sysbio-curie',  # Username
@@ -116,6 +125,10 @@ html_context = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_show_sphinx = False
+html_logo = 'neko_logo.png'
+html_favicon = 'neko_logo.png'
 
 nitpick_ignore = [
     # If building the documentation fails because

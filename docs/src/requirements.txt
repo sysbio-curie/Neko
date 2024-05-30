@@ -1,0 +1,7 @@
+numpydoc
+nbsphinx
+ipython
+scikit-learn
+skranger
+sphinx_rtd_theme
+pandoc

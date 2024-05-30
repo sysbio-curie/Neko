@@ -24,6 +24,7 @@ class NetworkVisualizer:
             'inhibition': 'red',
             'form complex': 'blue',
             'undefined': 'gray',  # Adding the mapping for "undefined" effect
+            'bimodal': 'darkorange',  # Adding the mapping for "bimodal" effect
             # Add more custom mappings if needed
         }
         self.node_colors = {}  # Dictionary to store custom node colors
@@ -66,6 +67,10 @@ class NetworkVisualizer:
             elif effect == 'form complex':
                 arrowhead = 'dot'
                 color = 'blue'
+                dir = 'forward'
+            elif effect == 'bimodal':
+                arrowhead = 'box'
+                color = 'darkorange'
                 dir = 'forward'
             else:
                 arrowhead = 'normal'  # Default arrow

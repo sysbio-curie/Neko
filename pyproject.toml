@@ -38,6 +38,7 @@ jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
 pandas = "*"
+pypath-common = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"

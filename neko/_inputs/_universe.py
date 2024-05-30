@@ -23,6 +23,14 @@ _REQUIRED_COLS = {
     'target',
 }
 
+MANDATORY_COLUMNS = [
+    'source',
+    'target',
+    'is_directed',
+    'is_inhibition',
+    'is_stimulation',
+    'form_complex',
+]
 
 def network_universe(
         resource: Literal['omnipath'] | pd.DataFrame,
@@ -135,17 +143,14 @@ class Universe:
 
 
     @staticmethod
-    def merge(df1: DataFrame, df2: DataFrame) -> pd.DataFrame:
+    def merge(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
         """
         This function concatenates the provided df with the existing one in the resources object,
         aligning columns and filling in missing data with NaN.
 
         Parameters:
-            df (pd.DataFrame): The DataFrame to be added.
-            columns (dict, optional):
-                A dictionary of column name mappings to be applied on the
-                provided data frame. Mandatory columns: source, target, is_directed,
-                is_inhibition, is_stimulation, form_complex.
+            df1 (pd.DataFrame): The DataFrame to be added.
+            df2 (pd.DataFrame): The DataFrame to be added.
 
         Raises:
             ValueError: If the 'df' parameter is not a pandas DataFrame.
@@ -158,9 +163,9 @@ class Universe:
         all_columns = set(df1.columns).union(set(df2.columns))
         df1 = df1.reindex(columns=all_columns, fill_value=None)
         df2 = df2.reindex(columns=all_columns, fill_value=None)
-        df1 = pd.concat([df1, df2)
+        df1 = pd.concat([df1, df2])
 
-        return df1
+        return df1.copy()
 
 
     def build(self, resources: Iterable[str] | None):
@@ -168,11 +173,10 @@ class Universe:
         resources = _common.to_list(resources) or self._resources.keys()
 
         for res in resources:
-
             df = self._resources[res]
             self.interactions = (
-                df
-                    if self.interactions is None
+                df.copy()
+                if self.interactions is None else
                 self.merge(self.interactions, df)
             )
 
@@ -182,7 +186,7 @@ class Universe:
     @property
     def resource(self):
 
-        return self._resource if isinstence(self._resource, str) else 'user'
+        return self._resource if isinstance(self._resource, str) else 'user'
 
 
     @property
@@ -252,28 +256,6 @@ class Universe:
             hasattr(self, '_network') and
             not _REQUIRED_COLS - set(self._network.columns)
         )
-
-
-MANDATORY_COLUMNS = [
-    'source',
-    'target',
-    'is_directed',
-    'is_inhibition',
-    'is_stimulation',
-    'form_complex',
-]
-
-
-class Resources(_nbase.NetworkBase):
-    """
-    This class is used to store and manage databases for mining interactions.
-    The user can select different database formats from omnipath, pypath or load one of their own.
-
-    Attributes:
-    interactions (pd.DataFrame): The main DataFrame that stores the interactions.
-    filtered_interactions (pd.DataFrame): A filtered version of the interactions DataFrame. Currently not implemented.
-    required_columns (list): A list of column names that are required in the interactions DataFrame.
-    """
 
     @property
     def nodes(self) -> set[str]:

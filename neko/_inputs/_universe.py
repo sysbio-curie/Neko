@@ -74,6 +74,7 @@ class Universe:
         self._resources = {}
         self.interactions = None
         self.add_resources(resources, **param)
+        self.build()
 
 
     def add_resources(self, resources, **param) -> None:
@@ -175,6 +176,8 @@ class Universe:
 
         resources = _common.to_list(resources) or self._resources.keys()
 
+        self.interactions = None
+
         for res in resources:
             df = self._resources[res]
             self.interactions = (
@@ -236,18 +239,12 @@ class Universe:
 
     def __repr__(self) -> str:
 
-        param = (
-            _common.dict_str(self._param)[42:].
-            rsplit(', ', maxsplit = 1)[0]
-        )
-        param = f'; [{param}]' if param else ''
-
-        return f'Universe from {self.resource}; size: {len(self)}{param}'
+        return f'Universe; resources: {", ".join(self._resources.keys())}; size: {len(self)}'
 
 
     def __len__(self) -> int:
 
-        return len(getattr(self, '_network', ()))
+        return 0 if self.interactions is None else len(self.interactions)
 
 
     def check(self) -> bool:

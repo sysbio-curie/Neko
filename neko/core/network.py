@@ -949,7 +949,7 @@ class Network:
             print(f"An error occurred while connecting to upstream nodes: {e}")
         return
 
-    def convert_edgelist_into_genesymbol(self):
+    def convert_edgelist_into_genesymbol(self) -> pd.DataFrame:
         """
         This function converts the edge dataframe from uniprot to genesymbol.
         """
@@ -957,11 +957,13 @@ class Network:
         def convert_identifier(x):
             identifiers = mapping_node_identifier(x)
             return identifiers[0] or identifiers[1]
+        
+        gs_edges = self.edges.copy()
 
-        self.edges["source"] = self.edges["source"].apply(convert_identifier)
-        self.edges["target"] = self.edges["target"].apply(convert_identifier)
+        gs_edges["source"] = gs_edges["source"].apply(convert_identifier)
+        gs_edges["target"] = gs_edges["target"].apply(convert_identifier)
 
-        return
+        return gs_edges
 
     def connect_genes_to_phenotype(self,
                                    phenotype: str = None,

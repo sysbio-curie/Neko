@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Iterable, Literal
 import pickle
+import logging
 import pandas as pd
+
+from pypath_common import misc as _common
 
 from ._db.omnipath import omnipath_universe
 from ..core import _networkbase as _nbase
+from ._db import _misc
 
 """
 Access to generic networks from databases, files and standard formats.
@@ -59,6 +63,7 @@ class Universe:
         Load and preprocess a generic network from databases or files.
         """
 
+        self._resources = {}
         self.add_resources(resources, **param)
 
 
@@ -76,17 +81,26 @@ class Universe:
 
                 resources = pd.read_csv(resources, sep='\t')
 
+        name = param.get('name', '_default')
+        columns = param.get('columns', {})
+
         if isinstance(resources, pd.DataFrame):
 
-            name = param.get('name', '_default')
-            self._resources[name] = resources
+            self._resources[name] = self._check_columns(resources, columns)
 
         elif isinstance(resources, str) and resources in _METHODS:
 
-            self._resources[name] = _METHODS[resources](**param)
+            self._resources[name] = self._check_columns(
+                _METHODS[resources](**param),
+                columns,
+            )
 
         elif isinstance(resources, dict):
 
+            resources = {
+                k: self._check_columns(v, columns)
+                for k, v in resources.items()
+            }
             self._resources.update(resources)
 
         elif isinstance(resources, Iterable):
@@ -96,14 +110,32 @@ class Universe:
                 self.add_resources(r, **param)
 
 
+    @staticmethod
+    def _check_columns(df: pd.DataFrame, columns: dict) -> pd.DataFrame:
+            # If columns is provided, rename the columns of the incoming df
+        if columns:
+            df = df.rename(columns=columns)
 
+        if 'effect' in df.columns:
+
+            df = _misc.split_effect(df)
+
+        df = _misc.bool_col(df, 'is_stimulation')
+        df = _misc.bool_col(df, 'is_inhibition')
+
+        # Check if the df contains the required columns
+        missing_columns = set(MANDATORY_COLUMNS) - set(df.columns)
+
+        if missing_columns:
+
+            logging.warning("The incoming df is missing some required columns: %s", missing_columns)
+            logging.warning("This might lead to issues in running the package.")
+
+        return df
 
 
     @staticmethod
-    def merge(
-            df: pd.DataFrame,
-            columns: dict = None,
-        ):
+    def merge(df1: DataFrame, df2: DataFrame) -> pd.DataFrame:
         """
         This function concatenates the provided df with the existing one in the resources object,
         aligning columns and filling in missing data with NaN.
@@ -122,37 +154,27 @@ class Universe:
             None
         """
 
-        # If columns is provided, rename the columns of the incoming df
-        if columns:
-            df = df.rename(columns=columns)
+        # Align columns of both dataframes, filling missing columns with NaN
+        all_columns = set(df1.columns).union(set(df2.columns))
+        df1 = df1.reindex(columns=all_columns, fill_value=None)
+        df2 = df2.reindex(columns=all_columns, fill_value=None)
+        df1 = pd.concat([df1, df2)
 
-        if 'effect' in df.columns:
-
-            df = _misc.split_effect(df)
+        return df1
 
 
-        df = _misc.bool_col(df, 'is_stimulation')
-        df = _misc.bool_col(df, 'is_inhibition')
+    def build(self, resources: Iterable[str] | None):
 
-        # Check if the df contains the required columns
-        missing_columns = set(MANDATORY_COLUMNS) - set(df.columns)
+        resources = _common.to_list(resources) or self._resources.keys()
 
-        if missing_columns:
+        for res in resources:
 
-            logging.warning("The incoming df is missing some required columns: %s", missing_columns)
-            logging.warning("This might lead to issues in running the package.")
-
-        if self.interactions is not None:
-
-            # Align columns of both dataframes, filling missing columns with NaN
-            all_columns = set(self.interactions.columns).union(set(df.columns))
-            self.interactions = self.interactions.reindex(columns=all_columns, fill_value=None)
-            df = df.reindex(columns=all_columns, fill_value=None)
-            self.interactions = pd.concat([self.interactions, df])
-
-        elif self.interactions is None:
-            # If self.interactions is None, initialize it with the incoming df
-            self.interactions = df
+            df = self._resources[res]
+            self.interactions = (
+                df
+                    if self.interactions is None
+                self.merge(self.interactions, df)
+            )
 
         self.interactions.reset_index(drop=True, inplace=True)
 

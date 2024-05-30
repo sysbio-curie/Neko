@@ -64,7 +64,7 @@ class Universe:
 
     def __init__(
             self,
-            resources: Literal['omnipath'] | pd.DataFrame,
+            resources: Literal['omnipath'] | pd.DataFrame = None,
             **param
         ):
         """
@@ -72,6 +72,7 @@ class Universe:
         """
 
         self._resources = {}
+        self.interactions = None
         self.add_resources(resources, **param)
 
 
@@ -97,6 +98,8 @@ class Universe:
             self._resources[name] = self._check_columns(resources, columns)
 
         elif isinstance(resources, str) and resources in _METHODS:
+
+            name = resources
 
             self._resources[name] = self._check_columns(
                 _METHODS[resources](**param),
@@ -168,7 +171,7 @@ class Universe:
         return df1.copy()
 
 
-    def build(self, resources: Iterable[str] | None):
+    def build(self, resources: Iterable[str] | None = None) -> None:
 
         resources = _common.to_list(resources) or self._resources.keys()
 

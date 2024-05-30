@@ -1,8 +1,5 @@
 from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-
-    import pandas as pd
+import pandas as pd
 
 
 def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:

@@ -24,3 +24,4 @@ __all__ = [
 
 from ._metadata import __author__, __version__
 from . import _data as data
+from . import _inputs as inputs

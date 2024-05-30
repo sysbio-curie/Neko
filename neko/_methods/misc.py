@@ -1,3 +1,6 @@
+import pandas as pd
+from typing import Literal
+
 def filter_unsigned_paths(network, paths: list[tuple], consensus: bool) -> list[tuple]:
     """
     This function filters out unsigned paths from the provided list of paths. An unsigned path is a path where at least

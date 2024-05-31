@@ -14,8 +14,7 @@ def wrap_node_name(node_name):
 class NetworkVisualizer:
     def __init__(self, network, predefined_node=None, color_by="Effect"):
         net = network.copy()
-        net.convert_edgelist_into_genesymbol()
-        self.dataframe_edges = net.edges
+        self.dataframe_edges = net.convert_edgelist_into_genesymbol().copy()
         self.dataframe_nodes = net.nodes
         self.color_by = color_by
         self.graph = Digraph(format='pdf')

@@ -34,7 +34,7 @@ readme = "README.rst"
 toml = "*"
 notebook = "*"
 python = ">=3.9,<4.0"
-omnipath = ">=1.0.7"
+omnipath = { git = "https://github.com/saezlab/omnipath.git", branch = "main" }
 pypath-omnipath = { git = "https://github.com/saezlab/pypath.git", branch = "master" }
 jupyterlab = "*"
 pycurl = "*"

@@ -214,7 +214,7 @@ class Network:
             self.resources = resources
         else:
             res = Resources()
-            res.load_omnipath_interactions()
+            res.load_all_omnipath_interactions()
             self.resources = res.interactions
         if initial_nodes:
             for node in initial_nodes:
@@ -957,7 +957,7 @@ class Network:
         def convert_identifier(x):
             identifiers = mapping_node_identifier(x)
             return identifiers[0] or identifiers[1]
-        
+
         gs_edges = self.edges.copy()
 
         gs_edges["source"] = gs_edges["source"].apply(convert_identifier)

@@ -214,7 +214,7 @@ class Network:
             self.resources = resources
         else:
             res = Resources()
-            res.load_omnipath_interactions()
+            res.load_all_omnipath_interactions()
             self.resources = res.interactions
         if initial_nodes:
             for node in initial_nodes:
@@ -949,7 +949,7 @@ class Network:
             print(f"An error occurred while connecting to upstream nodes: {e}")
         return
 
-    def convert_edgelist_into_genesymbol(self):
+    def convert_edgelist_into_genesymbol(self) -> pd.DataFrame:
         """
         This function converts the edge dataframe from uniprot to genesymbol.
         """
@@ -958,10 +958,12 @@ class Network:
             identifiers = mapping_node_identifier(x)
             return identifiers[0] or identifiers[1]
 
-        self.edges["source"] = self.edges["source"].apply(convert_identifier)
-        self.edges["target"] = self.edges["target"].apply(convert_identifier)
+        gs_edges = self.edges.copy()
 
-        return
+        gs_edges["source"] = gs_edges["source"].apply(convert_identifier)
+        gs_edges["target"] = gs_edges["target"].apply(convert_identifier)
+
+        return gs_edges
 
     def connect_genes_to_phenotype(self,
                                    phenotype: str = None,

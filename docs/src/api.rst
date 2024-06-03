@@ -8,10 +8,6 @@ Import Neko as::
 Network
 -------
 
-.. autoclass:: neko.core.network.Network
-   :undoc-members:
-   :show-inheritance:
-
 .. autosummary::
    :toctree: _autosummary
 

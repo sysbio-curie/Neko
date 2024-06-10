@@ -14,6 +14,16 @@ Neko, is based on `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <ht
 
 This is a work-in-progress package made in collaboration with Dénes Turei and Asmund Flobak.
 
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+
+Installation:
+
+All the dependencies are listed in the pyproject.toml file. To install the package, you can use the following command:
+
+.. code-block:: bash
+
+    pip install .
+
 CURRENT FEATURES:
 
 version 0.9.0

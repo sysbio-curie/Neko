@@ -11,9 +11,9 @@ class Exports:
     """
     def __init__(self, network):
         net = network.copy()
-        net.convert_edgelist_into_genesymbol()
+        df_edges = net.convert_edgelist_into_genesymbol()
         self.nodes = net.nodes
-        self.interactions = net.edges
+        self.interactions = df_edges
         return
 
     def export_bnet(self, file_name="logic_model.bnet"):

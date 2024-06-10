@@ -291,6 +291,10 @@ class Network:
         else:
             new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
 
+        if not self.check_node_existence(uniprot):
+            print("Error: node %s is not present in the resources database" % node)
+            return
+
         self.nodes.loc[len(self.nodes)] = new_entry
         self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
         return

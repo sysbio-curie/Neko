@@ -1,6 +1,6 @@
 from graphviz import Digraph
 from IPython.display import display
-
+from yfiles_jupyter_graphs import GraphWidget
 
 def wrap_node_name(node_name):
     if ":" in node_name:
@@ -23,7 +23,6 @@ class NetworkVisualizer:
             'inhibition': 'red',
             'form complex': 'blue',
             'undefined': 'gray',  # Adding the mapping for "undefined" effect
-            'bimodal': 'darkorange',  # Adding the mapping for "bimodal" effect
             # Add more custom mappings if needed
         }
         self.node_colors = {}  # Dictionary to store custom node colors
@@ -66,10 +65,6 @@ class NetworkVisualizer:
             elif effect == 'form complex':
                 arrowhead = 'dot'
                 color = 'blue'
-                dir = 'forward'
-            elif effect == 'bimodal':
-                arrowhead = 'box'
-                color = 'darkorange'
                 dir = 'forward'
             else:
                 arrowhead = 'normal'  # Default arrow
@@ -114,3 +109,121 @@ class NetworkVisualizer:
         else:
             self.graph.render(filename=output_file)
             display(self.graph)  # Display the graph directly in the Jupyter Notebook
+    
+    def yfiles_visual(
+     #       self,
+            network,
+            graph_layout,
+            directed,
+        ):
+        # creating empty object for visualization
+        w = GraphWidget()
+
+        objects = []
+        for idx, item in network.nodes.iterrows():
+            obj = {
+                "id" : network.nodes["Uniprot"].loc[idx],
+                "properties" : {"label": network.nodes["Genesymbol"].loc[idx]},
+                "color":"#ffffff",
+                "styles":{"backgroundColor":"#ffffff"}
+                }
+            objects.append(obj)
+        w.nodes=objects
+
+        # filling w with edges
+        objects= []
+        for index, row in network.edges.iterrows():
+            obj={
+            "id":network.edges["Effect"].loc[index],
+            "start" : network.edges["source"].loc[index],
+            "end" : network.edges["target"].loc[index],
+            "properties":{"references":network.edges["References"].loc[index]}}
+            objects.append(obj)
+        w.edges=objects
+
+        def custom_edge_color_mapping(edge: 'Dict'):
+            """let the edge be purple if the starting node has an even index"""
+            return ("#ff0066" if edge['id']  == "inhibition" else "#00cc00")
+        w.set_edge_color_mapping(custom_edge_color_mapping)
+
+
+        def custom_label_styles_mapping(node: 'Dict'):
+            """let the label be the negated purple big index"""
+            return {
+                'backgroundColor': '#ffffff', 
+                'color': '#ffffff', 
+                'shape':'round-rectangle'
+            }
+        w.set_node_styles_mapping(custom_label_styles_mapping)
+
+        w.directed=directed
+        w.graph_layout=graph_layout
+
+        w.show()
+
+    def vis_comparison(
+            int_comparison,
+            node_comparison,
+            graph_layout,
+            directed,
+        ):
+        # creating empty object for visualization
+        w = GraphWidget()
+
+        objects = []
+        for idx, item in node_comparison.iterrows():
+            obj = {
+                "id" : node_comparison["node"].loc[idx],
+                "properties" : {"label": node_comparison["node"].loc[idx],
+                               "comparison": node_comparison["comparison"].loc[idx],},
+           #     "color":"#ffffff",
+         #       "styles":{"backgroundColor":"#ffffff"}
+                }
+            objects.append(obj)
+        w.nodes=objects
+
+        # filling w with edges
+        objects= []
+        for index, row in int_comparison.iterrows():
+            obj={
+            "id":int_comparison["comparison"].loc[index],
+            "start" : int_comparison["source"].loc[index],
+            "end" : int_comparison["target"].loc[index]
+                }
+            objects.append(obj)
+        w.edges=objects
+    
+        def custom_node_color_mapping(node: 'Dict'):
+            if node['properties']['comparison'] == "Unique to Network 1":
+                return "#ff0066"
+            elif node['properties']['comparison'] == "Unique to Network 2":
+                return "#00cc00"
+            elif node['properties']['comparison'] == "Common":
+                return "#0000ff"
+        w.set_node_styles_mapping(custom_node_color_mapping)
+    
+        def custom_edge_color_mapping(edge: 'Dict'):
+            if edge['id'] == "Unique to Network 1":
+                return "#ff0066"
+            elif edge['id'] == "Unique to Network 2":
+                return "#00cc00"
+            elif edge['id'] == "Common":
+                return "#0000ff"
+            elif edge['id'] == "Conflicting":
+                return "#ffcc00"    
+        w.set_edge_color_mapping(custom_edge_color_mapping)
+
+
+        def custom_label_styles_mapping(node: 'Dict'):
+            return {
+                'backgroundColor': '#ffffff', 
+                'color': '#ffffff', 
+                'shape':'round-rectangle'
+            }
+        w.set_node_styles_mapping(custom_label_styles_mapping)
+        w.directed=directed
+        w.graph_layout=graph_layout
+
+        w.show()    
+
+

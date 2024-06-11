@@ -222,7 +222,9 @@ class Network:
             self.drop_missing_nodes()
             self.nodes.reset_index(drop=True)
         elif sif_file:
+            self.initial_nodes = []
             self.load_network_from_sif(sif_file)
+
 
     def copy(self):
         new_instance = copy.deepcopy(self)
@@ -271,7 +273,7 @@ class Network:
                 ", ".join(missing_nodes))
         return
 
-    def add_node(self, node: str):
+    def add_node(self, node: str, from_sif: bool = False):
         """
         Adds a node to the network. The node is added to the nodes DataFrame of the network. The function checks the syntax
         for the genesymbol to ensure it is correct. If the node is a complex, it is added with the 'Genesymbol' as the complex
@@ -284,6 +286,25 @@ class Network:
         Returns:
         None. The function modifies the network object in-place by adding the node to the nodes DataFrame.
         """
+
+        if from_sif:
+            #check that the new entry node can be translated using the function mapping node identifier (all the output of the function should be None)
+            #if it cannot be translated, print an error message but add the node to the network anyway
+
+            complex_string, genesymbol, uniprot = mapping_node_identifier(node)
+            if not complex_string and not genesymbol and not uniprot:
+                print("Error: node %s could not be automatically translated" % node)
+                new_entry = {"Genesymbol": node, "Uniprot": node, "Type": "NaN"}
+                self.nodes.loc[len(self.nodes)] = new_entry
+                self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
+
+            new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
+            self.nodes.loc[len(self.nodes)] = new_entry
+            self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
+            self.initial_nodes.append(new_entry["Genesymbol"])
+            self.initial_nodes = list(set(self.initial_nodes))
+            return
+
         complex_string, genesymbol, uniprot = mapping_node_identifier(node)
 
         if complex_string:
@@ -486,10 +507,9 @@ class Network:
                 "inhibit": "inhibition",
                 "block": "inhibition",
                 "inhibition": "inhibition",
-                "form complex": "form complex",
                 "form_complex": "form complex",
                 "form-complex": "form complex",
-                "complex formation": "form complex"
+                "complex_formation": "form complex"
             }
             return effect_types.get(interaction_type, "undefined")
 
@@ -517,9 +537,9 @@ class Network:
         self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
 
         # Update the nodes list
-        self.initial_nodes = list(node_set)
-        for node in self.initial_nodes:
-            self.add_node(node)
+        nodes = list(node_set)
+        for node in nodes:
+            self.add_node(node, from_sif=True)
 
         return
 

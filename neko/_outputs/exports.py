@@ -84,6 +84,9 @@ class Exports:
                 # Use the Effect column directly assuming it contains "activate" or "inhibit"
                 interaction_type = row['Effect']
 
+                if interaction_type == "form complex":
+                    interaction_type = "form_complex"
+
                 # Reference for the interaction
                 interaction_reference = row['References']  # Adjust column name if necessary
 

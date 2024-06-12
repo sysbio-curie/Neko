@@ -378,6 +378,16 @@ class Network:
         if not edge["target"].values[0] in self.nodes["Uniprot"].unique():
             self.add_node(edge["target"].values[0])
 
+        # if in the edge dataframe there is an edge with the same source, target and effect, merge the references
+        if not self.edges[(self.edges["source"] == edge["source"].values[0]) &
+                          (self.edges["target"] == edge["target"].values[0]) &
+                          (self.edges["Effect"] == effect)].empty:
+            self.edges.loc[(self.edges["source"] == edge["source"].values[0]) &
+                           (self.edges["target"] == edge["target"].values[0]) &
+                           (self.edges["Effect"] == effect), "References"] = self.edges.loc[(self.edges["source"] == edge["source"].values[0]) & (self.edges["target"] == edge["target"].values[0]) & (self.edges["Effect"] == effect), "References"] + "; " + str(references)
+            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+            return
+
         # Concatenate the new edge DataFrame with the existing edges in the graph
         self.edges = pd.concat([self.edges, df_edge])
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
@@ -406,6 +416,65 @@ class Network:
             self.edges = self.edges[~((self.edges["source"] == node1) & (self.edges["target"] == node2))]
         else:
             print("Warning: The edge does not exist in the network, check syntax for ", mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+        return
+
+    def remove_disconnected_nodes(self):
+        """
+        This function removes nodes from the network that are not connected to any other nodes.
+
+        Returns:
+        None. The function modifies the network object in-place by removing the disconnected nodes from the nodes DataFrame.
+        """
+        # Get the list of nodes that are not connected to any other nodes
+        disconnected_nodes = self.nodes[~self.nodes["Uniprot"].isin(self.edges["source"]) &
+                                        ~self.nodes["Uniprot"].isin(self.edges["target"])]
+
+        # Remove the disconnected nodes from the nodes DataFrame
+        self.nodes = self.nodes[~self.nodes["Uniprot"].isin(disconnected_nodes["Uniprot"])]
+
+        return
+
+    def modify_node_name(self, old_name: str, new_name: str, type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'):
+        """
+        This function modifies the name of a node in the network. It takes the old name of the node and the new name
+        as input and modifies the name of the node in the nodes and in the edges DataFrame. If type is set to 'Genesymbol',
+        it modifies the genesymbol name of the node in the nodes DataFrame. If type is set to 'Uniprot', it modifies the
+         uniprot name of the node in the edges DataFrame. If type is set to 'both', it modifies both the genesymbol and
+            uniprot names of the node in the nodes and edges DataFrame.
+
+
+        Parameters:
+        - old_name: A string representing the old name of the node.
+        - new_name: A string representing the new name of the node.
+        - type: A string indicating the type of name to be modified. It can be 'Genesymbol', 'Uniprot', or 'both'. Default is 'Genesymbol'.
+
+        Returns:
+        None. The function modifies the network object in-place by changing the name of the node in the nodes DataFrame.
+        """
+
+        if type == 'Genesymbol':
+            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
+        elif type == 'Uniprot':
+            self.nodes.loc[self.nodes["Uniprot"] == old_name, "Uniprot"] = new_name
+            # Update the source and target columns in the edges DataFrame
+            self.edges.loc[self.edges["source"] == old_name, "source"] = new_name
+            self.edges.loc[self.edges["target"] == old_name, "target"] = new_name
+        elif type == 'both':
+            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
+            # check if it is possible to translate the genesymbol to uniprot
+            try:
+                new_name_uniprot = mapping_node_identifier(new_name)[2]
+                old_name_uniprot = mapping_node_identifier(old_name)[2]
+            except:
+                new_name_uniprot = new_name
+                old_name_uniprot = old_name
+            self.nodes.loc[self.nodes["Uniprot"] == old_name_uniprot, "Uniprot"] = new_name_uniprot
+            # Update the source and target columns in the edges DataFrame
+            self.edges.loc[self.edges["source"] == old_name_uniprot, "source"] = new_name_uniprot
+            self.edges.loc[self.edges["target"] == old_name_uniprot, "target"] = new_name_uniprot
+        else:
+            print("Error: Invalid type. Please choose 'Genesymbol', 'Uniprot', or 'both'.")
+
         return
 
     def print_my_paths(self, node1: str, node2: str, maxlen: int = 2, genesymbol: bool = True):

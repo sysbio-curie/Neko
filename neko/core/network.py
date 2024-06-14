@@ -965,9 +965,6 @@ class Network:
         None. The function modifies the network object in-place.
 
         """
-        # Print the components for debugging purposes
-        print(comp_A)
-        print(comp_B)
 
         # Create a Connections object for the resources
         connect = Connections(self.resources)
@@ -1148,8 +1145,65 @@ class Network:
                 self.edges = self.edges.append(new_edge, ignore_index=True)
         return
 
+    def connect_network_radially(self, max_len: int = 1, loops: bool = False, consensus: bool = False) -> None:
+        """
+                This method attempts to connect all nodes of a network object in a topological manner. It iteratively connects
+                upstream nodes and checks if the network is connected. If not, it increases the search depth and repeats the process.
+                It also removes any nodes that do not have a source in the edge dataframe and are not in the output nodes.
+
+                Parameters:
+                - outputs: A list of output nodes to be connected.
+
+                Returns:
+                None. The function modifies the network object in-place.
+            """
+
+        # new algorithm to complete network using topological approach
+        # Create a Connections object for the resources
+        connect = Connections(self.resources)
+        initial_nodes = self.initial_nodes
+        initial_nodes = [mapping_node_identifier(i)[2] for i in initial_nodes]
+        i = 0
+        new_nodes = []
+        while i < max_len:
+            if i == 0:
+                source_nodes = initial_nodes
+            else:
+                source_nodes = new_nodes
+
+            new_nodes = []
+            for source in source_nodes:
+                neighs = connect.find_neighbours(source)
+                if source in neighs and not loops:
+                    neighs.remove(source)
+                for node in neighs:
+                    path = [(source, node)]
+                    self.add_paths_to_edge_list(self.filter_unsigned_paths(path, consensus))  # this is not correct,
+                    # to verify and change
+                new_nodes += neighs
+            i = i + 1
+
+        # now I create a list storing all those nodes in my network that do not have a target in the edge dataframe
+        disconnected_nodes = self.nodes[~self.nodes["Uniprot"].isin(self.edges["source"])]
+        # from this list I remove all the nodes that are int the initial nodes list
+        disconnected_nodes = disconnected_nodes[~disconnected_nodes["Uniprot"].isin(initial_nodes)]
+        # now I iteratively remove those nodes from the network, and at the end of this loop I will check if there
+        # are  other nodes withouth a target in the edge dataframe
+        while len(disconnected_nodes) > 0:
+            for node in disconnected_nodes["Uniprot"]:
+                self.remove_node(node)
+            disconnected_nodes = self.nodes[~self.nodes["Uniprot"].isin(self.edges["source"])]
+            disconnected_nodes = disconnected_nodes[~disconnected_nodes["Uniprot"].isin(initial_nodes)]
+
+        return
+
+
     def connect_as_atopo(self,
-                         outputs: list[str],
+                         strategy: Literal['radial', 'complete', None] = None,
+                         max_len: int = 1,
+                         loops: bool = False,
+                         outputs=None,
+                         consensus: bool = False
                          ) -> None:
         """
             This method attempts to connect all nodes of a network object in a topological manner. It iteratively connects
@@ -1162,9 +1216,17 @@ class Network:
             Returns:
             None. The function modifies the network object in-place.
         """
-        # Complete the connection with minimal=True, only_signed=True, consensus=False, and connect_node_when_first_introduced=False
-        self.complete_connection(minimal=True, only_signed=True, consensus=False,
-                                 connect_node_when_first_introduced=False)
+
+        if outputs is None:
+            outputs = []
+
+        # Chose the strategy to use to connect the network
+        if strategy == 'radial':
+            self.connect_network_radially(max_len, loops)
+        elif strategy == 'complete':
+            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=True, consensus=False, connect_node_when_first_introduced=False)
+        else:
+            pass
 
         # Add output nodes to the network
         for node in outputs:
@@ -1181,9 +1243,10 @@ class Network:
 
         # While the network is not connected, connect to upstream nodes and increase depth
         while not self.is_connected():
-            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=1, only_signed=True, consensus=True)
-            new_nodes = set(self.nodes["Uniprot"].tolist()) - starting_nodes
-            self.connect_nodes(only_signed=True, consensus_only=True)
+            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=1, only_signed=True, consensus=consensus)
+            new_nodes = set(self.nodes["Uniprot"].tolist()) | starting_nodes
+            new_nodes = new_nodes | set(outputs_uniprot)
+            self.connect_component(list(new_nodes), list(starting_nodes), mode="IN", maxlen=1, only_signed=True, consensus=consensus)
 
             # Remove nodes that do not have a source in the edge dataframe
             for node in new_nodes:

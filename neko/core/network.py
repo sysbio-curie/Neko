@@ -9,7 +9,7 @@ import pandas as pd
 from pypath.utils import mapping
 import omnipath as op
 
-from .._inputs._universe import Universe
+from ..inputs._universe import Universe
 from .._methods.enrichment_methods import Connections
 from .._annotations import go
 import _networkbase as _nbase

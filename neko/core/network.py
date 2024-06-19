@@ -64,7 +64,7 @@ class Network(_nbase.NetworkBase):
 
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
-        self.initial_nodes = initial_nodes
+        self.noi = Noi(noi, groups, id_type, entity_type, organism)
         self.ontology = None
         if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
             self.resources = resources
@@ -283,8 +283,7 @@ class Network(_nbase.NetworkBase):
 
         return
 
-    @classmethod
-    def from_sif(cls, path: str):
+    def from_sif(self, sif_file: str):
         """
         Load a network object from a SIF (Simple Interaction Format) file.
 
@@ -311,7 +310,7 @@ class Network(_nbase.NetworkBase):
                 "1": "stimulation",
                 "activate": "stimulation",
                 "stimulate": "stimulation",
-                "phosphorilate": "stimulation",
+                "phosphorylate": "stimulation",
                 "stimulation": "stimulation",
                 "->": "stimulation",
                 "-|": "inhibition",
@@ -324,7 +323,7 @@ class Network(_nbase.NetworkBase):
                 "form-complex": "form complex",
                 "complex formation": "form complex"
             }
-            return effect_types.get(interaction_type, "undefined")
+            return effect_types.get(str(interaction_type).lower(), "undefined")
 
         with open(sif_file, "r") as f:
             for line in f:
@@ -349,15 +348,10 @@ class Network(_nbase.NetworkBase):
 
         # Create or update the edges DataFrame
         df_edge = pd.DataFrame(interactions)
+        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+        self.noi = Noi(node_set, )
 
-        new = cls()
-        new.edges = pd.concat([self.edges, df_edge], ignore_index=True)
-        new.initial_nodes = list(node_set)
-        for node in new.initial_nodes:
-            new.add_node(node)
-
-        return new
-
+        return
 
     def is_connected(self) -> bool:
         """

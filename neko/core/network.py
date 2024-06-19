@@ -10,8 +10,8 @@ from pypath.utils import mapping
 import omnipath as op
 
 from ..inputs._universe import Universe
-from .._methods.enrichment_methods import Connections
-from .._annotations import go
+from ..methods.enrichment_methods import Connections
+from ..annotations import go
 import _networkbase as _nbase
 
 

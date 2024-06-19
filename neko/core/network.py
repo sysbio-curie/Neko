@@ -10,6 +10,7 @@ from pypath.utils import mapping
 import omnipath as op
 
 from ..inputs._universe import Universe
+import ..inputs._misc as _inputs_misc
 from .noi import Node, Noi
 from ..methods.enrichment_methods import Connections
 from ..annotations import go
@@ -62,9 +63,10 @@ class Network(_nbase.NetworkBase):
                 provided, we will try to guess.
         """
 
-        self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
-        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
-        self.noi = Noi(noi, groups, id_type, entity_type, organism)
+        self._init_args = locals()
+        self._init_args.pop('self')
+        self._setup()
+
         self.ontology = None
         if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
             self.resources = resources
@@ -85,6 +87,72 @@ class Network(_nbase.NetworkBase):
         return new_instance
 
 
+    def _setup(self):
+
+        locals().update(self._init_args)
+        self._empty()
+
+        if isinstance(noi, str) and os.path.exists(noi):
+
+            self._from_sif()
+
+        else:
+
+            self.noi = Noi(noi, groups, id_type, entity_type, organism)
+
+    def _empty(self):
+
+        self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
+        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
+
+
+    def _from_sif(self, sif_file: str):
+        """
+        Load a network object from a SIF (Simple Interaction Format) file.
+
+        Parameters:
+        - sif_file: A string representing the path to the SIF file.
+
+        Returns:
+        None. The function modifies the network object in-place.
+        """
+        interactions = []
+        node_set = set()
+
+        locals().update(self._init_args)
+
+        with open(sif_file, "r") as f:
+            for line in f:
+                if line.startswith('#'):  # Skip comment lines
+                    continue
+                interaction = line.strip().split()
+                if len(interaction) < 3:
+                    continue  # Skip malformed lines
+
+                effect = _inputs_misc.effect(interaction[1])
+
+                interactions.append({
+                    "source": translate_id(interaction[0])[2] if check_gene_list_format(
+                        [interaction[0]]) else interaction[0],
+                    "target": translate_id(interaction[2])[2] if check_gene_list_format(
+                        [interaction[2]]) else interaction[2],
+                    "Type": interaction[3] if len(interaction) > 3 else None,
+                    "Effect": effect,
+                    "References": "SIF file"
+                })
+                node_set.update([interaction[0], interaction[2]])
+
+        # Create or update the edges DataFrame
+        df_edge = pd.DataFrame(interactions)
+        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+        self.noi = Noi(
+            node_set,
+            id_type = id_type,
+            organism = organism,
+            entity_type = entity_type,
+        )
+
+
     def check_nodes(self, nodes: list[str]) -> list[str]:
         """
         This function checks if the nodes exist in the resources database and returns the nodes that are present.
@@ -93,7 +161,6 @@ class Network(_nbase.NetworkBase):
         - nodes: A list of node identifiers (strings). These are the nodes to be checked.
 
         Returns:
-        - A list of node identifiers (strings) that exist in the resources database. If a node from the input list does not exist in the resources database, it is not included in the output list.
 
         The function works by iterating over the input list of nodes. For each node, it checks if the node exists in the 'source' or 'target' columns of the resources database. If the node exists, it is added to the output list.
         """
@@ -280,76 +347,6 @@ class Network(_nbase.NetworkBase):
         # Print all the paths
         for path in paths:
             print(path)
-
-        return
-
-    def from_sif(self, sif_file: str):
-        """
-        Load a network object from a SIF (Simple Interaction Format) file.
-
-        Parameters:
-        - sif_file: A string representing the path to the SIF file.
-
-        Returns:
-        None. The function modifies the network object in-place.
-        """
-        interactions = []
-        node_set = set()
-
-        def determine_effect(interaction_type):
-            """
-            Determine the effect based on the interaction type.
-
-            Parameters:
-            - interaction_type: A string representing the type of interaction.
-
-            Returns:
-            - A string representing the effect of the interaction. If the interaction type is not recognized, it returns "undefined".
-            """
-            effect_types = {
-                "1": "stimulation",
-                "activate": "stimulation",
-                "stimulate": "stimulation",
-                "phosphorylate": "stimulation",
-                "stimulation": "stimulation",
-                "->": "stimulation",
-                "-|": "inhibition",
-                "-1": "inhibition",
-                "inhibit": "inhibition",
-                "block": "inhibition",
-                "inhibition": "inhibition",
-                "form complex": "form complex",
-                "form_complex": "form complex",
-                "form-complex": "form complex",
-                "complex formation": "form complex"
-            }
-            return effect_types.get(str(interaction_type).lower(), "undefined")
-
-        with open(sif_file, "r") as f:
-            for line in f:
-                if line.startswith('#'):  # Skip comment lines
-                    continue
-                interaction = line.strip().split()
-                if len(interaction) < 3:
-                    continue  # Skip malformed lines
-
-                effect = determine_effect(interaction[1])
-
-                interactions.append({
-                    "source": translate_id(interaction[0])[2] if check_gene_list_format(
-                        [interaction[0]]) else interaction[0],
-                    "target": translate_id(interaction[2])[2] if check_gene_list_format(
-                        [interaction[2]]) else interaction[2],
-                    "Type": interaction[3] if len(interaction) > 3 else None,
-                    "Effect": effect,
-                    "References": "SIF file"
-                })
-                node_set.update([interaction[0], interaction[2]])
-
-        # Create or update the edges DataFrame
-        df_edge = pd.DataFrame(interactions)
-        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
-        self.noi = Noi(node_set, )
 
         return
 

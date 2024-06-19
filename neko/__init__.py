@@ -25,3 +25,4 @@ __all__ = [
 from ._metadata import __author__, __version__
 from . import data
 from . import inputs
+from .core import Node, Noi

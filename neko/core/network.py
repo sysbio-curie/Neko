@@ -10,6 +10,7 @@ from pypath.utils import mapping
 import omnipath as op
 
 from ..inputs._universe import Universe
+from .noi import Node, Noi
 from ..methods.enrichment_methods import Connections
 from ..annotations import go
 import _networkbase as _nbase
@@ -19,10 +20,48 @@ class Network(_nbase.NetworkBase):
 
     def __init__(
             self,
-            initial_nodes: list[str] = None,
-            sif_file=None,
-            resources=None
+            noi: Noi | list[str] | list[list[str]] | dict[str, list[str]],
+            universe: Universe | str | None = None,
+            organism: int | str | None = 'human',
+            groups: list[str] | dict[str, str] | None = None,
+            id_type: str | None = None,
+            entity_type: str | None = None,
     ):
+        """
+        A molecular interaction network.
+
+        The `Network` object is the central organizing component of the `neko`
+        module. It is the subject of all operations implemented here, including
+        topological algorithms, graph analysis, network visualization and
+        integration of database knowledge.
+
+        Args:
+            noi:
+                Nodes of interest. It can be either a single molecule ID, a set
+                of molecule IDs or multiple sets (groups), or an initial network
+                which contains molecules and relationships. In the latter case,
+                you can provide a `Network` object or path to a `sif` file.
+            universe:
+                The database of network interactions that we use to look up
+                paths in the process of network construction. Bultin databases
+                can be referenced with simple labels, the default is
+                "omnipath", which represents the core curated signaling network
+                from the OmniPath database.
+            organism:
+                Name or NCBI Taxonomy ID of an organism. The `noi` is assumed
+                to contain identifiers of this organism, while the `universe`
+                will be queried or translated to this organism.
+            groups:
+                Groups within nodes of interest (e.g. perturbed vs. measured,
+                or condition specific, etc).
+            id_type:
+                Provide the ID type of `noi` explicitely. Without it, we will
+                try to guess.
+            entity_type:
+                Provide the type of molecular entities in `noi`. If not
+                provided, we will try to guess.
+        """
+
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes

@@ -39,6 +39,7 @@ pycurl = "*"
 graphviz = "*"
 pandas = "*"
 pypath-common = "^0.2.0"
+networkcommons = {git = "https://github.com/saezlab/networkcommons", rev = "dev"}
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"

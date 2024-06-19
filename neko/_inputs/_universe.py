@@ -178,6 +178,10 @@ class Universe:
 
         self.interactions = None
 
+        if not resources:
+
+            return
+
         for res in resources:
             df = self._resources[res]
             self.interactions = (

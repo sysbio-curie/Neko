@@ -9,39 +9,13 @@ import pandas as pd
 from pypath.utils import mapping
 import omnipath as op
 
-from .._inputs._db.omnipath import Resources
+from .._inputs._universe import Universe
 from .._methods.enrichment_methods import Connections
 from .._annotations import go
 import _networkbase as _nbase
 
 
 class Network(_nbase.NetworkBase):
-    """
-    The Network class is the main class of the Omniflow package. It is designed to store nodes and edges of a network and offers various methods for enrichment analysis. The class takes a list of nodes as the main argument and a series of optional filters and other options such as inputs/outputs, specific tissues, type of interactions, prune inputs/outputs, etc.
-
-    Attributes:
-        nodes (pd.DataFrame): A DataFrame storing the nodes in the network.
-        edges (pd.DataFrame): A DataFrame storing the edges (interactions) in the network.
-        initial_nodes (list): A list storing the initial list of nodes.
-        resources (pd.DataFrame): A DataFrame storing the interactions from the Omnipath database.
-        ontology (Ontology): An instance of the Ontology class.
-
-    Methods:
-        copy(): Returns a deep copy of the Network instance.
-        add_node(node: str): Adds a node to the network.
-        remove_node(node: str): Removes a node from the network.
-        add_edge(edge: pd.DataFrame): Adds an edge to the network.
-        load_network_from_sif(sif_file): Loads a network from a SIF (Simple Interaction Format) file.
-        add_paths_to_edge_list(paths): Adds paths to the edge list of the network.
-        connect_nodes(only_signed: bool = False, consensus_only: bool = False): Connects all the nodes in the network.
-        is_connected(): Checks if all the nodes in the network are connected.
-        filter_unsigned_paths(paths: list[tuple], consensus: bool): Filters out unsigned paths from the provided list of paths.
-        connect_subgroup(group: (str | pd.DataFrame | list[str]), maxlen: int = 1, only_signed: bool = False, consensus: bool = False): Connects all the nodes in a particular subgroup.
-        complete_connection(maxlen: int = 2, minimal: bool = True, k_mean: Literal['tight', 'extensive'] = 'tight', only_signed: bool = False, consensus: bool = False, connect_node_when_first_introduced: bool = True): Connects all nodes of a network object.
-        connect_component(comp_A: (str | pd.DataFrame | list[str]), comp_B: (str | pd.DataFrame | list[str]), maxlen: int = 2, mode: str = 'OUT', only_signed: bool = False, compress: bool = False): Connects subcomponents of a network object.
-        convert_edgelist_into_genesymbol(): Converts the edge dataframe from uniprot to genesymbol.
-        connect_genes_to_phenotype(phenotype: str = None, id_accession: str = None, sub_genes: list[str] = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False): Connects genes to a phenotype.
-    """
 
     def __init__(
             self,

@@ -100,13 +100,17 @@ class Network(_nbase.NetworkBase):
 
             self.noi = Noi(noi, groups, id_type, entity_type, organism)
 
+        self.universe = Universe(universe, organism)
+        self.nodes_from_noi()
+        # to add filter in the nodes df to remove nodes that are not present in the Universe if a list of nodes is provided
+
     def _empty(self):
 
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
 
 
-    def _from_sif(self, sif_file: str):
+    def _from_sif(self):
         """
         Load a network object from a SIF (Simple Interaction Format) file.
 
@@ -121,7 +125,7 @@ class Network(_nbase.NetworkBase):
 
         locals().update(self._init_args)
 
-        with open(sif_file, "r") as f:
+        with open(noi, "r") as f:
             for line in f:
                 if line.startswith('#'):  # Skip comment lines
                     continue
@@ -145,12 +149,16 @@ class Network(_nbase.NetworkBase):
         # Create or update the edges DataFrame
         df_edge = pd.DataFrame(interactions)
         self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+
         self.noi = Noi(
             node_set,
             id_type = id_type,
             organism = organism,
             entity_type = entity_type,
         )
+    def nodes_from_noi(self):
+
+        self.nodes = pd.DataFrame( [(n.label, n.identifier, n.entity_type) for n in self.noi], columns=["Genesymbol", "Uniprot", "Type"])
 
 
     def check_nodes(self, nodes: list[str]) -> list[str]:

@@ -5,15 +5,28 @@ import omnipath as op
 from itertools import combinations
 import pandas as pd
 from .._inputs.resources import Resources
-from .._methods.enrichment_methods import Connections
+from .._methods.methods_update import Connections
 from typing_extensions import Literal
 from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor
 import copy
 from .._annotations.gene_ontology import Ontology
 
 import pandas as pd
 
+import networkx as nx
 
+def is_connected(network) -> bool:
+    """
+    Return True if all the nodes in the nodes list in the Network object are connected, otherwise it returns False.
+    """
+    # Create a graph from the edges
+    g = nx.from_pandas_edgelist(network.edges, 'source', 'target')
+    # Add isolated nodes to the graph
+    all_nodes = set(network.nodes['Uniprot'])
+    g.add_nodes_from(all_nodes)
+    # Check if the graph is connected
+    return nx.is_connected(g)
 def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
     """
     This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
@@ -211,11 +224,11 @@ class Network:
         self.initial_nodes = initial_nodes
         self.ontology = Ontology()
         if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
-            self.resources = resources
+            self.resources = resources.copy()
         else:
             res = Resources()
             res.load_all_omnipath_interactions()
-            self.resources = res.interactions
+            self.resources = res.interactions.copy()
         if initial_nodes:
             for node in initial_nodes:
                 self.add_node(node)
@@ -225,6 +238,7 @@ class Network:
             self.initial_nodes = []
             self.load_network_from_sif(sif_file)
 
+        self.connect = Connections(self.resources)
 
     def copy(self):
         new_instance = copy.deepcopy(self)
@@ -317,6 +331,7 @@ class Network:
             return
 
         self.nodes.loc[len(self.nodes)] = new_entry
+
         self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
         return
 
@@ -384,7 +399,16 @@ class Network:
                           (self.edges["Effect"] == effect)].empty:
             self.edges.loc[(self.edges["source"] == edge["source"].values[0]) &
                            (self.edges["target"] == edge["target"].values[0]) &
-                           (self.edges["Effect"] == effect), "References"] = self.edges.loc[(self.edges["source"] == edge["source"].values[0]) & (self.edges["target"] == edge["target"].values[0]) & (self.edges["Effect"] == effect), "References"] + "; " + str(references)
+                           (self.edges["Effect"] == effect), "References"] = self.edges.loc[(self.edges["source"] ==
+                                                                                             edge["source"].values[
+                                                                                                 0]) & (self.edges[
+                                                                                                            "target"] ==
+                                                                                                        edge[
+                                                                                                            "target"].values[
+                                                                                                            0]) & (
+                                                                                                    self.edges[
+                                                                                                        "Effect"] == effect), "References"] + "; " + str(
+                references)
             self.edges = self.edges.drop_duplicates().reset_index(drop=True)
             return
 
@@ -415,7 +439,8 @@ class Network:
         if not self.edges[(self.edges["source"] == node1) & (self.edges["target"] == node2)].empty:
             self.edges = self.edges[~((self.edges["source"] == node1) & (self.edges["target"] == node2))]
         else:
-            print("Warning: The edge does not exist in the network, check syntax for ", mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
+            print("Warning: The edge does not exist in the network, check syntax for ",
+                  mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
         return
 
     def remove_disconnected_nodes(self):
@@ -434,7 +459,8 @@ class Network:
 
         return
 
-    def modify_node_name(self, old_name: str, new_name: str, type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'):
+    def modify_node_name(self, old_name: str, new_name: str,
+                         type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'):
         """
         This function modifies the name of a node in the network. It takes the old name of the node and the new name
         as input and modifies the name of the node in the nodes and in the edges DataFrame. If type is set to 'Genesymbol',
@@ -593,8 +619,10 @@ class Network:
                 effect = determine_effect(interaction[1])
 
                 interactions.append({
-                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format([interaction[0]]) else interaction[0],
-                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format([interaction[2]]) else interaction[2],
+                    "source": mapping_node_identifier(interaction[0])[2] if check_gene_list_format(
+                        [interaction[0]]) else interaction[0],
+                    "target": mapping_node_identifier(interaction[2])[2] if check_gene_list_format(
+                        [interaction[2]]) else interaction[2],
                     "Type": interaction[3] if len(interaction) > 3 else None,
                     "Effect": effect,
                     "References": "SIF file"
@@ -630,7 +658,7 @@ class Network:
         # Iterate through the list of paths
         for path in paths:
             # Handle single string or tuple
-            if isinstance(path, (str, tuple)):
+            if isinstance(path, (str)):
                 path = [path]
 
             # Iterate through the nodes in the path
@@ -645,7 +673,9 @@ class Network:
 
                 # If an interaction exists, add it to the edge list of the network
                 if not interaction.empty:
-                    self.add_edge(interaction)
+                    if not ((self.edges['source'] == interaction['source'].values[0]) & (
+                        self.edges['target'] == interaction['target'].values[0])).any():
+                        self.add_edge(interaction)
 
         # Remove duplicate edges from the edge list
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
@@ -754,6 +784,7 @@ class Network:
         Returns:
         - A list of paths where all interactions in each path are signed.
         """
+
         interactions = self.resources
         filtered_paths = []
         for path in paths:
@@ -762,11 +793,12 @@ class Network:
                 if i == len(path) - 1:
                     break
                 interaction = interactions.loc[(interactions["source"] == path[i]) &
-                                                  (interactions["target"] == path[i + 1])]
+                                               (interactions["target"] == path[i + 1])]
                 if not interaction.empty and check_sign(interaction, consensus) == "undefined":
                     is_full_signed = False
             if is_full_signed:
                 filtered_paths.append(path)
+
         return filtered_paths
 
     def check_node_existence(self, node: str) -> bool:
@@ -801,7 +833,7 @@ class Network:
         Returns:
         None. The function modifies the network object in-place.
         """
-        connect = Connections(self.resources)  # here we have the database where we look for the interactions
+
         if not check_gene_list_format(group):
             uniprot_gene_list = group
         else:
@@ -815,11 +847,11 @@ class Network:
                 paths_out = []
                 while i <= maxlen:
                     if not paths_out:
-                        paths_out = connect.find_paths(node1, node2, maxlen=i)
+                        paths_out = self.connect.find_paths(node1, node2, maxlen=i)
                         if only_signed:
                             paths_out = self.filter_unsigned_paths(paths_out, consensus)
                     if not paths_in:
-                        paths_in = connect.find_paths(node2, node1, maxlen=i)
+                        paths_in = self.connect.find_paths(node2, node1, maxlen=i)
                         if only_signed:
                             paths_in = self.filter_unsigned_paths(paths_in, consensus)
                     if not paths_in or not paths_out and i <= maxlen:
@@ -862,9 +894,6 @@ class Network:
         elif k_mean == 'extensive':
             i_search = 4
 
-        # Create a Connections object for the resources
-        connect = Connections(self.resources)
-
         # Copy the nodes
         nodes = self.nodes.copy()
 
@@ -874,7 +903,9 @@ class Network:
         # Iterate through all combinations of nodes
         for node1, node2 in combinations(nodes["Uniprot"], 2):
             if not self.check_node_existence(node1) or not self.check_node_existence(node2):
-                print("Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(node1) else "Error: node %s is not present in the resources database" % node2)
+                print(
+                    "Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(
+                        node1) else "Error: node %s is not present in the resources database" % node2)
                 continue
             i = 0
             # Reset the object connect_network, updating the possible list of paths if minimal is True
@@ -902,7 +933,7 @@ class Network:
                     j = 0
                     # Start a loop to find new paths in the database
                     while not flag and j <= i_search:
-                        paths_in = connect.find_paths(node2, node1, maxlen=j)
+                        paths_in = self.connect.find_paths(node2, node1, maxlen=j)
                         # Filter unsigned paths if only_signed is True
                         if only_signed:
                             paths_in = self.filter_unsigned_paths(paths_in, consensus)
@@ -922,7 +953,7 @@ class Network:
                     flag = False
                     j = 0
                     while not flag and j <= i_search:
-                        paths_out = connect.find_paths(node1, node2, maxlen=j)
+                        paths_out = self.connect.find_paths(node1, node2, maxlen=j)
                         if only_signed:
                             paths_out = self.filter_unsigned_paths(paths_out, consensus)
                         if not paths_out:
@@ -966,19 +997,16 @@ class Network:
 
         """
 
-        # Create a Connections object for the resources
-        connect = Connections(self.resources)
-
         # Determine the search mode and find paths accordingly
         if mode == "IN":
-            paths_in = connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths_in = self.connect.find_paths(comp_B, comp_A, maxlen=maxlen)
             paths = paths_in
         elif mode == "OUT":
-            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths_out = self.connect.find_paths(comp_A, comp_B, maxlen=maxlen)
             paths = paths_out
         elif mode == "ALL":
-            paths_out = connect.find_paths(comp_A, comp_B, maxlen=maxlen)
-            paths_in = connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths_out = self.connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths_in = self.connect.find_paths(comp_B, comp_A, maxlen=maxlen)
             paths = paths_out + paths_in
         else:
             print("The only accepted modes are IN, OUT or ALL, please check the syntax")
@@ -1025,12 +1053,11 @@ class Network:
         None. The function modifies the network object in-place.
         """
         try:
-            # Initialize connections object
-            connect = Connections(self.resources)
             if nodes_to_connect is None:
                 nodes_to_connect = self.nodes["Uniprot"].tolist()
 
-            cascades = connect.find_upstream_cascades(nodes_to_connect, depth, rank)
+            cascades = self.connect.find_upstream_cascades(nodes_to_connect, depth, rank)
+
             if only_signed:
                 cascades = self.filter_unsigned_paths(cascades, consensus)
             self.add_cascade_to_edge_list(cascades)
@@ -1145,58 +1172,73 @@ class Network:
                 self.edges = self.edges.append(new_edge, ignore_index=True)
         return
 
-    def connect_network_radially(self, max_len: int = 1, loops: bool = False, consensus: bool = False) -> None:
-        """
-                This method attempts to connect all nodes of a network object in a topological manner. It iteratively connects
-                upstream nodes and checks if the network is connected. If not, it increases the search depth and repeats the process.
-                It also removes any nodes that do not have a source in the edge dataframe and are not in the output nodes.
+    def connect_network_radially(self, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None,
+                                 loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:
 
-                Parameters:
-                - outputs: A list of output nodes to be connected.
-
-                Returns:
-                None. The function modifies the network object in-place.
-            """
-
-        # new algorithm to complete network using topological approach
-        # Create a Connections object for the resources
-        connect = Connections(self.resources)
         initial_nodes = self.initial_nodes
-        initial_nodes = [mapping_node_identifier(i)[2] for i in initial_nodes]
+        initial_nodes_set = set([mapping_node_identifier(i)[2] for i in initial_nodes])
+
         i = 0
-        new_nodes = []
+        source_nodes = initial_nodes_set
+        target_nodes = initial_nodes_set
+
         while i < max_len:
-            if i == 0:
-                source_nodes = initial_nodes
-            else:
+            new_nodes = []
+            if direction == 'OUT' or direction is None:
+                for source in source_nodes:
+                    target_neighs = self.connect.find_target_neighbours(source)
+                    if source in target_neighs and not loops:
+                        target_neighs.remove(source)
+                    target_paths = [(source, node) for node in target_neighs]
+                    if only_signed:
+                        target_paths = self.filter_unsigned_paths(target_paths, consensus)
+                    self.add_paths_to_edge_list(target_paths)
+                    target_neighs_filtered = [path[1] for path in target_paths]
+                    target_neighs_filtered = [node for node in target_neighs_filtered if node not in initial_nodes_set]
+                    new_nodes.extend(target_neighs_filtered)
                 source_nodes = new_nodes
 
             new_nodes = []
-            for source in source_nodes:
-                neighs = connect.find_neighbours(source)
-                if source in neighs and not loops:
-                    neighs.remove(source)
-                for node in neighs:
-                    path = [(source, node)]
-                    self.add_paths_to_edge_list(self.filter_unsigned_paths(path, consensus))  # this is not correct,
-                    # to verify and change
-                new_nodes += neighs
-            i = i + 1
+            if direction == 'IN' or direction is None:
+                for target in target_nodes:
+                    source_neighs = self.connect.find_source_neighbours(target)
+                    if target in source_neighs and not loops:
+                        source_neighs.remove(target)
+                    source_paths = [(node, target) for node in source_neighs]
+                    if only_signed:
+                        source_paths = self.filter_unsigned_paths(source_paths, consensus)
+                    self.add_paths_to_edge_list(source_paths)
+                    source_neighs_filtered = [path[0] for path in source_paths]
+                    source_neighs_filtered = [node for node in source_neighs_filtered if node not in initial_nodes_set]
+                    new_nodes.extend(source_neighs_filtered)
+                target_nodes = new_nodes
+            i += 1
 
-        # now I create a list storing all those nodes in my network that do not have a target in the edge dataframe
-        disconnected_nodes = self.nodes[~self.nodes["Uniprot"].isin(self.edges["source"])]
-        # from this list I remove all the nodes that are int the initial nodes list
-        disconnected_nodes = disconnected_nodes[~disconnected_nodes["Uniprot"].isin(initial_nodes)]
-        # now I iteratively remove those nodes from the network, and at the end of this loop I will check if there
-        # are  other nodes withouth a target in the edge dataframe
-        while len(disconnected_nodes) > 0:
-            for node in disconnected_nodes["Uniprot"]:
+        # remove all nodes that have no source or that have no target and are not in the initial nodes
+        target_nodes = set(self.edges["target"].unique())
+        source_nodes = set(self.edges["source"].unique())
+
+        disconnected_nodes = self.nodes[
+            ~self.nodes["Uniprot"].isin(initial_nodes_set) & (
+                ~self.nodes["Uniprot"].isin(target_nodes) | ~self.nodes["Uniprot"].isin(source_nodes))]
+
+        # Loop until there are no more disconnected nodes
+        while not disconnected_nodes.empty:
+            # Collect nodes to remove
+            nodes_to_remove = disconnected_nodes["Uniprot"].tolist()
+
+            for node in nodes_to_remove:
                 self.remove_node(node)
-            disconnected_nodes = self.nodes[~self.nodes["Uniprot"].isin(self.edges["source"])]
-            disconnected_nodes = disconnected_nodes[~disconnected_nodes["Uniprot"].isin(initial_nodes)]
+
+            # Recalculate disconnected nodes
+            target_nodes = set(self.edges["target"].unique())
+            source_nodes = set(self.edges["source"].unique())
+
+            disconnected_nodes = self.nodes[
+                ~self.nodes["Uniprot"].isin(initial_nodes_set) & (
+                    ~self.nodes["Uniprot"].isin(target_nodes) | ~self.nodes["Uniprot"].isin(source_nodes))]
 
         return
-
 
     def connect_as_atopo(self,
                          strategy: Literal['radial', 'complete', None] = None,
@@ -1217,16 +1259,23 @@ class Network:
             None. The function modifies the network object in-place.
         """
 
-        if outputs is None:
-            outputs = []
+        initial_nodes = [mapping_node_identifier(i)[2] for i in self.initial_nodes]
+        initial_nodes_set = set(initial_nodes)
 
         # Chose the strategy to use to connect the network
         if strategy == 'radial':
-            self.connect_network_radially(max_len, loops)
+            self.connect_network_radially(max_len, direction=None,
+                                          loops=loops, consensus=consensus, only_signed=True)
         elif strategy == 'complete':
-            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=True, consensus=False, connect_node_when_first_introduced=False)
+            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=True, consensus=consensus,
+                                     connect_node_when_first_introduced=False)
         else:
             pass
+
+        starting_nodes = set(self.nodes["Uniprot"].tolist())
+
+        if outputs is None:
+            return
 
         # Add output nodes to the network
         for node in outputs:
@@ -1235,22 +1284,21 @@ class Network:
         # Convert output nodes to Uniprot identifiers
         outputs_uniprot = [mapping_node_identifier(i)[2] for i in outputs]
 
-        # Create a set of starting nodes
-        starting_nodes = set(self.nodes["Uniprot"].tolist()) | set(outputs_uniprot)
-
         # Initialize depth
         depth = 1
 
-        # While the network is not connected, connect to upstream nodes and increase depth
-        while not self.is_connected():
-            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=1, only_signed=True, consensus=consensus)
-            new_nodes = set(self.nodes["Uniprot"].tolist()) | starting_nodes
-            new_nodes = new_nodes | set(outputs_uniprot)
-            self.connect_component(list(new_nodes), list(starting_nodes), mode="IN", maxlen=1, only_signed=True, consensus=consensus)
+        # While the network is not connected, connect to upstream nodes and first increase the rank and then the depth
+        while not is_connected(self):
+            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=True, consensus=consensus)
+            new_nodes = set(self.nodes["Uniprot"].tolist()) - starting_nodes
+            new_nodes = new_nodes - set(outputs_uniprot)
 
             # Remove nodes that do not have a source in the edge dataframe
             for node in new_nodes:
                 if node not in self.edges["target"].unique():
+                    self.remove_node(node)
+                # remove a node if it auto-regulates itself
+                if not loops and any((self.edges['source'] == node) & (self.edges['target'] == node)):
                     self.remove_node(node)
 
             # If depth reaches 4, stop the process
@@ -1264,21 +1312,24 @@ class Network:
         # Remove duplicate edges
         self.edges.drop_duplicates().reset_index(drop=True)
 
-        # Remove nodes from the network if the node has no source in the edge dataframe and is not in outputs
-        check = True
-        nodes_to_remove = []
-        while check is True:
-            # Check if there are nodes to remove
-            for node in self.nodes["Uniprot"]:
-                if node not in self.edges["target"].unique():
-                    nodes_to_remove.append(node)
+        # Create a set of unique sources from the edges DataFrame
+        target_nodes = set(self.edges["target"].unique())
 
-            # If there are no nodes to remove, stop the process
-            if len(nodes_to_remove) == 0:
-                check = False
-            else:
-                # Remove nodes
-                for node in nodes_to_remove:
-                    self.remove_node(node)
-                nodes_to_remove = []
+        # Identify nodes in the network that are not sources in the edges and not in initial nodes
+        disconnected_nodes = self.nodes[
+            ~self.nodes["Uniprot"].isin(initial_nodes_set) & ~self.nodes["Uniprot"].isin(target_nodes)]
+
+        # Loop until there are no more disconnected nodes
+        while not disconnected_nodes.empty:
+            # Collect nodes to remove
+            nodes_to_remove = disconnected_nodes["Uniprot"].tolist()
+
+            for node in nodes_to_remove:
+                self.remove_node(node)
+
+            # Recalculate disconnected nodes
+            target_nodes = set(self.edges["target"].unique())
+            disconnected_nodes = self.nodes[
+                ~self.nodes["Uniprot"].isin(initial_nodes_set) & ~self.nodes["Uniprot"].isin(target_nodes)]
+
         return

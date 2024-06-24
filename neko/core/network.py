@@ -1245,6 +1245,7 @@ class Network:
                          max_len: int = 1,
                          loops: bool = False,
                          outputs=None,
+                         only_signed: bool = True,
                          consensus: bool = False
                          ) -> None:
         """
@@ -1265,9 +1266,9 @@ class Network:
         # Chose the strategy to use to connect the network
         if strategy == 'radial':
             self.connect_network_radially(max_len, direction=None,
-                                          loops=loops, consensus=consensus, only_signed=True)
+                                          loops=loops, consensus=consensus, only_signed=only_signed)
         elif strategy == 'complete':
-            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=True, consensus=consensus,
+            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=only_signed, consensus=consensus,
                                      connect_node_when_first_introduced=False)
         else:
             pass
@@ -1289,7 +1290,7 @@ class Network:
 
         # While the network is not connected, connect to upstream nodes and first increase the rank and then the depth
         while not is_connected(self):
-            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=True, consensus=consensus)
+            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=only_signed, consensus=consensus)
             new_nodes = set(self.nodes["Uniprot"].tolist()) - starting_nodes
             new_nodes = new_nodes - set(outputs_uniprot)
 

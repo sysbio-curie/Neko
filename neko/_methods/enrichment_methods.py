@@ -1,6 +1,134 @@
-from __future__ import annotations
+from typing import Union, List, Tuple
 import pandas as pd
-from typing_extensions import Literal
+
+
+class Connections:
+    """
+    Class that stores many utility functions to enrich an object Network.
+    Each utility functions should take as input the nodes dataframe, which is used as base for each algorithm, and a
+    database from the inputs modules, which will be used to extend the initial network.
+    """
+
+    def __init__(self, database: pd.DataFrame):
+        self.resources = database.copy()
+        self.target_neighbours_map = self._preprocess_target_neighbours()
+        self.source_neighbours_map = self._preprocess_source_neighbours()
+
+    def _preprocess_target_neighbours(self) -> dict:
+        """
+        Preprocess the targets neighbours map for fast lookup.
+        """
+        df_sources = self.resources.set_index('source')
+        return df_sources.groupby('source')['target'].apply(set).to_dict()
+
+    def _preprocess_source_neighbours(self) -> dict:
+        """
+        Preprocess the sources neighbours map for fast lookup.
+        """
+        df_targets = self.resources.set_index('target')
+        return df_targets.groupby('target')['source'].apply(set).to_dict()
+
+    def find_target_neighbours(self, node: str) -> List[str]:
+        """
+        Optimized helper function that finds the neighbors of the target node.
+        """
+        return list(self.target_neighbours_map.get(node, []))
+
+    def find_source_neighbours(self, node: str) -> List[str]:
+        """
+        Optimized helper function that finds the neighbors of the target node.
+        """
+        return list(self.source_neighbours_map.get(node, []))
+
+    def find_all_neighbours(self, node: str) -> List[str]:
+        """
+        Optimized helper function that finds all neighbors (both source and target) of the target node.
+        """
+        target_neighs = self.find_target_neighbours(node)
+        source_neighs = self.find_source_neighbours(node)
+        return list(set(target_neighs + source_neighs))
+
+    def find_paths(self,
+                   start: Union[str, pd.DataFrame, List[str]],
+                   end: Union[str, pd.DataFrame, List[str], None] = None,
+                   maxlen: int = 2,
+                   minlen: int = 1,
+                   loops: bool = False) -> List[Tuple[str, ...]]:
+        """
+        Find paths or motifs in a network.
+        """
+
+        def convert_to_string_list(start):
+            if isinstance(start, str):
+                return [start]
+            elif isinstance(start, pd.DataFrame):
+                return start['name_of_node'].tolist()
+            elif isinstance(start, list) and all(isinstance(item, str) for item in start):
+                return start
+            else:
+                raise ValueError("Invalid type for 'start' variable")
+
+        def find_all_paths_aux(start, end, path, maxlen):
+            path = path + [start]
+
+            if len(path) >= minlen + 1 and (start == end or (end is None and not loops and len(path) == maxlen + 1) or (
+                loops and path[0] == path[-1])):
+                return [path]
+
+            paths = []
+
+            if len(path) <= maxlen:
+                next_steps = self.find_target_neighbours(start)
+
+                if not loops:
+                    next_steps = list(set(next_steps) - set(path))
+
+                for node in next_steps:
+                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
+
+            return paths
+
+        start_nodes = convert_to_string_list(start)
+        end_nodes = convert_to_string_list(end) if end else [None]
+
+        minlen = max(1, minlen)
+        all_paths = []
+
+        for s in start_nodes:
+            for e in end_nodes:
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
+
+        return all_paths
+
+    def find_upstream_cascades(self,
+                               target_genes: List[str],
+                               max_depth: int = 1,
+                               selected_rank: int = 1) -> List[Tuple[str, str]]:
+        """
+        Find cascades of interactions in the network.
+        Parameters:
+        - target_genes: List of target genes to start the cascade.
+        - max_depth: Maximum depth of the cascade.
+        - selected_rank: Number of top regulators to select for each iteration.
+        Returns:
+        - interactions: List of interactions in the cascade.
+        """
+
+        def collect_for_depth(current_targets, current_depth):
+            if current_depth > max_depth:
+                return []
+
+            mcs_regulators = find_minimal_covering_regulators(self.resources, current_targets, selected_rank)
+
+            interactions = [(reg, target) for reg in mcs_regulators for target in self.target_neighbours_map.get(reg, []) if target in current_targets]  # this is not working
+
+            if current_depth < max_depth:
+                next_targets = list(mcs_regulators)
+                interactions += collect_for_depth(next_targets, current_depth + 1)
+
+            return interactions
+
+        return collect_for_depth(target_genes, 1) # it returns nothing
 
 
 def remove_keys_and_related_values(dictionary: dict, keys_to_remove: list[str]) -> dict:
@@ -23,25 +151,14 @@ def remove_keys_and_related_values(dictionary: dict, keys_to_remove: list[str]) 
     return dictionary
 
 
-def check_dataframe_coverage(df: pd.DataFrame, target_genes: list[str]) -> list[str]:
+def check_dataframe_coverage(df: pd.DataFrame, target_genes: List[str]) -> List[str]:
     """
     Checks the DataFrame for the presence of the specified target genes and returns
     an updated list with those genes that are covered.
-
-    Parameters:
-    - df: pandas DataFrame with at least 'target' column.
-    - target_genes: Iterable of target genes to check for in the DataFrame.
-
-    Returns:
-    - covered_targets: List of target genes that are present in the DataFrame.
     """
-    # Determine which target genes are present in the DataFrame
     present_targets = set(df['target'].unique())
     targets = set(target_genes)
-
-    # Filter out target genes not present in the DataFrame
     covered_targets = list(targets & present_targets)
-
     return covered_targets
 
 
@@ -97,138 +214,3 @@ def find_minimal_covering_regulators(df: pd.DataFrame, target_genes: list[str], 
         regulator_to_targets = remove_keys_and_related_values(regulator_to_targets, keys_with_max_values)
 
     return regulators
-
-
-class Connections:
-    """
-    Class that stores many utility functions to enrich an object Network.
-    Each utility functions should take as input the nodes dataframe, which is used as base for each algorithm, and a
-    database from the inputs modules, which will be used to extend the initial network.
-    """
-
-    def __init__(self, database):
-        self.resources = database
-        return
-
-    def find_neighbours(self,
-                        node: str) -> list[str]:
-        """
-        Optimized helper function that finds the neighbors of the target node.
-        """
-
-        db = self.resources
-
-        neigh = set(db.loc[db["source"] == node]["target"])
-
-        return list(neigh)
-
-    def find_all_neighbours(self,
-                        node: str) -> list[str]:
-        """
-        Optimized helper function that finds the neighbors of the target node.
-        """
-
-        db = self.resources
-
-        neigh_target = set(db.loc[db["source"] == node]["target"])
-        neigh_source = set(db.loc[db["target"] == node]["source"])
-        neigh = neigh_target.union(neigh_source)
-
-        return list(neigh)
-
-    def find_paths(self,
-                   start: (
-                       str | pd.DataFrame | list[str]
-                   ),
-                   end: (
-                       str | pd.DataFrame | list[str] | None
-                   ) = None,
-                   maxlen: int = 2,
-                   minlen: int = 1,
-                   loops: bool = False,
-                   ) -> list[tuple]:
-        """
-        Find paths or motifs in a network.
-        Adapted from pypath function 'find_paths' in Network core class.
-        In future this class will be extended to take into account many other parameters to select those paths that
-        match certain criteria (type of interaction, effect, direction, data model, etc...)
-        For now (version 0.1.0) it will act as skeleton to retrieve interactions from AllInteractions in Omnipath.
-        """
-
-        def convert_to_string_list(start):
-            if isinstance(start, str):
-                return [start]
-            elif isinstance(start, pd.DataFrame):
-                return start['name_of_node'].tolist()
-            elif isinstance(start, list) and all(isinstance(item, str) for item in start):
-                return start
-            else:
-                raise ValueError("Invalid type for 'start' variable")
-
-        def find_all_paths_aux(start, end, path, maxlen):
-            path = path + [start]
-
-            if len(path) >= minlen + 1 and (start == end or (end is None and not loops and len(path) == maxlen + 1) or (
-                loops and path[0] == path[-1])):
-                return [path]
-
-            paths = []
-
-            if len(path) <= maxlen:
-                next_steps = self.find_neighbours(start)
-
-                if not loops:
-                    next_steps = list(set(next_steps) - set(path))
-
-                for node in next_steps:
-                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
-
-            return paths
-
-        start_nodes = convert_to_string_list(start)
-        end_nodes = convert_to_string_list(end) if end else [None]
-
-        minlen = max(1, minlen)
-        all_paths = []
-
-        for s in start_nodes:
-            for e in end_nodes:
-                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
-
-        return all_paths
-
-    def find_upstream_cascades(self,
-                               target_genes: list[str],
-                               max_depth: int = 1,
-                               selected_rank: int = 1) -> list[tuple]:
-
-        """
-        Find cascades of interactions in the network.
-        Parameters:
-        - target_genes: List of target genes to start the cascade.
-        - max_depth: Maximum depth of the cascade.
-        - selected_rank: Number of top regulators to select for each iteration.
-        Returns:
-        - interactions: List of interactions in the cascade.
-        """
-        def collect_for_depth(current_targets, current_depth):
-            # Base case: Exit if maximum depth is exceeded
-            if current_depth > max_depth:
-                return []
-
-            # Find the minimal covering set of regulators for current targets
-            mcs_regulators = find_minimal_covering_regulators(self.resources, current_targets, selected_rank)
-
-            # Collect interactions (source, target) for these regulators
-            interactions = [(reg, target) for reg in mcs_regulators for target in self.resources[self.resources['source'] == reg]['target'] if
-                            target in current_targets]
-
-            # If additional depth is required, treat the regulators just found as the next targets
-            if current_depth < max_depth:
-                next_targets = mcs_regulators  # The regulators themselves become the targets for the next depth
-                interactions += collect_for_depth(next_targets, current_depth + 1)
-
-            return interactions
-
-        # Kick off the recursive process starting with the original genes as targets
-        return collect_for_depth(target_genes, 1)

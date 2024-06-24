@@ -5,7 +5,7 @@ import omnipath as op
 from itertools import combinations
 import pandas as pd
 from .._inputs.resources import Resources
-from .._methods.methods_update import Connections
+from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 from multiprocessing import Pool
 from concurrent.futures import ThreadPoolExecutor

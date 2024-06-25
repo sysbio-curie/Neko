@@ -1,5 +1,6 @@
 from typing import Union, List, Tuple
 import pandas as pd
+from collections import deque
 
 
 class Connections:
@@ -99,6 +100,165 @@ class Connections:
                 all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
 
         return all_paths
+
+    def bfs(self, start: str, end: str) -> list:
+        """
+        Find a path between two nodes using Breadth First Search. Useful to quickly check if two nodes are connected.
+
+        Args:
+            start: The start node.
+            end: The end node.
+
+        Returns:
+            List of nodes representing the path from start to end. If no path exists, returns an empty list.
+        """
+        visited = set()
+        queue = deque([(start, [start])])  # Store the path along with the node
+
+        while queue:
+            node, path = queue.popleft()
+            if node == end:
+                return path
+
+            if node not in visited:
+                visited.add(node)
+                neighbours = self.find_target_neighbours(node)
+                queue.extend((neighbour, path + [neighbour]) for neighbour in neighbours if neighbour not in visited)
+
+        return []
+
+    def find_shortest_path(self,
+                           start: Union[str, pd.DataFrame, List[str]],
+                           end: Union[str, pd.DataFrame, List[str], None] = None,
+                           loops: bool = False,
+                           max_len: int = 6) -> List[Tuple[str, ...]]:
+        """
+        Find (one of) the shortest paths between two nodes in the network. It stops exploring path if it exceeds max_len.
+        Slower than bfs function but ensures the shortest path.
+
+        Args:
+            start:
+            end:
+            loops:
+            max_len: Maximum length of paths to explore.
+
+        Returns:
+
+        """
+
+        def convert_to_string_list(start):
+            if isinstance(start, str):
+                return [start]
+            elif isinstance(start, pd.DataFrame):
+                return start['name_of_node'].tolist()
+            elif isinstance(start, list) and all(isinstance(item, str) for item in start):
+                return start
+            else:
+                raise ValueError("Invalid type for 'start' variable")
+
+        def find_shortest_path_aux(start, end, path):
+            path = path + [start]
+
+            if len(path) > max_len:  # Stop exploring if path length exceeds max_len
+                return None
+
+            if start == end or (end is None and not loops and len(path) > 1 and path[0] == path[-1]):
+                return path
+
+            shortest_path = None
+            next_steps = self.find_target_neighbours(start)
+
+            if not loops:
+                next_steps = list(set(next_steps) - set(path))
+
+            for node in next_steps:
+                newpath = find_shortest_path_aux(node, end, path)
+
+                if newpath:
+                    if not shortest_path or len(newpath) < len(shortest_path):
+                        shortest_path = newpath
+
+            return shortest_path
+
+        start_nodes = convert_to_string_list(start)
+        end_nodes = convert_to_string_list(end) if end else [None]
+        shortest_path = []
+
+        for s in start_nodes:
+            for e in end_nodes:
+                shortest_path = find_shortest_path_aux(s, e, [])
+
+                if shortest_path:
+                    break
+            if shortest_path:
+                break
+
+        return shortest_path
+
+    def find_all_shortest_paths(self,
+                                start: Union[str, pd.DataFrame, List[str]],
+                                end: Union[str, pd.DataFrame, List[str], None] = None,
+                                loops: bool = False,
+                                max_len: int = 6) -> List[Tuple[str, ...]]:
+        """
+        Find all shortest paths between two nodes in the network. It stops exploring path if it exceeds max_len.
+        Slower than find_shortest_path function as it needs to keep track of all shortest paths.
+
+        Args:
+            start:
+            end:
+            loops:
+            max_len: Maximum length of paths to explore.
+
+        Returns:
+            A list of all shortest paths.
+        """
+
+        def convert_to_string_list(start):
+            if isinstance(start, str):
+                return [start]
+            elif isinstance(start, pd.DataFrame):
+                return start['name_of_node'].tolist()
+            elif isinstance(start, list) and all(isinstance(item, str) for item in start):
+                return start
+            else:
+                raise ValueError("Invalid type for 'start' variable")
+
+        def find_all_shortest_paths_aux(start, end, path):
+            path = path + [start]
+
+            if len(path) > max_len:  # Stop exploring if path length exceeds max_len
+                return []
+
+            if start == end or (end is None and not loops and len(path) > 1 and path[0] == path[-1]):
+                return [path]
+
+            shortest_paths = []
+            next_steps = self.find_target_neighbours(start)
+
+            if not loops:
+                next_steps = list(set(next_steps) - set(path))
+
+            for node in next_steps:
+                newpaths = find_all_shortest_paths_aux(node, end, path)
+
+                for newpath in newpaths:
+                    if not shortest_paths or len(newpath) == len(shortest_paths[0]):
+                        shortest_paths.append(newpath)
+                    elif len(newpath) < len(shortest_paths[0]):
+                        shortest_paths = [newpath]
+
+            return shortest_paths
+
+        start_nodes = convert_to_string_list(start)
+        end_nodes = convert_to_string_list(end) if end else [None]
+        all_shortest_paths = []
+
+        for s in start_nodes:
+            for e in end_nodes:
+                all_shortest_paths.extend(find_all_shortest_paths_aux(s, e, []))
+
+        return all_shortest_paths
 
     def find_upstream_cascades(self,
                                target_genes: List[str],

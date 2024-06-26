@@ -390,33 +390,25 @@ class Network:
             "References": references
         })
 
+        # Convert the "Uniprot" column to a set for efficient membership test
+        uniprot_nodes = set(self.nodes["Uniprot"].unique())
+
         # add the new nodes to the nodes dataframe
-        if not edge["source"].values[0] in self.nodes["Uniprot"].unique():
+        if edge["source"].values[0] not in uniprot_nodes:
             self.add_node(edge["source"].values[0])
-        if not edge["target"].values[0] in self.nodes["Uniprot"].unique():
+        if edge["target"].values[0] not in uniprot_nodes:
             self.add_node(edge["target"].values[0])
 
         # if in the edge dataframe there is an edge with the same source, target and effect, merge the references
-        if not self.edges[(self.edges["source"] == edge["source"].values[0]) &
-                          (self.edges["target"] == edge["target"].values[0]) &
-                          (self.edges["Effect"] == effect)].empty:
-            self.edges.loc[(self.edges["source"] == edge["source"].values[0]) &
-                           (self.edges["target"] == edge["target"].values[0]) &
-                           (self.edges["Effect"] == effect), "References"] = self.edges.loc[(self.edges["source"] ==
-                                                                                             edge["source"].values[
-                                                                                                 0]) & (self.edges[
-                                                                                                            "target"] ==
-                                                                                                        edge[
-                                                                                                            "target"].values[
-                                                                                                            0]) & (
-                                                                                                self.edges[
-                                                                                                    "Effect"] == effect), "References"] + "; " + str(
-                references)
-            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
-            return
+        existing_edge = self.edges[(self.edges["source"] == edge["source"].values[0]) &
+                                   (self.edges["target"] == edge["target"].values[0]) &
+                                   (self.edges["Effect"] == effect)]
+        if not existing_edge.empty:
+            self.edges.loc[existing_edge.index, "References"] += "; " + str(references)
+        else:
+            # Concatenate the new edge DataFrame with the existing edges in the graph
+            self.edges = pd.concat([self.edges, df_edge])
 
-        # Concatenate the new edge DataFrame with the existing edges in the graph
-        self.edges = pd.concat([self.edges, df_edge])
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
 
@@ -791,6 +783,8 @@ class Network:
         interactions = self.resources
         filtered_paths = []
         for path in paths:
+            if isinstance(path, (str)):
+                path = [path]
             is_full_signed = True
             for i in range(0, len(path)):
                 if i == len(path) - 1:
@@ -799,6 +793,7 @@ class Network:
                                                (interactions["target"] == path[i + 1])]
                 if not interaction.empty and check_sign(interaction, consensus) == "undefined":
                     is_full_signed = False
+                    break
             if is_full_signed:
                 filtered_paths.append(path)
 
@@ -1000,12 +995,12 @@ class Network:
                         paths_in = self.filter_unsigned_paths(paths_in, consensus)
                     if paths_in:
                         self.add_paths_to_edge_list(paths_in)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
                         break
                     else:
                         i += 1
-            if connect_node_when_first_introduced:
-                self.connect_nodes(only_signed, consensus)
-                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
             if not paths_out:
                 i = 0
@@ -1015,12 +1010,167 @@ class Network:
                         paths_out = self.filter_unsigned_paths(paths_out, consensus)
                     if paths_out:
                         self.add_paths_to_edge_list(paths_out)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
                         break
                     else:
                         i += 1
-            if connect_node_when_first_introduced:
-                self.connect_nodes(only_signed, consensus)
-                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+
+        # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
+        if not connect_node_when_first_introduced:
+            self.connect_nodes(only_signed, consensus)
+            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        return
+
+    def complete_connectionv5(self,
+                              maxlen: int = 2,
+                              minimal: bool = True,
+                              only_signed: bool = False,
+                              consensus: bool = False,
+                              connect_node_when_first_introduced: bool = True):
+        """
+        This function attempts to connect all nodes of a network object using one of the methods presented in the Connection
+        object. This is a core characteristic of this package and the user should have the possibility to choose different
+        methods to enrich its Network object.
+
+        Parameters:
+        - maxlen: The maximum length of the paths to be searched for. Default is 2.
+        - minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list of
+          paths. Default is True.
+        - k_mean: The search mode, which can be 'tight' or 'extensive'. Default is 'tight'.
+        - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
+        - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
+        - connect_node_when_first_introduced: A boolean flag indicating whether to connect nodes when first introduced.
+          Default is True.
+
+        Returns:
+        None. The function modifies the network object in-place.
+        """
+
+        # Copy the nodes
+        nodes = self.nodes.copy()
+
+        # Create a Connections object for the edges
+        connect_network = Connections(self.edges)
+
+        # Iterate through all combinations of nodes
+        for node1, node2 in combinations(nodes["Uniprot"], 2):
+            if not self.check_node_existence(node1) or not self.check_node_existence(node2):
+                print(
+                    "Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(
+                        node1) else "Error: node %s is not present in the resources database" % node2)
+                continue
+            i = 0
+            # Reset the object connect_network, updating the possible list of paths if minimal is True
+            if minimal:
+                connect_network = Connections(self.edges)
+
+            # As first step, make sure that there is at least one path between two nodes in the network separated by len = maxlen
+            paths_in = connect_network.find_shortest_path(node2, node1, max_len=maxlen)
+            paths_out = connect_network.find_shortest_path(node1, node2, max_len=maxlen)
+
+            if not paths_in:
+                i = 0
+                while i <= maxlen:
+                    paths_in = self.connect.find_paths(node2, node1, maxlen=i)
+                    if only_signed:
+                        paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                    if paths_in:
+                        self.add_paths_to_edge_list(paths_in)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+                        break
+                    else:
+                        i += 1
+
+            if not paths_out:
+                i = 0
+                while i <= maxlen:
+                    paths_out = self.connect.find_paths(node1, node2, maxlen=i)
+                    if only_signed:
+                        paths_out = self.filter_unsigned_paths(paths_out, consensus)
+                    if paths_out:
+                        self.add_paths_to_edge_list(paths_out)
+                        if connect_node_when_first_introduced:
+                            self.connect_nodes(only_signed, consensus)
+                            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+                        break
+                    else:
+                        i += 1
+
+        # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
+        if not connect_node_when_first_introduced:
+            self.connect_nodes(only_signed, consensus)
+            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        return
+
+    def complete_connectionv6(self,
+                              minimal: bool = True,
+                              only_signed: bool = False,
+                              consensus: bool = False,
+                              connect_node_when_first_introduced: bool = True):
+        """
+        This function attempts to connect all nodes of a network object using one of the methods presented in the Connection
+        object. This is a core characteristic of this package and the user should have the possibility to choose different
+        methods to enrich its Network object.
+
+        Parameters:
+        - maxlen: The maximum length of the paths to be searched for. Default is 2.
+        - minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list of
+          paths. Default is True.
+        - k_mean: The search mode, which can be 'tight' or 'extensive'. Default is 'tight'.
+        - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
+        - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
+        - connect_node_when_first_introduced: A boolean flag indicating whether to connect nodes when first introduced.
+          Default is True.
+
+        Returns:
+        None. The function modifies the network object in-place.
+        """
+
+        # Copy the nodes
+        nodes = self.nodes.copy()
+
+        # Create a Connections object for the edges
+        connect_network = Connections(self.edges)
+
+        # Iterate through all combinations of nodes
+        for node1, node2 in combinations(nodes["Uniprot"], 2):
+            if not self.check_node_existence(node1) or not self.check_node_existence(node2):
+                print(
+                    "Error: node %s is not present in the resources database" % node1 if not self.check_node_existence(
+                        node1) else "Error: node %s is not present in the resources database" % node2)
+                continue
+
+            # Reset the object connect_network, updating the possible list of paths if minimal is True
+            if minimal:
+                connect_network = Connections(self.edges)
+
+            # As first step, make sure that there is at least one path between two nodes in the network separated by len = maxlen
+            paths_in = connect_network.bfs(node2, node1)
+            paths_out = connect_network.bfs(node1, node2)
+
+            if not paths_in:
+                paths_in = self.connect.bfs(node2, node1)
+                if only_signed:
+                    paths_in = self.filter_unsigned_paths(paths_in, consensus)
+                if paths_in:
+                    self.add_paths_to_edge_list(paths_in)
+                    if connect_node_when_first_introduced:
+                        self.connect_nodes(only_signed, consensus)
+                        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+
+            if not paths_out:
+                paths_out = self.connect.bfs(node1, node2)
+                if only_signed:
+                    paths_out = self.filter_unsigned_paths(paths_out, consensus)
+                if paths_out:
+                    self.add_paths_to_edge_list(paths_out)
+                    if connect_node_when_first_introduced:
+                        self.connect_nodes(only_signed, consensus)
+                        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
         # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
         if not connect_node_when_first_introduced:
@@ -1081,9 +1231,9 @@ class Network:
                 paths_in = self.filter_unsigned_paths(paths_in, consensus)
             if paths_in:
                 self.add_paths_to_edge_list(paths_in)
-            if connect_node_when_first_introduced:
-                self.connect_nodes(only_signed, consensus)
-                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+                if connect_node_when_first_introduced:
+                    self.connect_nodes(only_signed, consensus)
+                    self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
             if not paths_out:
                 paths_out = self.connect.find_all_shortest_paths(node1, node2, max_len=maxlen)
@@ -1091,9 +1241,9 @@ class Network:
                 paths_out = self.filter_unsigned_paths(paths_out, consensus)
             if paths_out:
                 self.add_paths_to_edge_list(paths_out)
-            if connect_node_when_first_introduced:
-                self.connect_nodes(only_signed, consensus)
-                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+                if connect_node_when_first_introduced:
+                    self.connect_nodes(only_signed, consensus)
+                    self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
         # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
         if not connect_node_when_first_introduced:

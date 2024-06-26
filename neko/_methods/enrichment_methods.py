@@ -1,6 +1,7 @@
 from typing import Union, List, Tuple
 import pandas as pd
 from collections import deque
+import random
 
 
 class Connections:
@@ -101,7 +102,7 @@ class Connections:
 
         return all_paths
 
-    def bfs(self, start: str, end: str) -> list:
+    def bfs(self, start: str, end: str) -> List[Tuple[str, ...]]:
         """
         Find a path between two nodes using Breadth First Search. Useful to quickly check if two nodes are connected.
 
@@ -118,11 +119,12 @@ class Connections:
         while queue:
             node, path = queue.popleft()
             if node == end:
-                return path
+                return [(path[i], path[i+1]) for i in range(len(path)-1)]
 
             if node not in visited:
                 visited.add(node)
                 neighbours = self.find_target_neighbours(node)
+                random.shuffle(neighbours)  # Shuffle the neighbours to avoid bias
                 queue.extend((neighbour, path + [neighbour]) for neighbour in neighbours if neighbour not in visited)
 
         return []
@@ -156,44 +158,39 @@ class Connections:
             else:
                 raise ValueError("Invalid type for 'start' variable")
 
-        def find_shortest_path_aux(start, end, path):
+        def find_shortest_path_aux(start, end, path, max_len):
             path = path + [start]
 
-            if len(path) > max_len:  # Stop exploring if path length exceeds max_len
-                return None
-
-            if start == end or (end is None and not loops and len(path) > 1 and path[0] == path[-1]):
+            if start == end or (end is None and not loops and len(path) == max_len + 1) or (
+                loops and path[0] == path[-1]):
                 return path
 
-            shortest_path = None
-            next_steps = self.find_target_neighbours(start)
+            shortest_path = []
+            if len(path) <= max_len:
+                next_steps = self.find_target_neighbours(start)
 
-            if not loops:
-                next_steps = list(set(next_steps) - set(path))
+                if not loops:
+                    next_steps = list(set(next_steps) - set(path))
 
-            for node in next_steps:
-                newpath = find_shortest_path_aux(node, end, path)
+                for node in next_steps:
+                    newpath = find_shortest_path_aux(node, end, path, max_len)
 
-                if newpath:
-                    if not shortest_path or len(newpath) < len(shortest_path):
-                        shortest_path = newpath
+                    if newpath:
+                        if not shortest_path or len(newpath) < len(shortest_path): # here we discard the longest paths
+                            shortest_path = newpath
 
             return shortest_path
 
         start_nodes = convert_to_string_list(start)
         end_nodes = convert_to_string_list(end) if end else [None]
-        shortest_path = []
+
+        shortest_paths = []
 
         for s in start_nodes:
             for e in end_nodes:
-                shortest_path = find_shortest_path_aux(s, e, [])
+                shortest_paths.extend(find_shortest_path_aux(s, e, [], max_len))
 
-                if shortest_path:
-                    break
-            if shortest_path:
-                break
-
-        return shortest_path
+        return shortest_paths
 
     def find_all_shortest_paths(self,
                                 start: Union[str, pd.DataFrame, List[str]],
@@ -227,26 +224,26 @@ class Connections:
         def find_all_shortest_paths_aux(start, end, path):
             path = path + [start]
 
-            if len(path) > max_len:  # Stop exploring if path length exceeds max_len
-                return []
-
-            if start == end or (end is None and not loops and len(path) > 1 and path[0] == path[-1]):
+            if start == end or (end is None and not loops and len(path) == max_len + 1) or (
+                loops and path[0] == path[-1]):
                 return [path]
 
             shortest_paths = []
-            next_steps = self.find_target_neighbours(start)
 
-            if not loops:
-                next_steps = list(set(next_steps) - set(path))
+            if len(path) <= max_len:
+                next_steps = self.find_target_neighbours(start)
 
-            for node in next_steps:
-                newpaths = find_all_shortest_paths_aux(node, end, path)
+                if not loops:
+                    next_steps = list(set(next_steps) - set(path))
 
-                for newpath in newpaths:
-                    if not shortest_paths or len(newpath) == len(shortest_paths[0]):
-                        shortest_paths.append(newpath)
-                    elif len(newpath) < len(shortest_paths[0]):
-                        shortest_paths = [newpath]
+                for node in next_steps:
+                    newpaths = find_all_shortest_paths_aux(node, end, path)
+
+                    for newpath in newpaths:
+                        if not shortest_paths or len(newpath) == len(shortest_paths[0]):
+                            shortest_paths.append(newpath)
+                        elif len(newpath) < len(shortest_paths[0]):
+                            shortest_paths = [newpath]
 
             return shortest_paths
 

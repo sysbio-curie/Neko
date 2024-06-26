@@ -16,6 +16,7 @@ import pandas as pd
 
 import networkx as nx
 
+
 def is_connected(network) -> bool:
     """
     Return True if all the nodes in the nodes list in the Network object are connected, otherwise it returns False.
@@ -27,6 +28,8 @@ def is_connected(network) -> bool:
     g.add_nodes_from(all_nodes)
     # Check if the graph is connected
     return nx.is_connected(g)
+
+
 def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
     """
     This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
@@ -239,6 +242,10 @@ class Network:
             self.load_network_from_sif(sif_file)
 
         self.connect = Connections(self.resources)
+        self.algorithms = {
+            'dfs': self.dfs_algorithm,
+            'bfs': self.bfs_algorithm
+        }
 
     def copy(self):
         new_instance = copy.deepcopy(self)
@@ -862,13 +869,85 @@ class Network:
                         break
         return
 
+    def dfs_algorithm(self,
+                      node1: str,
+                      node2: str,
+                      maxlen: int,
+                      only_signed: bool,
+                      consensus: bool,
+                      connect_with_bias: bool):
+
+        """
+        This function uses the Depth-First Search (DFS) algorithm to find paths between two nodes in the network. It starts
+        from the target node and searches for paths of increasing length until it finds a path of length maxlen. If the
+        `only_signed` flag is set to True, it filters out unsigned paths. If the `connect_with_bias` flag is set to True, it
+        connects the nodes when first introduced.
+        Args:
+            node1:
+            node2:
+            maxlen:
+            only_signed:
+            consensus:
+            connect_with_bias:
+
+        Returns:
+
+        """
+
+        i = 0
+        while i <= maxlen:
+            paths = self.connect.find_paths(node2, node1, maxlen=i)
+            if only_signed:
+                paths = self.filter_unsigned_paths(paths, consensus)
+            if paths:
+                self.add_paths_to_edge_list(paths)
+                if connect_with_bias:
+                    self.connect_nodes(only_signed, consensus)
+                    self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+                break
+            else:
+                i += 1
+
+    def bfs_algorithm(self,
+                      node1: str,
+                      node2: str,
+                      maxlen: int,
+                      only_signed: bool,
+                      consensus: bool,
+                      connect_with_bias: bool):
+
+        """
+        This function uses the Breadth-First Search (BFS) algorithm to find paths between two nodes in the network. It starts
+        from the target node and searches for paths of increasing length until it finds a path of length maxlen. If the
+        `only_signed` flag is set to True, it filters out unsigned paths. If the `connect_with_bias` flag is set to True, it
+        connects the nodes when first introduced.
+        Args:
+            node1:
+            node2:
+            only_signed:
+            consensus:
+            connect_with_bias:
+
+        Returns:
+
+        """
+
+        paths = self.connect.bfs(node1, node2)
+        if only_signed:
+            paths = self.filter_unsigned_paths(paths, consensus)
+        if paths:
+            self.add_paths_to_edge_list(paths)
+            if connect_with_bias:
+                self.connect_nodes(only_signed, consensus)
+                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+
     def complete_connection(self,
                             maxlen: int = 2,
+                            algorithm: Literal['bfs', 'dfs'] = 'dfs',
                             minimal: bool = True,
-                            k_mean: Literal['tight', 'extensive'] = 'tight',
                             only_signed: bool = False,
                             consensus: bool = False,
-                            connect_node_when_first_introduced: bool = True):
+                            connect_with_bias: bool = False):
         """
         This function attempts to connect all nodes of a network object using one of the methods presented in the Connection
         object. This is a core characteristic of this package and the user should have the possibility to choose different
@@ -876,9 +955,9 @@ class Network:
 
         Parameters:
         - maxlen: The maximum length of the paths to be searched for. Default is 2.
+        - algorithm: The search algorithm to be used. It can be 'bfs' (Breadth-First Search) or 'dfs' (Depth-First Search).
         - minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list of
           paths. Default is True.
-        - k_mean: The search mode, which can be 'tight' or 'extensive'. Default is 'tight'.
         - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
         - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
         - connect_node_when_first_introduced: A boolean flag indicating whether to connect nodes when first introduced.
@@ -887,12 +966,6 @@ class Network:
         Returns:
         None. The function modifies the network object in-place.
         """
-
-        # Set the search depth based on the k_mean parameter
-        if k_mean == 'tight':
-            i_search = 3
-        elif k_mean == 'extensive':
-            i_search = 4
 
         # Copy the nodes
         nodes = self.nodes.copy()
@@ -912,62 +985,18 @@ class Network:
             if minimal:
                 connect_network = Connections(self.edges)
 
-            # Start a loop to find paths between nodes
-            while i <= maxlen:
-                # As first step, make sure that there is at least one path between two nodes in the network
-                paths_in = connect_network.find_paths(node2, node1, maxlen=i)
-                paths_out = connect_network.find_paths(node1, node2, maxlen=i)
+            # As first step, make sure that there is at least one path between two nodes in the network separated by
+            # len = maxlen
+            paths_in = connect_network.bfs(node2, node1)
+            paths_out = connect_network.bfs(node1, node2)
 
-                # If paths in both directions are found, break the loop
-                if paths_in and paths_out:
-                    break
-
-                # If no paths are found and the maximum length has not been reached, increment the length and continue the loop
-                if not (paths_in and paths_out) and i < maxlen:
-                    i += 1
-                    continue
-
-                # If no paths are found and the maximum length has been reached, search for new paths in the database
-                if not paths_in and i == maxlen:
-                    flag = False
-                    j = 0
-                    # Start a loop to find new paths in the database
-                    while not flag and j <= i_search:
-                        paths_in = self.connect.find_paths(node2, node1, maxlen=j)
-                        # Filter unsigned paths if only_signed is True
-                        if only_signed:
-                            paths_in = self.filter_unsigned_paths(paths_in, consensus)
-                        # If no paths are found, increment the length and continue the loop
-                        if not paths_in:
-                            j += 1
-                        else:
-                            # If a path is found, add it to the edge list and connect nodes if connect_node_when_first_introduced is True
-                            self.add_paths_to_edge_list(paths_in)
-                            if connect_node_when_first_introduced:
-                                self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
-                            flag = True
-
-                # Repeat the same process for paths in the opposite direction
-                if not paths_out and i == maxlen:
-                    flag = False
-                    j = 0
-                    while not flag and j <= i_search:
-                        paths_out = self.connect.find_paths(node1, node2, maxlen=j)
-                        if only_signed:
-                            paths_out = self.filter_unsigned_paths(paths_out, consensus)
-                        if not paths_out:
-                            j += 1
-                        else:
-                            self.add_paths_to_edge_list(paths_out)
-                            if connect_node_when_first_introduced:
-                                self.connect_nodes(only_signed, consensus)
-                                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
-                            flag = True
-                break
+            if not paths_in:
+                self.algorithms[algorithm](node2, node1, maxlen, only_signed, consensus, connect_with_bias)
+            if not paths_out:
+                self.algorithms[algorithm](node1, node2, maxlen, only_signed, consensus, connect_with_bias)
 
         # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
-        if not connect_node_when_first_introduced:
+        if not connect_with_bias:
             self.connect_nodes(only_signed, consensus)
             self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
@@ -1268,8 +1297,9 @@ class Network:
             self.connect_network_radially(max_len, direction=None,
                                           loops=loops, consensus=consensus, only_signed=only_signed)
         elif strategy == 'complete':
-            self.complete_connection(max_len, minimal=True, k_mean='tight', only_signed=only_signed, consensus=consensus,
-                                     connect_node_when_first_introduced=False)
+            self.complete_connection(max_len, minimal=True, only_signed=only_signed,
+                                     consensus=consensus,
+                                     connect_with_bias=False)
         else:
             pass
 
@@ -1290,7 +1320,8 @@ class Network:
 
         # While the network is not connected, connect to upstream nodes and first increase the rank and then the depth
         while not is_connected(self):
-            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=only_signed, consensus=consensus)
+            self.connect_to_upstream_nodes(outputs_uniprot, depth=depth, rank=len(outputs_uniprot),
+                                           only_signed=only_signed, consensus=consensus)
             new_nodes = set(self.nodes["Uniprot"].tolist()) - starting_nodes
             new_nodes = new_nodes - set(outputs_uniprot)
 

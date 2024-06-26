@@ -1,5 +1,7 @@
 from typing import Union, List, Tuple
 import pandas as pd
+from collections import deque
+import random
 
 
 class Connections:
@@ -47,6 +49,33 @@ class Connections:
         target_neighs = self.find_target_neighbours(node)
         source_neighs = self.find_source_neighbours(node)
         return list(set(target_neighs + source_neighs))
+
+    def bfs(self, start: str, end: str) -> List[Tuple[str, ...]]:
+        """
+        Find a path between two nodes using Breadth First Search. Useful to quickly check if two nodes are connected.
+
+        Args:
+            start: The start node.
+            end: The end node.
+
+        Returns:
+            List of nodes representing the path from start to end. If no path exists, returns an empty list.
+        """
+        visited = set()
+        queue = deque([(start, [start])])  # Store the path along with the node
+
+        while queue:
+            node, path = queue.popleft()
+            if node == end:
+                return [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+
+            if node not in visited:
+                visited.add(node)
+                neighbours = self.find_target_neighbours(node)
+                random.shuffle(neighbours)  # Shuffle the neighbours to avoid bias
+                queue.extend((neighbour, path + [neighbour]) for neighbour in neighbours if neighbour not in visited)
+
+        return []
 
     def find_paths(self,
                    start: Union[str, pd.DataFrame, List[str]],

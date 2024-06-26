@@ -603,7 +603,9 @@ class Network:
                 "inhibition": "inhibition",
                 "form_complex": "form complex",
                 "form-complex": "form complex",
-                "complex_formation": "form complex"
+                "complex_formation": "form complex",
+                "bimodal": "bimodal",
+                "both": "bimodal"
             }
             return effect_types.get(interaction_type, "undefined")
 

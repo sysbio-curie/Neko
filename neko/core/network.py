@@ -394,33 +394,25 @@ class Network:
             "References": references
         })
 
+        # Convert the "Uniprot" column to a set for efficient membership test
+        uniprot_nodes = set(self.nodes["Uniprot"].unique())
+
         # add the new nodes to the nodes dataframe
-        if not edge["source"].values[0] in self.nodes["Uniprot"].unique():
+        if edge["source"].values[0] not in uniprot_nodes:
             self.add_node(edge["source"].values[0])
-        if not edge["target"].values[0] in self.nodes["Uniprot"].unique():
+        if edge["target"].values[0] not in uniprot_nodes:
             self.add_node(edge["target"].values[0])
 
         # if in the edge dataframe there is an edge with the same source, target and effect, merge the references
-        if not self.edges[(self.edges["source"] == edge["source"].values[0]) &
-                          (self.edges["target"] == edge["target"].values[0]) &
-                          (self.edges["Effect"] == effect)].empty:
-            self.edges.loc[(self.edges["source"] == edge["source"].values[0]) &
-                           (self.edges["target"] == edge["target"].values[0]) &
-                           (self.edges["Effect"] == effect), "References"] = self.edges.loc[(self.edges["source"] ==
-                                                                                             edge["source"].values[
-                                                                                                 0]) & (self.edges[
-                                                                                                            "target"] ==
-                                                                                                        edge[
-                                                                                                            "target"].values[
-                                                                                                            0]) & (
-                                                                                                    self.edges[
-                                                                                                        "Effect"] == effect), "References"] + "; " + str(
-                references)
-            self.edges = self.edges.drop_duplicates().reset_index(drop=True)
-            return
+        existing_edge = self.edges[(self.edges["source"] == edge["source"].values[0]) &
+                                   (self.edges["target"] == edge["target"].values[0]) &
+                                   (self.edges["Effect"] == effect)]
+        if not existing_edge.empty:
+            self.edges.loc[existing_edge.index, "References"] += "; " + str(references)
+        else:
+            # Concatenate the new edge DataFrame with the existing edges in the graph
+            self.edges = pd.concat([self.edges, df_edge])
 
-        # Concatenate the new edge DataFrame with the existing edges in the graph
-        self.edges = pd.concat([self.edges, df_edge])
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
 
@@ -803,6 +795,7 @@ class Network:
                                                (interactions["target"] == path[i + 1])]
                 if not interaction.empty and check_sign(interaction, consensus) == "undefined":
                     is_full_signed = False
+                    break
             if is_full_signed:
                 filtered_paths.append(path)
 

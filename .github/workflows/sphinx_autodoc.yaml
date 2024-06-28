@@ -28,8 +28,11 @@ jobs:
       run: |
         cd docs
         poetry run make html
+    -   name: List contents of build directory
+        run: ls -R docs/_build/html
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/_build/html
+        force_orphan: true

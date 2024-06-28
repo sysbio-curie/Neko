@@ -139,8 +139,7 @@ class NetworkVisualizer:
             display(self.graph)  # Display the graph directly in the Jupyter Notebook
 
     def yfiles_visual(
-        #       self,
-        network,
+        self,
         graph_layout,
         directed,
     ):
@@ -149,10 +148,10 @@ class NetworkVisualizer:
 
         # filling w with nodes
         objects = []
-        for idx, item in network.nodes.iterrows():
+        for idx, item in self.dataframe_nodes.iterrows():
             obj = {
-                "id": network.nodes["Uniprot"].loc[idx],
-                "properties": {"label": network.nodes["Genesymbol"].loc[idx]},
+                "id": self.dataframe_nodes["Uniprot"].loc[idx],
+                "properties": {"label": self.dataframe_nodes["Genesymbol"].loc[idx]},
                 "color": "#ffffff",
                 "styles": {"backgroundColor": "#ffffff"}
             }
@@ -161,12 +160,12 @@ class NetworkVisualizer:
 
         # filling w with edges
         objects = []
-        for index, row in network.edges.iterrows():
+        for index, row in self.dataframe_edges.iterrows():
             obj = {
-                "id": network.edges["Effect"].loc[index],
-                "start": network.edges["source"].loc[index],
-                "end": network.edges["target"].loc[index],
-                "properties": {"references": network.edges["References"].loc[index]}}
+                "id": self.dataframe_edges["Effect"].loc[index],
+                "start": self.dataframe_edges["source"].loc[index],
+                "end": self.dataframe_edges["target"].loc[index],
+                "properties": {"references": self.dataframe_edges["References"].loc[index]}}
             objects.append(obj)
         w.edges = objects
 
@@ -206,6 +205,7 @@ class NetworkVisualizer:
         display(w)
 
     def vis_comparison(
+        self,
         int_comparison,
         node_comparison,
         graph_layout,

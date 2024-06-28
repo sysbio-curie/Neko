@@ -717,9 +717,9 @@ class Network:
         The only_signed flag makes sure that just signed interaction will be added to the network, while "consensus_only"
         makes sure that just signed interaction with consensus among references will be included.
 
-        Parameters:
-        - only_signed: A boolean flag indicating whether to only add signed interactions to the network.
-        - consensus_only: A boolean flag indicating whether to only add signed interactions with consensus among references to the network.
+        Parameters: - only_signed: A boolean flag indicating whether to only add signed interactions to the network.
+        - consensus_only: A boolean flag indicating whether to only add signed interactions with consensus among
+        references to the network.
 
         Returns:
         None. The function modifies the network object in-place.
@@ -731,7 +731,8 @@ class Network:
 
         def add_edge_if_not_empty_and_signed(node1, node2):
             """
-            Helper function to add an edge to the network if the interaction is not empty and, if the `only_signed` flag is set, the interaction is signed.
+            Helper function to add an edge to the network if the interaction is not empty and, if the `only_signed`
+            flag is set, the interaction is signed.
 
             Parameters:
             - node1: The source node of the interaction.
@@ -740,10 +741,12 @@ class Network:
             Returns:
             None. The function modifies the network object in-place.
             """
-            interaction = self.resources.loc[(self.resources["source"] == node1) &
-                                             (self.resources["target"] == node2)]
-            if not interaction.empty and (not only_signed or check_sign(interaction, consensus_only) != "undefined"):
-                self.add_edge(interaction)
+            if node2 in self.connect.find_all_neighbours(node1):
+                interaction = self.resources.loc[(self.resources["source"] == node1) &
+                                                 (self.resources["target"] == node2)]
+                if not interaction.empty and (
+                    not only_signed or check_sign(interaction, consensus_only) != "undefined"):
+                    self.add_edge(interaction)
 
         for node1, node2 in combinations(self.nodes["Uniprot"], 2):
             add_edge_if_not_empty_and_signed(node1, node2)
@@ -889,9 +892,10 @@ class Network:
 
         """
 
-        i = 0
+        i = 1
+        min_len = 1
         while i <= maxlen:
-            paths = self.connect.find_paths(node2, node1, maxlen=i)
+            paths = self.connect.find_paths(node2, node1, maxlen=i, minlen=min_len)
             if only_signed:
                 paths = self.filter_unsigned_paths(paths, consensus)
             if paths:
@@ -902,6 +906,7 @@ class Network:
                 break
             else:
                 i += 1
+                min_len += 1
 
     def bfs_algorithm(self,
                       node1: str,

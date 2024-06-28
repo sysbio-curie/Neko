@@ -1,12 +1,26 @@
-API
-===
+API Reference
+=============
 
-Import Neko as::
+This page contains the API reference for the Neko package.
+
+Network Class
+-------------
+
+The main class in Neko is the ``Network`` class. You can import it as follows:
+
+.. code-block:: python
 
     from neko.core.network import Network
 
-Network
--------
+Below is a summary of the methods available in the ``Network`` class:
+
+.. autoclass:: neko.core.network.Network
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Method Details
+--------------
 
 .. autosummary::
    :toctree: _autosummary
@@ -26,3 +40,8 @@ Network
    neko.core.network.Network.convert_edgelist_into_genesymbol
    neko.core.network.Network.filter_unsigned_paths
    neko.core.network.Network.is_connected
+
+Other Modules
+-------------
+
+.. Add other modules and classes here as your project grows

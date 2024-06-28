@@ -1,5 +1,6 @@
 import pandas as pd
-
+import os
+import itertools
 
 class Exports:
     """
@@ -18,7 +19,7 @@ class Exports:
 
     def export_bnet(self, file_name="logic_model.bnet"):
         """
-        Function to export the network in bnet format.
+        Function to export the network in bnet format, creating multiple files for bimodal interactions.
         """
         # Checks for nodes and interactions data
         if not isinstance(self.nodes, pd.DataFrame) or self.nodes.empty:
@@ -32,47 +33,71 @@ class Exports:
         undefined_interactions = self.interactions.query("Effect == 'undefined'")
         if not undefined_interactions.empty:
             print(f"Warning: The network has {len(undefined_interactions)} UNDEFINED interaction(s).")
-            # print source and target for each undefined interaction and relative references
-            print("Bimodal interactions:")
+            print("Undefined interactions:")
             for index, row in undefined_interactions.iterrows():
                 print(f"{row['source']} -> {row['target']}")
                 print(f"Reference: {row['References']}")
+
         # Identify bimodal interactions
         bimodal_interactions = self.interactions.query("Effect == 'bimodal'")
         if not bimodal_interactions.empty:
             print(f"Warning: The network has {len(bimodal_interactions)} BIMODAL interaction(s).")
-            # print source and target for each bimodal interaction and relative references
             print("Bimodal interactions:")
             for index, row in bimodal_interactions.iterrows():
                 print(f"{row['source']} -> {row['target']}")
                 print(f"Reference: {row['References']}")
 
-        # Pre-filter stimulations, inhibitions, and exclude undefined effects
-        stimulations = self.interactions.query("Effect == 'stimulation' or Effect == 'bimodal'")
-        inhibitions = self.interactions.query("Effect == 'inhibition' or Effect == 'bimodal'")
-        complex_formation = self.interactions.query("Effect == 'form complex'")
+        # Generate permutations for bimodal interactions
+        bimodal_sources = bimodal_interactions['source'].tolist()
+        bimodal_targets = bimodal_interactions['target'].tolist()
+        permutations = list(itertools.product(['stimulation', 'inhibition'], repeat=len(bimodal_interactions)))
 
-        with open(file_name, "w") as f:
-            f.write("# model in BoolNet format\n")
-            f.write("targets, factors\n")
+        # Create a directory for the BNet files
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-            for entry in self.nodes.values:
-                node = entry[0]
-                formula_on = stimulations[stimulations["target"] == node]["source"].to_list()
-                formula_off = inhibitions[inhibitions["target"] == node]["source"].to_list()
-                formula_complex = complex_formation[complex_formation["target"] == node]["source"].to_list()
+        # Iterate through permutations and create a BNet file for each
+        for i, perm in enumerate(permutations):
+            # Create a copy of the interactions DataFrame
+            interactions_copy = self.interactions.copy()
 
-                # Constructing the formula
-                formula_parts = []
-                if formula_complex:
-                    formula_parts.append(f"({' & '.join(formula_complex)})")
-                if formula_on:
-                    formula_parts.append(f"({' | '.join(formula_on)})")
-                if formula_off:
-                    formula_parts.append("!({})".format(" | ".join(formula_off)))
+            # Update bimodal interactions based on the current permutation
+            for j, (source, target) in enumerate(zip(bimodal_sources, bimodal_targets)):
+                interactions_copy.loc[(interactions_copy['source'] == source) &
+                                      (interactions_copy['target'] == target), 'Effect'] = perm[j]
 
-                # Writing the node and its formula to the file
-                f.write(f"{node}, {' & '.join(formula_parts) if formula_parts else node}\n")
+            # Pre-filter stimulations, inhibitions, and exclude undefined effects
+            stimulations = interactions_copy.query("Effect == 'stimulation'")
+            inhibitions = interactions_copy.query("Effect == 'inhibition'")
+            complex_formation = interactions_copy.query("Effect == 'form complex'")
+
+            # Generate the file name for this permutation
+            perm_file_name = f"{os.path.splitext(file_name)[0]}_{i + 1}.bnet"
+
+            with open(perm_file_name, "w") as f:
+                f.write("# model in BoolNet format\n")
+                f.write("targets, factors\n")
+
+                for entry in self.nodes.values:
+                    node = entry[0]
+                    formula_on = stimulations[stimulations["target"] == node]["source"].to_list()
+                    formula_off = inhibitions[inhibitions["target"] == node]["source"].to_list()
+                    formula_complex = complex_formation[complex_formation["target"] == node]["source"].to_list()
+
+                    # Constructing the formula
+                    formula_parts = []
+                    if formula_complex:
+                        formula_parts.append(f"({' & '.join(formula_complex)})")
+                    if formula_on:
+                        formula_parts.append(f"({' | '.join(formula_on)})")
+                    if formula_off:
+                        formula_parts.append("!({})".format(" | ".join(formula_off)))
+
+                    # Writing the node and its formula to the file
+                    f.write(f"{node}, {' & '.join(formula_parts) if formula_parts else node}\n")
+
+            print(f"Created BNet file: {perm_file_name}")
+
+        print(f"Generated {len(permutations)} BNet files.")
 
     def export_sif(self, file_name="logic_model.sif"):
         """

@@ -1,17 +1,23 @@
+========
 Contents
 ========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
+   :caption: User Guide
 
-   index
-   api
-
-Notebooks
-=========
+   installation
+   quickstart
+   tutorials
 
 .. toctree::
    :maxdepth: 2
+   :caption: API Reference
+
+   api
+
+.. toctree::
+   :maxdepth: 1
    :caption: Notebooks
 
    notebooks/1_network_building
@@ -20,3 +26,10 @@ Notebooks
    notebooks/4_Connect_upstream
    notebooks/5_ontology
    notebooks/6_tissue_mapping
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Development
+
+   contributing
+   changelog

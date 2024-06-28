@@ -26,7 +26,7 @@ All the dependencies are listed in the pyproject.toml file. To install the packa
 
 CURRENT FEATURES:
 
-version 0.9.0
+version 0.9.1
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.

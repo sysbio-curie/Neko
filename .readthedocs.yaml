@@ -10,3 +10,6 @@ python:
   - method: pip
     path: .
   - requirements: docs/src/requirements.txt
+formats:
+  - pdf
+  - epub

@@ -136,3 +136,12 @@ nitpick_ignore = [
     # you can add an exception to this list.
     #     ("py:class", "igraph.Graph"),
 ]
+
+# -- To skip private members -------------------------------------------------
+def skip(app, what, name, obj, would_skip, options):
+    if name.startswith('_'):
+        return True
+    return would_skip
+
+def setup(app):
+    app.connect('autodoc-skip-member', skip)

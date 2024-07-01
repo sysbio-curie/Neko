@@ -2,29 +2,66 @@
 Neko
 ==================
 
+.. image:: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg
    :target: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml
    :alt: Tests
 
-.. image:: https://img.shields.io/readthedocs/omniflow_project
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: https://sysbio-curie.github.io/Neko/
    :alt: Documentation
 
-Package to extract, visualize, convert and study interactions from database into executable activity flow based model.
-Neko, is based on `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_ and `Atopo <https://github.com/druglogics/atopo>`_.
+Neko: Network Extraction, Knowledge Organization, and Visualization
+-------------------------------------------------------------------
 
-This is a work-in-progress package made in collaboration with Dénes Turei and Asmund Flobak.
+Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It's built on top of `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_, and `Atopo <https://github.com/druglogics/atopo>`_.
 
-Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+**Note**: Neko is currently in development and approaching its final stages. It is not yet available on PyPI.
 
-Installation:
+Features
+--------
 
-All the dependencies are listed in the pyproject.toml file. To install the package, you can use the following command:
+- Network creation and manipulation
+- Connection of nodes and subnetworks
+- Gene-to-phenotype mapping
+- Network visualization
+- Interaction database integration
+
+Installation
+------------
+
+As Neko is still in development, you can install it directly from the GitHub repository:
 
 .. code-block:: bash
 
-    pip install .
+    git clone https://github.com/sysbio-curie/Neko.git
+    cd Neko
+    pip install -e .
 
-CURRENT FEATURES:
+Documentation
+-------------
+
+For full documentation, including API reference and detailed tutorials, visit our `GitHub Pages documentation <https://sysbio-curie.github.io/Neko/>`_.
+
+Jupyter Notebooks
+-----------------
+
+We provide a comprehensive set of Jupyter notebooks that offer a detailed and user-friendly explanation of the package. These notebooks cover all modules of NeKo and provide a complete overview of how to use the package:
+
+1. Network Building
+2. Adding Resources
+3. Building Phosphosite Networks
+4. Connecting Upstream
+5. Ontology
+6. Tissue Mapping
+
+You can find these notebooks in the `notebooks` directory of the repository.
+
+Acknowledgements
+----------------
+
+This project is a collaborative effort with Dénes Turei and Asmund Flobak.
+
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
 
 version 0.9.1
 --------------

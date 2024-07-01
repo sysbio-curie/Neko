@@ -382,7 +382,7 @@ class Network:
             the references for the interaction.
 
         Returns:
-            -None
+            - None
         """
 
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
@@ -432,7 +432,7 @@ class Network:
             - node2: A string representing the target node of the edge.
 
         Returns:
-            -None
+            - None
         """
         # check if node1 and node2 are in genesymbol format or uniprot format
         if check_gene_list_format([node1]):

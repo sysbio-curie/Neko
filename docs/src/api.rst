@@ -6,7 +6,7 @@ This page contains the API reference for the Neko package.
 Network Class
 -------------
 
-The main class in Neko is the ``Network`` class. You can import it as follows:
+The main class in NeKo is the ``Network`` class. You can import it as follows:
 
 .. code-block:: python
 
@@ -40,6 +40,21 @@ Method Details
    neko.core.network.Network.convert_edgelist_into_genesymbol
    neko.core.network.Network.filter_unsigned_paths
    neko.core.network.Network.is_connected
+
+NetworkVisualizer Class Methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: _autosummary
+
+   neko._visual.visualize_network.NetworkVisualizer.set_custom_edge_colors
+   neko._visual.visualize_network.NetworkVisualizer.set_node_colors
+   neko._visual.visualize_network.NetworkVisualizer.add_edges_to_graph
+   neko._visual.visualize_network.NetworkVisualizer.add_nodes_to_graph
+   neko._visual.visualize_network.NetworkVisualizer.tissue_mapping
+   neko._visual.visualize_network.NetworkVisualizer.render
+   neko._visual.visualize_network.NetworkVisualizer.yfiles_visual
+   neko._visual.visualize_network.NetworkVisualizer.vis_comparison
 
 Other Modules
 -------------

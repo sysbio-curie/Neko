@@ -28,7 +28,6 @@ years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Sysbio-Curie'
 repository_url = 'https://github.com/sysbio-curie/Neko'
 
-# thank you stupid sphinx, thank you stupid github :((( <-- directly taken from conf.py of Pypath XD
 readme_lines = []
 readme = pathlib.Path().absolute().parents[1].joinpath('README.rst')
 

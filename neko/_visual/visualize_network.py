@@ -14,15 +14,45 @@ def wrap_node_name(node_name):
 
 
 class NetworkVisualizer:
+    """
+    Visualize a network using Graphviz and yfiles.
+
+    Args:
+        - network (Network): A Network object.
+        - predefined_node (str): The name of a node to display along with its connections.
+        - color_by (str): The attribute to use for coloring nodes.
+        - noi (bool): If True, only display the nodes of interest.
+
+    Attributes:
+        - dataframe_edges (DataFrame): DataFrame containing the edges of the network.
+        - dataframe_nodes (DataFrame): DataFrame containing the nodes of the network.
+        - initial_nodes (list): List of initial nodes.
+        - color_by (str): The attribute to use for coloring nodes.
+        - noi (bool): If True, only display the nodes of interest.
+        - graph (Digraph): A Digraph object from the Graphviz library.
+        - edge_colors (dict): Dictionary mapping edge effects to colors.
+        - node_colors (dict): Dictionary mapping node names to colors.
+        - predefined_node (str): The name of a node to display along with its connections.
+
+    Methods:
+        - set_custom_edge_colors(custom_edge_colors): Set custom edge colors.
+        - set_node_colors(node_colors): Set custom node colors.
+        - add_edges_to_graph(): Add edges to the graph.
+        - add_nodes_to_graph(): Add nodes to the graph.
+        - tissue_mapping(tissue_df): Color the nodes based on their expression in the tissue of interest.
+        - render(output_file, view, highlight_nodes, highlight_color): Render the graph.
+        - yfiles_visual(graph_layout, directed): Visualize the graph using yFiles.
+        - vis_comparison(int_comparison, node_comparison, graph_layout, directed): Visualize the comparison of two networks.
+    """
     def __init__(self, network, predefined_node=None, color_by="Effect", noi=False):
         net = network.copy()
-        self.dataframe_edges = net.convert_edgelist_into_genesymbol().copy()
-        self.dataframe_nodes = net.nodes
+        self.__dataframe_edges = net.convert_edgelist_into_genesymbol().copy()
+        self.__dataframe_nodes = net.nodes
         self.initial_nodes = net.initial_nodes
-        self.color_by = color_by
-        self.noi = noi  # nodes of interest
+        self.__color_by = color_by
+        self.__noi = noi  # nodes of interest
         self.graph = Digraph(format='pdf')
-        self.edge_colors = {
+        self.__edge_colors = {
             'stimulation': 'green',
             'inhibition': 'red',
             'form complex': 'blue',
@@ -30,29 +60,29 @@ class NetworkVisualizer:
             'undefined': 'gray',  # Adding the mapping for "undefined" effect
             # Add more custom mappings if needed
         }
-        self.node_colors = {}  # Dictionary to store custom node colors
+        self.__node_colors = {}  # Dictionary to store custom node colors
         self.predefined_node = wrap_node_name(predefined_node) if predefined_node else None
         # Apply wrap_node_name function to node names in dataframe_nodes
-        self.dataframe_nodes['Genesymbol'] = self.dataframe_nodes['Genesymbol'].apply(wrap_node_name)
-        self.dataframe_nodes['Uniprot'] = self.dataframe_nodes['Uniprot'].apply(wrap_node_name)
+        self.__dataframe_nodes['Genesymbol'] = self.__dataframe_nodes['Genesymbol'].apply(wrap_node_name)
+        self.__dataframe_nodes['Uniprot'] = self.__dataframe_nodes['Uniprot'].apply(wrap_node_name)
 
         # Apply wrap_node_name function to node names in "source" and "target" columns of dataframe_edges
-        self.dataframe_edges['source'] = self.dataframe_edges['source'].apply(wrap_node_name)
-        self.dataframe_edges['target'] = self.dataframe_edges['target'].apply(wrap_node_name)
+        self.__dataframe_edges['source'] = self.__dataframe_edges['source'].apply(wrap_node_name)
+        self.__dataframe_edges['target'] = self.__dataframe_edges['target'].apply(wrap_node_name)
 
-        self.add_edges_to_graph()
-        self.add_nodes_to_graph()
+        self.__add_edges_to_graph()
+        self.__add_nodes_to_graph()
 
-    def set_custom_edge_colors(self, custom_edge_colors):
+    def __set_custom_edge_colors(self, custom_edge_colors):
         # Update the edge_colors dictionary with custom mappings
-        self.edge_colors.update(custom_edge_colors)
+        self.__edge_colors.update(custom_edge_colors)
 
-    def set_node_colors(self, node_colors):
+    def __set_node_colors(self, node_colors):
         # Update the node_colors dictionary with custom node colorsdataframe_nodes
-        self.node_colors.update(node_colors)
+        self.__node_colors.update(node_colors)
 
-    def add_edges_to_graph(self):
-        for _, row in self.dataframe_edges.iterrows():
+    def __add_edges_to_graph(self):
+        for _, row in self.__dataframe_edges.iterrows():
             effect = row['Effect']
             source = wrap_node_name(row['source'])
             target = wrap_node_name(row['target'])
@@ -86,14 +116,14 @@ class NetworkVisualizer:
             # Add the edge to the graph with specified attributes
             self.graph.edge(source, target, color=color, arrowhead=arrowhead, dir=dir)
 
-    def add_nodes_to_graph(self):
-        for _, row in self.dataframe_nodes.iterrows():
+    def __add_nodes_to_graph(self):
+        for _, row in self.__dataframe_nodes.iterrows():
             node = row['Genesymbol']
             # add function to set color
             node_color = 'lightgray'
-            if node in self.initial_nodes and self.noi:
+            if node in self.initial_nodes and self.__noi:
                 node_color = 'lightyellow'
-            node_color = self.node_colors.get(node, node_color)
+            node_color = self.__node_colors.get(node, node_color)
 
             # Display only the predefined node and its connections
             if self.predefined_node and (node != self.predefined_node):
@@ -113,7 +143,7 @@ class NetworkVisualizer:
             gene_symbol = row['Genesymbol']
             in_tissue = row['in_tissue']
             node_color = 'lightblue' if in_tissue else 'lightgray'
-            self.node_colors[gene_symbol] = node_color
+            self.__node_colors[gene_symbol] = node_color
 
     def render(self, output_file='network', view=False, highlight_nodes=None, highlight_color='lightyellow'):
         """
@@ -129,7 +159,7 @@ class NetworkVisualizer:
         if highlight_nodes is not None:
             for node in highlight_nodes:
                 # first check that the node is in the node dataframe
-                if wrap_node_name(node) in self.dataframe_nodes['Genesymbol'].values:
+                if wrap_node_name(node) in self.__dataframe_nodes['Genesymbol'].values:
                     # then change the color only of the node in the graph
                     self.graph.node(wrap_node_name(node), style='filled', fillcolor=highlight_color)
         if view:
@@ -148,10 +178,10 @@ class NetworkVisualizer:
 
         # filling w with nodes
         objects = []
-        for idx, item in self.dataframe_nodes.iterrows():
+        for idx, item in self.__dataframe_nodes.iterrows():
             obj = {
-                "id": self.dataframe_nodes["Uniprot"].loc[idx],
-                "properties": {"label": self.dataframe_nodes["Genesymbol"].loc[idx]},
+                "id": self.__dataframe_nodes["Uniprot"].loc[idx],
+                "properties": {"label": self.__dataframe_nodes["Genesymbol"].loc[idx]},
                 "color": "#ffffff",
                 "styles": {"backgroundColor": "#ffffff"}
             }
@@ -160,18 +190,18 @@ class NetworkVisualizer:
 
         # filling w with edges
         objects = []
-        for index, row in self.dataframe_edges.iterrows():
+        for index, row in self.__dataframe_edges.iterrows():
             obj = {
-                "id": self.dataframe_edges["Effect"].loc[index],
-                "start": self.dataframe_edges["source"].loc[index],
-                "end": self.dataframe_edges["target"].loc[index],
-                "properties": {"references": self.dataframe_edges["References"].loc[index]}}
+                "id": self.__dataframe_edges["Effect"].loc[index],
+                "start": self.__dataframe_edges["source"].loc[index],
+                "end": self.__dataframe_edges["target"].loc[index],
+                "properties": {"references": self.__dataframe_edges["References"].loc[index]}}
             objects.append(obj)
         w.edges = objects
 
         def custom_edge_color_mapping(edge: Dict):
             """let the edge be red if the interaction is an inhibition, else green"""
-            return ("#fa1505" if edge['id'] == "inhibition" else "#05e60c")
+            return "#fa1505" if edge['id'] == "inhibition" else "#05e60c"
 
         w.set_edge_color_mapping(custom_edge_color_mapping)
 

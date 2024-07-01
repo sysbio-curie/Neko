@@ -1,12 +1,12 @@
 ==================
- Neko 
+Neko
 ==================
 
-   :target: https://github.com/sysbio-curie/Neko/actions/workflows/test.yml
+   :target: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml
    :alt: Tests
 
 .. image:: https://img.shields.io/readthedocs/omniflow_project
-   :target: https://neko.readthedocs.io
+   :target: https://sysbio-curie.github.io/Neko/
    :alt: Documentation
 
 Package to extract, visualize, convert and study interactions from database into executable activity flow based model.

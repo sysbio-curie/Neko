@@ -15,6 +15,8 @@ Contents
    :caption: API Reference
 
    api
+   network
+   network_visualizer
 
 .. toctree::
    :maxdepth: 1

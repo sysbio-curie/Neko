@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="neko.core.network.Network.add_edge" href="_autosummary/neko.core.network.Network.add_edge.html" />
+    <link rel="prev" title="Contents" href="contents.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="contents.html">
+            
+              <img src="_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.9.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#network-class">Network Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neko.core.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.add_edge"><code class="docutils literal notranslate"><span class="pre">Network.add_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.add_node"><code class="docutils literal notranslate"><span class="pre">Network.add_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.bfs_algorithm"><code class="docutils literal notranslate"><span class="pre">Network.bfs_algorithm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.check_node"><code class="docutils literal notranslate"><span class="pre">Network.check_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.check_nodes"><code class="docutils literal notranslate"><span class="pre">Network.check_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.complete_connection"><code class="docutils literal notranslate"><span class="pre">Network.complete_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_as_atopo"><code class="docutils literal notranslate"><span class="pre">Network.connect_as_atopo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_component"><code class="docutils literal notranslate"><span class="pre">Network.connect_component()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_genes_to_phenotype"><code class="docutils literal notranslate"><span class="pre">Network.connect_genes_to_phenotype()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_network_radially"><code class="docutils literal notranslate"><span class="pre">Network.connect_network_radially()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_nodes"><code class="docutils literal notranslate"><span class="pre">Network.connect_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_subgroup"><code class="docutils literal notranslate"><span class="pre">Network.connect_subgroup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.connect_to_upstream_nodes"><code class="docutils literal notranslate"><span class="pre">Network.connect_to_upstream_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.convert_edgelist_into_genesymbol"><code class="docutils literal notranslate"><span class="pre">Network.convert_edgelist_into_genesymbol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.copy"><code class="docutils literal notranslate"><span class="pre">Network.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.dfs_algorithm"><code class="docutils literal notranslate"><span class="pre">Network.dfs_algorithm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.is_connected"><code class="docutils literal notranslate"><span class="pre">Network.is_connected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.modify_node_name"><code class="docutils literal notranslate"><span class="pre">Network.modify_node_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.print_my_paths"><code class="docutils literal notranslate"><span class="pre">Network.print_my_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.remove_disconnected_nodes"><code class="docutils literal notranslate"><span class="pre">Network.remove_disconnected_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.remove_edge"><code class="docutils literal notranslate"><span class="pre">Network.remove_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.remove_node"><code class="docutils literal notranslate"><span class="pre">Network.remove_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.remove_path"><code class="docutils literal notranslate"><span class="pre">Network.remove_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#method-details">Method Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.add_edge.html">neko.core.network.Network.add_edge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.remove_node.html">neko.core.network.Network.remove_node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.add_node.html">neko.core.network.Network.add_node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.complete_connection.html">neko.core.network.Network.complete_connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.connect_component.html">neko.core.network.Network.connect_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.connect_genes_to_phenotype.html">neko.core.network.Network.connect_genes_to_phenotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.connect_nodes.html">neko.core.network.Network.connect_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.connect_subgroup.html">neko.core.network.Network.connect_subgroup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.connect_to_upstream_nodes.html">neko.core.network.Network.connect_to_upstream_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.convert_edgelist_into_genesymbol.html">neko.core.network.Network.convert_edgelist_into_genesymbol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/neko.core.network.Network.is_connected.html">neko.core.network.Network.is_connected</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#networkvisualizer-class-methods">NetworkVisualizer Class Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.tissue_mapping.html">neko._visual.visualize_network.NetworkVisualizer.tissue_mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.render.html">neko._visual.visualize_network.NetworkVisualizer.render</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.yfiles_visual.html">neko._visual.visualize_network.NetworkVisualizer.yfiles_visual</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.vis_comparison.html">neko._visual.visualize_network.NetworkVisualizer.vis_comparison</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#other-modules">Other Modules</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_tissue_mapping.html">Map tissue expression</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/api.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>This page contains the API reference for the Neko package.</p>
+<section id="network-class">
+<h2>Network Class<a class="headerlink" href="#network-class" title="Link to this heading"></a></h2>
+<p>The main class in NeKo is the <code class="docutils literal notranslate"><span class="pre">Network</span></code> class. You can import it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neko.core.network</span> <span class="kn">import</span> <span class="n">Network</span>
+</pre></div>
+</div>
+<p>Below is a summary of the methods available in the <code class="docutils literal notranslate"><span class="pre">Network</span></code> class:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="neko.core.network.Network">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neko.core.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sif_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A molecular interaction network.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">Network</span></code> object is the central organizing component of the <code class="docutils literal notranslate"><span class="pre">neko</span></code>
+module. It is the subject of all operations implemented here, including
+topological algorithms, graph analysis, network visualization and
+integration of database knowledge.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>initial_nodes: A list of initial nodes to be added to the network.
+sif_file: A SIF (Simple Interaction Format) file to load the network from.
+resources: A pandas DataFrame containing the resources database.</p>
+</dd>
+</dl>
+<p>Methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.add_edge" title="Link to this definition"></a></dt>
+<dd><p>This method adds an interaction to the list of interactions while converting it to the NeKo-network format.
+It checks if the edge represents inhibition or stimulation and sets the effect accordingly. It also checks if the
+nodes involved in the interaction are already present in the network, if not, it adds them.</p>
+<dl>
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>edge: A pandas DataFrame representing the interaction. The DataFrame should contain columns for</p></li>
+</ul>
+<p>‘source’, ‘target’, ‘type’, and ‘references’. The ‘source’ and ‘target’ columns represent the nodes involved
+in the interaction. The ‘type’ column represents the type of interaction. The ‘references’ column contains
+the references for the interaction.</p>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_sif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.add_node" title="Link to this definition"></a></dt>
+<dd><p>Adds a node to the network. The node is added to the nodes DataFrame of the network. The function checks the
+syntax for the genesymbol to ensure it is correct. If the node is a complex, it is added with the
+‘Genesymbol’ as the complex string and ‘Uniprot’ as the node. Otherwise, it is added with the ‘Genesymbol’ as
+the genesymbol and ‘Uniprot’ as the uniprot. The ‘Type’ is set as ‘NaN’ for all new nodes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>node: A string representing the node to be added. The node can be represented by either its</dt><dd><p>Genesymbol or Uniprot identifier.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.bfs_algorithm">
+<span class="sig-name descname"><span class="pre">bfs_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_with_bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.bfs_algorithm" title="Link to this definition"></a></dt>
+<dd><p>This function uses the Breadth-First Search (BFS) algorithm to find paths between two nodes in the network.
+It starts from the target node and searches for paths of increasing length until it finds a path of length
+maxlen. If the <code class="docutils literal notranslate"><span class="pre">only_signed</span></code> flag is set to True, it filters out unsigned paths. If the <code class="docutils literal notranslate"><span class="pre">connect_with_bias</span></code>
+flag is set to True, it connects the nodes when first introduced. Args: node1: node2: only_signed: consensus:
+connect_with_bias:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>node1: A string representing the source node.</p></li>
+<li><p>node2: A string representing the target node.</p></li>
+<li><p>maxlen: An integer representing the maximum length of the paths to be searched for. Default is 2.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+<li><dl class="simple">
+<dt>connect_with_bias: A boolean flag indicating whether to connect the nodes when first introduced.</dt><dd><p>Default is True.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.check_node">
+<span class="sig-name descname"><span class="pre">check_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#neko.core.network.Network.check_node" title="Link to this definition"></a></dt>
+<dd><p>This function checks if a node exists in the resources’ database.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>node: A string representing the node to be checked.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>A boolean indicating whether the node exists in the resources’ database.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.check_nodes">
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neko.core.network.Network.check_nodes" title="Link to this definition"></a></dt>
+<dd><p>This function checks if the nodes exist in the resources database and returns the nodes that are present.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>nodes: A list of node identifiers (strings). These are the nodes to be checked.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>A list[str] of node identifiers that are present in the resources database.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.complete_connection">
+<span class="sig-name descname"><span class="pre">complete_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'bfs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dfs'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_with_bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.complete_connection" title="Link to this definition"></a></dt>
+<dd><p>This function attempts to connect all nodes of a network object using one of the methods presented in the
+Connection object. This is a core characteristic of this package and the user should have the possibility to
+choose different methods to enrich its Network object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>maxlen: The maximum length of the paths to be searched for. Default is 2.</p></li>
+<li><dl class="simple">
+<dt>algorithm: The search algorithm to be used. It can be ‘bfs’ (Breadth-First Search) or ‘dfs’</dt><dd><p>(Depth-First Search).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>minimal: A boolean flag indicating whether to reset the object connect_network, updating the possible list</dt><dd><p>of paths. Default is True.</p>
+</dd>
+</dl>
+</li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+<li><dl class="simple">
+<dt>connect_with_bias: A boolean flag indicating whether to connect nodes when first</dt><dd><p>introduced. Default is True.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_as_atopo">
+<span class="sig-name descname"><span class="pre">connect_as_atopo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'radial'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'complete'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_as_atopo" title="Link to this definition"></a></dt>
+<dd><p>This method attempts to connect all nodes of a network object in a topological manner. It iteratively
+connects upstream nodes and checks if the network is connected. If not, it increases the search depth and
+repeats the process. It also removes any nodes that do not have a source in the edge dataframe and are not in
+the output nodes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>strategy: The strategy to use to connect the network. It can be ‘radial’ or ‘complete’. Default is None.</p></li>
+<li><p>max_len: The maximum length of the paths to be searched for. Default is 1.</p></li>
+<li><p>loops: A boolean flag indicating whether to allow loops in the network. Default is False.</p></li>
+<li><p>outputs: A list of output nodes to connect to. Default is None.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is True.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_component">
+<span class="sig-name descname"><span class="pre">connect_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'OUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'IN'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ALL'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'OUT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_component" title="Link to this definition"></a></dt>
+<dd><p>This function attempts to connect subcomponents of a network object using one of the methods presented in the
+Connection object. This is a core characteristic of this package and the user should have the possibility to
+choose different methods to enrich its Network object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>comp_A: A string or list of strings representing the first component to connect.</p></li>
+<li><p>comp_B: A string or list of strings representing the second component to connect.</p></li>
+<li><p>maxlen: The maximum length of the paths to be searched for. Default is 2.</p></li>
+<li><p>mode: The search mode, which can be ‘OUT’, ‘IN’, or ‘ALL’. Default is ‘OUT’.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_genes_to_phenotype">
+<span class="sig-name descname"><span class="pre">connect_genes_to_phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_accession</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_genes_to_phenotype" title="Link to this definition"></a></dt>
+<dd><p>This function connects genes to a phenotype based on the provided Args. It retrieves phenotype markers,
+identifies unique Uniprot genes, and connects them to the network. It also has the option to compress the
+network by substituting specified genes with the phenotype name.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>phenotype: The phenotype to connect to. If not provided, it will be retrieved using the id_accession.</p></li>
+<li><p>id_accession: The accession id of the phenotype. If not provided, the phenotype parameter must be given.</p></li>
+<li><dl class="simple">
+<dt>sub_genes: A list of genes to be considered for connection. If not provided, all nodes in the network are</dt><dd><p>considered.</p>
+</dd>
+</dl>
+</li>
+<li><p>maxlen: The maximum length of the paths to be searched for.</p></li>
+<li><p>only_signed: A boolean flag to indicate whether to filter unsigned paths.</p></li>
+<li><p>compress: A boolean flag to indicate whether to substitute the specified genes with the phenotype name.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_network_radially">
+<span class="sig-name descname"><span class="pre">connect_network_radially</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'OUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'IN'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_network_radially" title="Link to this definition"></a></dt>
+<dd><p>This function connects all nodes of a network object in a radial manner. It iteratively connects upstream and
+downstream nodes of the initial nodes. The function also removes any nodes that do not have a source in the edge
+dataframe and are not in the initial nodes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>max_len: The maximum length of the paths to be searched for. Default is 1.</p></li>
+<li><p>direction: The direction of the search. It can be ‘OUT’, ‘IN’, or None. Default is None.</p></li>
+<li><p>loops: A boolean flag indicating whether to allow loops in the network. Default is False.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is True.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_nodes">
+<span class="sig-name descname"><span class="pre">connect_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_nodes" title="Link to this definition"></a></dt>
+<dd><p>Basic node connections. It adds all the interactions found in the omnipath database.
+Once an interaction is found it will be added to the list of edges.
+The only_signed flag makes sure that just signed interaction will be added to the network, while “consensus_only”
+makes sure that just signed interaction with consensus among references will be included.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>only_signed: A boolean flag indicating whether to only add signed interactions to the network.</p></li>
+<li><dl class="simple">
+<dt>consensus_only: A boolean flag indicating whether to only add signed interactions with consensus among</dt><dd><p>references to the network.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_subgroup">
+<span class="sig-name descname"><span class="pre">connect_subgroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_subgroup" title="Link to this definition"></a></dt>
+<dd><p>This function is used to connect all the nodes in a particular subgroup. It iterates over all pairs of nodes
+in the subgroup and finds paths between them in the resources’ database. If a path is found, it is added to
+the edge list of the network. The function also filters out unsigned paths if the <code class="docutils literal notranslate"><span class="pre">only_signed</span></code> flag is set
+to True.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>group: A list of nodes representing the subgroup to connect. Nodes can be represented as strings,</dt><dd><p>pandas DataFrame, or list of strings.</p>
+</dd>
+</dl>
+</li>
+<li><p>maxlen: The maximum length of the paths to be searched for in the resources’ database. Default is 1.</p></li>
+<li><dl class="simple">
+<dt>only_signed: A boolean flag indicating whether to only add signed interactions to the network. Default is</dt><dd><p>False.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>consensus: A boolean flag indicating whether to only add signed interactions with consensus among</dt><dd><p>references to the network. Default is False.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.connect_to_upstream_nodes">
+<span class="sig-name descname"><span class="pre">connect_to_upstream_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_to_connect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_to_upstream_nodes" title="Link to this definition"></a></dt>
+<dd><p>This function connects the provided nodes to their upstream nodes in the network.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>nodes_to_connect: A list of nodes to connect. If not provided, all nodes in the network are considered.</p></li>
+<li><p>depth: The depth of the search for upstream nodes.</p></li>
+<li><p>rank: The rank of the search for upstream nodes.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is True.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.convert_edgelist_into_genesymbol">
+<span class="sig-name descname"><span class="pre">convert_edgelist_into_genesymbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#neko.core.network.Network.convert_edgelist_into_genesymbol" title="Link to this definition"></a></dt>
+<dd><p>This function generates a new edges dataframe with the source and target identifiers translated (if possible)
+in Genesymbol format.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>A pandas DataFrame containing the edges with the source and target identifiers translated into Genesymbol</dt><dd><p>format.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network.copy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.dfs_algorithm">
+<span class="sig-name descname"><span class="pre">dfs_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consensus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_with_bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.dfs_algorithm" title="Link to this definition"></a></dt>
+<dd><p>This function uses the Depth-First Search (DFS) algorithm to find paths between two nodes in the network. It
+starts from the target node and searches for paths of increasing length until it finds a path of length
+maxlen. If the <code class="docutils literal notranslate"><span class="pre">only_signed</span></code> flag is set to True, it filters out unsigned paths. If the <code class="docutils literal notranslate"><span class="pre">connect_with_bias</span></code>
+flag is set to True, it connects the nodes when first introduced. Args: node1: node2: maxlen: only_signed:
+consensus: connect_with_bias:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>node1: A string representing the source node.</p></li>
+<li><p>node2: A string representing the target node.</p></li>
+<li><p>maxlen: An integer representing the maximum length of the paths to be searched for. Default is 2.</p></li>
+<li><p>only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.</p></li>
+<li><p>consensus: A boolean flag indicating whether to check for consensus among references. Default is False.</p></li>
+<li><dl class="simple">
+<dt>connect_with_bias: A boolean flag indicating whether to connect the nodes when first introduced.</dt><dd><p>Default is True.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#neko.core.network.Network.is_connected" title="Link to this definition"></a></dt>
+<dd><p>This function checks if the network is connected. It uses Depth-First Search (DFS) to traverse the network
+and check if all nodes are visited. If all nodes are visited, the network is connected.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.modify_node_name">
+<span class="sig-name descname"><span class="pre">modify_node_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Genesymbol'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Uniprot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'both'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Genesymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.modify_node_name" title="Link to this definition"></a></dt>
+<dd><p>This function modifies the name of a node in the network. It takes the old name of the node and the new name
+as input and modifies the name of the node in the nodes and in the edges DataFrame. If type is set to
+‘Genesymbol’, it modifies the genesymbol name of the node in the nodes DataFrame. If type is set to
+‘Uniprot’, it modifies the uniprot name of the node in the edges DataFrame. If type is set to ‘both’,
+it modifies both the genesymbol and uniprot names of the node in the nodes and edges DataFrame.</p>
+<dl>
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>old_name: A string representing the old name of the node. - new_name: A string representing the new</p></li>
+</ul>
+<p>name of the node. - type: A string indicating the type of name to be modified. It can be ‘Genesymbol’,
+‘Uniprot’, or ‘both’. Default is ‘Genesymbol’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>-None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.print_my_paths">
+<span class="sig-name descname"><span class="pre">print_my_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genesymbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.print_my_paths" title="Link to this definition"></a></dt>
+<dd><p>This function prints all the paths between two nodes in the network. It uses the <code class="docutils literal notranslate"><span class="pre">find_paths</span></code> method from the
+<code class="docutils literal notranslate"><span class="pre">Connections</span></code> class to find all the paths between the two nodes in the Network object. If no paths are found,
+it prints a warning message. If one of the selected nodes is not present in the network, it prints an error message.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>node1: A string representing the source node.</p></li>
+<li><p>node2: A string representing the target node.</p></li>
+<li><p>maxlen: An integer representing the maximum length of the paths to be searched for. Default is 2.</p></li>
+<li><p>genesymbol: A boolean flag indicating whether to print the paths in genesymbol format. Default is True.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.remove_disconnected_nodes">
+<span class="sig-name descname"><span class="pre">remove_disconnected_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.remove_disconnected_nodes" title="Link to this definition"></a></dt>
+<dd><p>This function removes nodes from the network that are not connected to any other nodes.</p>
+<p>Returns:
+None. The function modifies the network object in-place by removing the disconnected nodes from the nodes DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.remove_edge">
+<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.remove_edge" title="Link to this definition"></a></dt>
+<dd><p>This function removes an edge from the network. It takes the source node and target node as input and removes
+the edge from the edges DataFrame.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>node1: A string representing the source node of the edge.</p></li>
+<li><p>node2: A string representing the target node of the edge.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.remove_node" title="Link to this definition"></a></dt>
+<dd><p>Removes a node from the network. The node is removed from both the list of nodes and the list of edges.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>node: A string representing the node to be removed. The node can be represented by either its</dt><dd><p>Genesymbol or Uniprot identifier.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.remove_path">
+<span class="sig-name descname"><span class="pre">remove_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.remove_path" title="Link to this definition"></a></dt>
+<dd><p>This function removes a path from the network. It takes a list of nodes representing the path and removes all
+the edges between the nodes in the path.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>path: A list of nodes representing the path to be removed. The nodes can be represented as strings or tuples.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="method-details">
+<h2>Method Details<a class="headerlink" href="#method-details" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.add_edge" title="neko.core.network.Network.add_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.add_edge</span></code></a>(edge)</p></td>
+<td><p>This method adds an interaction to the list of interactions while converting it to the NeKo-network format.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.remove_node" title="neko.core.network.Network.remove_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.remove_node</span></code></a>(node)</p></td>
+<td><p>Removes a node from the network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.add_node" title="neko.core.network.Network.add_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.add_node</span></code></a>(node[, ...])</p></td>
+<td><p>Adds a node to the network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.complete_connection" title="neko.core.network.Network.complete_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.complete_connection</span></code></a>([...])</p></td>
+<td><p>This function attempts to connect all nodes of a network object using one of the methods presented in the Connection object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_component" title="neko.core.network.Network.connect_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_component</span></code></a>(...)</p></td>
+<td><p>This function attempts to connect subcomponents of a network object using one of the methods presented in the Connection object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_genes_to_phenotype" title="neko.core.network.Network.connect_genes_to_phenotype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_genes_to_phenotype</span></code></a>([...])</p></td>
+<td><p>This function connects genes to a phenotype based on the provided Args.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_nodes" title="neko.core.network.Network.connect_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_nodes</span></code></a>([...])</p></td>
+<td><p>Basic node connections.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_subgroup" title="neko.core.network.Network.connect_subgroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_subgroup</span></code></a>(group)</p></td>
+<td><p>This function is used to connect all the nodes in a particular subgroup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_to_upstream_nodes" title="neko.core.network.Network.connect_to_upstream_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_to_upstream_nodes</span></code></a>([...])</p></td>
+<td><p>This function connects the provided nodes to their upstream nodes in the network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.convert_edgelist_into_genesymbol" title="neko.core.network.Network.convert_edgelist_into_genesymbol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.convert_edgelist_into_genesymbol</span></code></a>()</p></td>
+<td><p>This function generates a new edges dataframe with the source and target identifiers translated (if possible) in Genesymbol format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.is_connected" title="neko.core.network.Network.is_connected"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.is_connected</span></code></a>()</p></td>
+<td><p>This function checks if the network is connected.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="networkvisualizer-class-methods">
+<h3>NetworkVisualizer Class Methods<a class="headerlink" href="#networkvisualizer-class-methods" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.tissue_mapping.html#neko._visual.visualize_network.NetworkVisualizer.tissue_mapping" title="neko._visual.visualize_network.NetworkVisualizer.tissue_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko._visual.visualize_network.NetworkVisualizer.tissue_mapping</span></code></a>(...)</p></td>
+<td><p>Color the nodes based on their expression in the tissue of interest (based on data from The Human Protein Atlas).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.render.html#neko._visual.visualize_network.NetworkVisualizer.render" title="neko._visual.visualize_network.NetworkVisualizer.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko._visual.visualize_network.NetworkVisualizer.render</span></code></a>([...])</p></td>
+<td><p>Render the graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.yfiles_visual.html#neko._visual.visualize_network.NetworkVisualizer.yfiles_visual" title="neko._visual.visualize_network.NetworkVisualizer.yfiles_visual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko._visual.visualize_network.NetworkVisualizer.yfiles_visual</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/neko._visual.visualize_network.NetworkVisualizer.vis_comparison.html#neko._visual.visualize_network.NetworkVisualizer.vis_comparison" title="neko._visual.visualize_network.NetworkVisualizer.vis_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko._visual.visualize_network.NetworkVisualizer.vis_comparison</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="other-modules">
+<h2>Other Modules<a class="headerlink" href="#other-modules" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contents.html" class="btn btn-neutral float-left" title="Contents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_autosummary/neko.core.network.Network.add_edge.html" class="btn btn-neutral float-right" title="neko.core.network.Network.add_edge" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2024, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

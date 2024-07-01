@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build network using user-defined resources &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build network based on kinase-phosphosite interactions" href="3_build_phosphosite_network.html" />
+    <link rel="prev" title="Usage" href="1_network_building.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.9.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build network using user-defined resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Adding-a-resource-already-in-Omnipath">1. Adding a resource already in Omnipath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1A.-Specify-the-interaction-resource-of-interest">1A. Specify the interaction resource of interest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1B.-Add-new-resource-to-the-Resources-object">1B. Add new resource to the Resources object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Adding-a-public-database">2. Adding a public database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2A.-Add-Signor-database">2A. Add Signor database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Build-the-network">3. Build the network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#3A.-Import-genes-as-network-nodes">3A. Import genes as network nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3B.-Create-network-object-by-specifying-the-interaction-resources">3B. Create network object by specifying the interaction resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3C.-Build-network">3C. Build network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_tissue_mapping.html">Map tissue expression</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build network using user-defined resources</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/2_add_resources.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Build-network-using-user-defined-resources">
+<h1>Build network using user-defined resources<a class="headerlink" href="#Build-network-using-user-defined-resources" title="Link to this heading"></a></h1>
+<p>This notebook explores how to add other individual resources from Omnipath or other public databases.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span> <span class="nn">neko.core.network</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">neko._visual.visualize_network</span> <span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span> <span class="nn">neko._inputs.resources</span> <span class="kn">import</span> <span class="n">Resources</span>
+<span class="kn">from</span> <span class="nn">neko._annotations.gene_ontology</span> <span class="kn">import</span> <span class="n">Ontology</span>
+<span class="kn">import</span> <span class="nn">omnipath</span> <span class="k">as</span> <span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 14.9 s, sys: 494 ms, total: 15.4 s
+Wall time: 16.4 s
+</pre></div></div>
+</div>
+<section id="1.-Adding-a-resource-already-in-Omnipath">
+<h2>1. Adding a resource already in Omnipath<a class="headerlink" href="#1.-Adding-a-resource-already-in-Omnipath" title="Link to this heading"></a></h2>
+<section id="1A.-Specify-the-interaction-resource-of-interest">
+<h3>1A. Specify the interaction resource of interest<a class="headerlink" href="#1A.-Specify-the-interaction-resource-of-interest" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extra</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "19a11d7dbbc744d8a4aa2d90f58f5e11", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="1B.-Add-new-resource-to-the-Resources-object">
+<h3>1B. Add new resource to the Resources object<a class="headerlink" href="#1B.-Add-new-resource-to-the-Resources-object" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">Resources</span><span class="p">()</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">add_database</span><span class="p">(</span><span class="n">extra</span><span class="p">,</span> <span class="n">reset_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:The incoming database is missing some required columns: {&#39;form_complex&#39;}
+WARNING:root:This might lead to issues in running the package.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="2.-Adding-a-public-database">
+<h2>2. Adding a public database<a class="headerlink" href="#2.-Adding-a-public-database" title="Link to this heading"></a></h2>
+<p>Alternatively, the user might want to use their own interaction databases. We have already implemented the inclusion of some of widely used databases.</p>
+<p>As example, we show here how to integrate the <a class="reference external" href="https://signor.uniroma2.it/">Signor 3.0</a> database. In order to do so, the User needs to have already downloaded the whole Signor database, available at the following link: <a class="reference external" href="https://signor.uniroma2.it/downloads.php">https://signor.uniroma2.it/downloads.php</a> or with the following code:.</p>
+<section id="2A.-Add-Signor-database">
+<h3>2A. Add Signor database<a class="headerlink" href="#2A.-Add-Signor-database" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">Resources</span><span class="p">()</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">import_signor_tsv</span><span class="p">(</span><span class="s2">&quot;all_data_30_05_24.tsv&quot;</span><span class="p">)</span> <span class="c1"># this function accept only tab separated values</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>SIGNOR uses has different identifiers for complexes, protein family, phenotype, etc. It is possible that the network contains nodes names like “Signor_pf32” or something like this… This is not yet translated, but if you are interested in what those nodes consist of, you can use download their vocabulary for the entities: <a class="reference external" href="https://signor.uniroma2.it/downloads.php">https://signor.uniroma2.it/downloads.php</a></p>
+</div>
+</section>
+</section>
+<section id="3.-Build-the-network">
+<h2>3. Build the network<a class="headerlink" href="#3.-Build-the-network" title="Link to this heading"></a></h2>
+<section id="3A.-Import-genes-as-network-nodes">
+<h3>3A. Import genes as network nodes<a class="headerlink" href="#3A.-Import-genes-as-network-nodes" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAK&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">,</span> <span class="s2">&quot;PTK2B&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="3B.-Create-network-object-by-specifying-the-interaction-resources">
+<h3>3B. Create network object by specifying the interaction resources<a class="headerlink" href="#3B.-Create-network-object-by-specifying-the-interaction-resources" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Print node dataframe</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NOTCH1</td>
+      <td>P46531</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CDH2</td>
+      <td>P19022</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>VIM</td>
+      <td>P08670</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MAP4K4</td>
+      <td>O95819</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>LATS1</td>
+      <td>O95835</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>LATS2</td>
+      <td>Q9NRM7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>PTK2B</td>
+      <td>Q14289</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="3C.-Build-network">
+<h3>3C. Build network<a class="headerlink" href="#3C.-Build-network" title="Link to this heading"></a></h3>
+<p>The downstream steps to connect your nodes, are the same. Please see the <a class="reference external" href="https://omniflow-project.readthedocs.io/en/latest/notebooks/network_building.html">Network building</a> tutorial for detailed explanations of each step.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 941 ms, sys: 11.9 ms, total: 953 ms
+Wall time: 957 ms
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_2_add_resources_19_0.svg" src="../_images/notebooks_2_add_resources_19_0.svg" /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>NB! It is important to note, that not all the databases have the same structure as Omnipath. In particular, if the columns “consensus” are missing, we suggest to avoid to use the flag <code class="docutils literal notranslate"><span class="pre">consensus</span></code> or <code class="docutils literal notranslate"><span class="pre">consensus_only</span></code> when using Omniflow with customize databases.</p>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">k_mean</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">connect_node_when_first_introduced</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># here, consensus_only is missing, in this way it is automatically False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 2min 16s, sys: 47.1 ms, total: 2min 16s
+Wall time: 2min 16s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize network</span>
+<span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_2_add_resources_22_0.svg" src="../_images/notebooks_2_add_resources_22_0.svg" /></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neko._outputs.exports</span> <span class="kn">import</span> <span class="n">Exports</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="o">=</span> <span class="n">Exports</span><span class="p">(</span><span class="n">new_net1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">export</span><span class="o">.</span><span class="n">export_bnet</span><span class="p">()</span>
+<span class="n">export</span><span class="o">.</span><span class="n">export_sif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning: The network has 1 BIMODAL interaction(s).
+Bimodal interactions:
+PRKACA -&gt; NF2
+Reference: 18071304
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="1_network_building.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="3_build_phosphosite_network.html" class="btn btn-neutral float-right" title="Build network based on kinase-phosphosite interactions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2024, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

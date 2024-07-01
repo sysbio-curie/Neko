@@ -917,7 +917,7 @@ class Network:
         i = 1
         min_len = 1
         while i <= maxlen:
-            paths = self.__connect.find_paths(node2, node1, maxlen=i, minlen=min_len)
+            paths = self.__connect.find_paths(start=node1, end=node2, maxlen=i, minlen=min_len)
             if only_signed:
                 paths = self.__filter_unsigned_paths(paths, consensus)
             if paths:
@@ -961,7 +961,7 @@ class Network:
 
         """
 
-        paths = self.__connect.bfs(node1, node2)
+        paths = self.__connect.bfs(start=node1, end=node2)
         if only_signed:
             paths = self.__filter_unsigned_paths(paths, consensus)
         if paths:
@@ -991,7 +991,7 @@ class Network:
                 of paths. Default is True.
             - only_signed: A boolean flag indicating whether to filter unsigned paths. Default is False.
             - consensus: A boolean flag indicating whether to check for consensus among references. Default is False.
-            - connect_node_when_first_introduced: A boolean flag indicating whether to connect nodes when first
+            - connect_with_bias: A boolean flag indicating whether to connect nodes when first
                 introduced. Default is True.
 
         Returns:
@@ -1016,17 +1016,16 @@ class Network:
             if minimal:
                 connect_network = Connections(self.edges)
 
-            # As first step, make sure that there is at least one path between two nodes in the network separated by
-            # len = maxlen
-            paths_in = connect_network.bfs(node2, node1)
-            paths_out = connect_network.bfs(node1, node2)
+            # As first step, make sure that there is at least one path between two nodes in the network
+            paths_in = connect_network.bfs(start=node2, end=node1)
+            paths_out = connect_network.bfs(start=node1, end=node2)
 
             if not paths_in:
-                self.__algorithms[algorithm](node2, node1, maxlen, only_signed, consensus, connect_with_bias)
+                self.__algorithms[algorithm](node1=node2, node2=node1, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
             if not paths_out:
-                self.__algorithms[algorithm](node1, node2, maxlen, only_signed, consensus, connect_with_bias)
+                self.__algorithms[algorithm](node1=node1, node2=node2, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
 
-        # If connect_node_when_first_introduced is False, connect nodes after all paths have been found
+        # If connect_with_bias is False, connect nodes after all paths have been found
         if not connect_with_bias:
             self.connect_nodes(only_signed, consensus)
             self.edges = self.edges.drop_duplicates().reset_index(drop=True)

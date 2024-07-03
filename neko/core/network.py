@@ -193,6 +193,41 @@ def join_unique(series) -> str:
     return ', '.join(unique_items)
 
 
+def determine_most_frequent_effect(effects):
+    effect_counts = effects.value_counts()
+
+    # If there's only one type of effect, return it
+    if len(effect_counts) == 1:
+        return effect_counts.index[0]
+
+    # Count the occurrences of each effect type
+    stimulation_count = effect_counts.get('stimulation', 0)
+    inhibition_count = effect_counts.get('inhibition', 0)
+    form_complex_count = effect_counts.get('form_complex', 0)
+
+    # Calculate the total of stimulation, inhibition, and form_complex
+    total_known_effects = stimulation_count + inhibition_count + form_complex_count
+
+    # If there are more unknown effects than known ones, return 'undefined'
+    if len(effects) - total_known_effects > total_known_effects:
+        return 'undefined'
+
+    # If form_complex is the most frequent, return it
+    if form_complex_count > stimulation_count and form_complex_count > inhibition_count:
+        return 'form_complex'
+
+    # Handle stimulation and inhibition
+    if stimulation_count > inhibition_count:
+        return 'stimulation'
+    elif inhibition_count > stimulation_count:
+        return 'inhibition'
+    elif stimulation_count == inhibition_count and stimulation_count > 0:
+        return 'bimodal'
+
+    # If we've reached this point, it means there's no clear majority
+    return 'undefined'
+
+
 class Network:
     """
     A molecular interaction network.
@@ -797,6 +832,18 @@ class Network:
         # Check if all nodes are visited
         return set(self.nodes['Uniprot']) == visited
 
+    def remove_undefined_interactions(self):
+        """
+        This function removes all undefined interactions from the network.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.edges = self.edges[self.edges['Effect'] != 'undefined']
+
     def __filter_unsigned_paths(self,
                                 paths: list[tuple],
                                 consensus: bool
@@ -1230,7 +1277,7 @@ class Network:
             # Group by source and target, and aggregate with the custom function for each column
             self.edges = self.edges.groupby(['source', 'target']).agg({
                 'Type': join_unique,  # Aggregate types with the custom function
-                'Effect': join_unique,  # Aggregate effects with the custom function
+                'Effect': determine_most_frequent_effect,  # Use the new function to determine the most frequent effect
                 'References': join_unique  # Aggregate references with the custom function
             }).reset_index()
 
@@ -1239,9 +1286,9 @@ class Network:
                 set(uniprot_gene_list if uniprot_gene_list else self.nodes["Uniprot"]))
             # For each common gene, add a new edge connecting the gene to the phenotype
             for gene in common_genes:
-                new_edge = {"source": gene, "target": phenotype_modified, "Effect": "stimulation",
-                            "References": "Gene Ontology"}
-                self.edges = self.edges.append(new_edge, ignore_index=True)
+                new_edge = pd.DataFrame({"source": [gene], "target": [phenotype_modified], "Effect": ["stimulation"],
+                                         "References": ["Gene Ontology"]})
+                self.edges = pd.concat([self.edges, new_edge], ignore_index=True)
         return
 
     def connect_network_radially(self,

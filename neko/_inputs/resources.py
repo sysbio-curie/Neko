@@ -60,7 +60,8 @@ class Resources():
                      reset_index=False):
         """
         This function concatenates the provided database with the existing one in the resources object,
-        aligning columns and filling in missing data with NaN.
+        aligning columns and filling in missing data with NaN. It also ensures that all required columns
+        are present, creating them with default values if necessary.
 
         Parameters:
         database (pd.DataFrame): The DataFrame to be added.
@@ -84,30 +85,36 @@ class Resources():
         if column_mapping is not None:
             database = database.rename(columns=column_mapping)
 
-            # If only one of is_inhibition or is_activation is specified in the column_mapping, assign the values
-            # from the specified column to both is_inhibition and is_activation, and then invert the values for one
-            # of them
-            if 'is_inhibition' in column_mapping and 'is_activation' not in column_mapping:
-                if 'is_inhibition' in database.columns and database['is_inhibition'].nunique() > 1:
-                    database['is_inhibition'] = database['is_inhibition'].replace(
-                        {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
-                    database['is_activation'] = ~database['is_inhibition']
-            elif 'is_activation' in column_mapping and 'is_inhibition' not in column_mapping:
-                if 'is_activation' in database.columns and database['is_activation'].nunique() > 1:
-                    database['is_activation'] = database['is_activation'].replace(
-                        {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
-                    database['is_inhibition'] = ~database['is_activation']
+        # Ensure all required columns are present, create if missing with default values
+        for column in self.required_columns:
+            if column not in database.columns:
+                if column in ['is_directed', 'is_stimulation', 'is_inhibition', 'form_complex',
+                              'consensus_direction', 'consensus_stimulation', 'consensus_inhibition']:
+                    database[column] = False
+                elif column in ['curation_effort']:
+                    database[column] = None
+                elif column in ['references', 'sources']:
+                    database[column] = ''
+                else:
+                    database[column] = None
+                logging.info(f"Created missing column '{column}' with default values.")
 
-        # Convert is_inhibition and is_activation columns to boolean values
-        for column in ['is_inhibition', 'is_activation']:
+        # Handle is_inhibition and is_activation columns
+        if 'is_inhibition' in database.columns and 'is_activation' not in database.columns:
+            database['is_inhibition'] = database['is_inhibition'].replace(
+                {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
+            database['is_activation'] = ~database['is_inhibition']
+        elif 'is_activation' in database.columns and 'is_inhibition' not in database.columns:
+            database['is_activation'] = database['is_activation'].replace(
+                {"True": True, "False": False, "true": True, "false": False, 1: True, -1: False}).astype(bool)
+            database['is_inhibition'] = ~database['is_activation']
+
+        # Convert boolean columns to proper boolean values
+        bool_columns = ['is_directed', 'is_stimulation', 'is_inhibition', 'form_complex',
+                        'consensus_direction', 'consensus_stimulation', 'consensus_inhibition']
+        for column in bool_columns:
             if column in database.columns:
-                database[column] = database[column].replace({1: True, -1: False}).astype(bool)
-
-        # Check if the database contains the required columns
-        missing_columns = set(self.required_columns) - set(database.columns)
-        if missing_columns:
-            logging.warning("The incoming database is missing some required columns: %s", missing_columns)
-            logging.warning("This might lead to issues in running the package.")
+                database[column] = database[column].replace({1: True, 0: False, -1: False}).astype(bool)
 
         # Align columns of both dataframes, filling missing columns with NaN
         if self.interactions is not None:
@@ -122,6 +129,8 @@ class Resources():
             self.interactions = pd.concat([self.interactions, database], axis=axis, ignore_index=ignore_index)
             if reset_index:
                 self.interactions.reset_index(drop=True, inplace=True)
+
+        logging.info("Database added successfully.")
         return
 
     def import_signor_tsv(self, signor_file):

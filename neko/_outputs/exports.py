@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import itertools
+import re
 
 class Exports:
     """
@@ -79,9 +80,16 @@ class Exports:
 
                 for entry in self.nodes.values:
                     node = entry[0]
-                    formula_on = stimulations[stimulations["target"] == node]["source"].to_list()
-                    formula_off = inhibitions[inhibitions["target"] == node]["source"].to_list()
-                    formula_complex = complex_formation[complex_formation["target"] == node]["source"].to_list()
+
+                    # Replace special characters in node names
+                    node = re.sub(r"[\/\-\s\#]", "_", node)
+
+                    formula_on = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                                  stimulations[stimulations["target"] == node]["source"].to_list()]
+                    formula_off = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                                   inhibitions[inhibitions["target"] == node]["source"].to_list()]
+                    formula_complex = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                                       complex_formation[complex_formation["target"] == node]["source"].to_list()]
 
                     # Constructing the formula
                     formula_parts = []

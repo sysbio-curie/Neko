@@ -113,9 +113,11 @@ def mapping_node_identifier(node: str) -> list[str]:
     if mapping.id_from_label0(node):
         # Convert UniProt ID to gene symbol
         uniprot = mapping.id_from_label0(node)
-
-        # Set the UniProt ID as the 'Uniprot' value in the new entry
-        genesymbol = mapping.label(uniprot)
+        if uniprot.startswith("MIMAT"):
+            genesymbol = uniprot
+        else:
+            # Set the UniProt ID as the 'Uniprot' value in the new entry
+            genesymbol = mapping.label(uniprot)
     elif mapping.id_from_label0(node).startswith("COMPLEX"):
         node = node[8:]
         node_list = node.split("_")

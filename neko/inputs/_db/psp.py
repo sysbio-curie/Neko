@@ -1,10 +1,15 @@
 import pandas as pd
 from typing import Literal
-def psp(kinase_substrate: str,
-        regulatory_sites: str,
+
+from ... import data as _data
+
+
+def psp(
         organism: Literal["human", "mouse", "rat"],
-        expand: bool = False
-        ) -> pd.DataFrame:
+        kinase_substrate: str | None = None,
+        regulatory_sites: str | None = None,
+        expand: bool = False,
+    ) -> pd.DataFrame:
     """
     PhoshpositePlus (PSP) from local file.
 
@@ -12,20 +17,40 @@ def psp(kinase_substrate: str,
     effect of phosphorylation on protein activities and creates an interaction dataframe based on the Omnipath
     interaction format.
 
-        Parameters:
-            kinase_substrate (str): The path to the kinase interaction file.
-            regulatory_sites (str): The path to the phosphorylation effect file.
-            organism (str): The organism to filter interactions for.
-            expand (bool, optional): If True, expands each line to include a new interaction from phosphosite to
-            respective protein. Default is False.
+    Parameters:
+        kinase_substrate (str): The path to the kinase interaction file.
+        regulatory_sites (str): The path to the phosphorylation effect file.
+        organism (str): The organism to filter interactions for.
+        expand (bool, optional): If True, expands each line to include a new interaction from phosphosite to
+        respective protein. Default is False.
 
-        Returns:
-            ks (pd.DataFrame): The processed interactions dataframe.
+    Returns:
+        ks (pd.DataFrame): The processed interactions dataframe.
     """
 
-    # Load the kinase interaction and phosphorylation effect files
-    ks = pd.read_csv(kinase_substrate, sep="\t")
-    rs = pd.read_csv(regulatory_sites, sep="\t")
+    args = locals()
+
+    def load(dset):
+
+        nonlocal args
+        value = args[dset]
+
+        if isinstance(value, str):
+
+            value = pd.read_table(value, sep = '\t')
+
+        elif value is None:
+
+            value = getattr(_data, f'phosphosite_{dset}')()
+
+        if not isinstance(value, pd.DataFrame):
+
+            raise ValueError(f"Invalid type for '{dset}' ({type(value)}).")
+
+        return value
+
+
+    ks, rs = tuple(load(dset) for dset in ('kinase_substrate', 'regulatory_sites'))
 
     # Filter the kinase interaction dataframe to include only interactions from the specified organism
     ks = ks.loc[
@@ -46,16 +71,18 @@ def psp(kinase_substrate: str,
     })
 
     # Keep only MOD_RSD entries with "-p" suffix and remove it
-    rs = rs[rs['MOD_RSD'] == rs['MOD_RSD'].endswith('-p')]
+    rs = rs[rs['MOD_RSD'].str.endswith('-p')]
     rs['MOD_RSD'] = rs['MOD_RSD'].apply(lambda x: x[:-2])
     # Concatenate the GENE and MOD_RSD columns to create the Prot_site column
     rs['target'] = rs['GENE'] + '_' + rs['MOD_RSD']
 
-    rs['is_stimulation'] = rs['ON_FUNCTION'].str.contains('activity, induced')
-    rs['is_inhibition'] = rs['ON_FUNCTION'].str.contains('activity, inhibited')
+    rs['is_stimulation'] = rs['ON_FUNCTION'].str.contains('activity, induced').astype('bool')
+    rs['is_inhibition'] = rs['ON_FUNCTION'].str.contains('activity, inhibited').astype('bool')
 
     # Update the ks dataframe based on the phosphorylation effect information
     ks = ks.merge(rs[['target', 'is_inhibition', 'is_stimulation']], how='left')
+    ks['is_stimulation'] = ks['is_stimulation'].astype('bool')
+    ks['is_inhibition'] = ks['is_inhibition'].astype('bool')
     ks.fillna('', inplace=True)
 
     # If expand is True, expand each line to include a new interaction from phosphosite to respective protein

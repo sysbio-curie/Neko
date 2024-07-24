@@ -3,7 +3,7 @@ from typing import List, Optional
 from pypath.utils import mapping
 from itertools import combinations
 import pandas as pd
-from .._inputs.resources import Resources
+from ..inputs import _universe
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 import copy
@@ -247,26 +247,37 @@ class Network:
     Methods:
     """
 
-    def __init__(self,
-                 initial_nodes: list[str] = None,
-                 sif_file=None,
-                 resources=None):
+    def __init__(
+            self,
+            initial_nodes: list[str] = None,
+            sif_file=None,
+            resources=None,
+        ):
+
+        self._init_args = locals()
+        del self._init_args['self']
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
         self.__ontology = Ontology()
-        if resources is not None and isinstance(resources, pd.DataFrame) and not resources.empty:
-            self.resources = resources.copy()
-        else:
-            res = Resources()
-            res.load_all_omnipath_interactions()
-            self.resources = res.interactions.copy()
-        if initial_nodes:
-            for node in initial_nodes:
+        self._populate()
+
+
+    def _populate(self):
+
+        self.resources = (
+            _universe.
+            network_universe(self._init_args['resources']).
+            interactions
+        )
+
+        if self.initial_nodes:
+            for node in self.initial_nodes:
                 self.add_node(node)
             self.__drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
-        elif sif_file:
+
+        elif sif_files := self._init_args['sif_file']:
             self.initial_nodes = []
             self.__load_network_from_sif(sif_file)
 

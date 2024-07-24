@@ -36,7 +36,7 @@ notebook = "*"
 python = ">=3.9,<4.0"
 omnipath = { git = "https://github.com/saezlab/omnipath.git", branch = "main" }
 pypath-omnipath = { git = "https://github.com/saezlab/pypath.git", branch = "master" }
-networkcommons = { git = "https://github.com/saezlab/networkcommons.git", branch = "main" }
+networkcommons = { git = "https://github.com/saezlab/networkcommons.git", branch = "dev" }
 yfiles_jupyter_graphs = "*"
 networkx = "*"
 unipressed = "*"

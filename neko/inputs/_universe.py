@@ -8,7 +8,7 @@ import pandas as pd
 from pypath_common import misc as _common
 
 from ._db.omnipath import omnipath_universe
-from ..core import _networkbase as _nbase
+from ._db import psp as _psp
 from ._db import _misc
 
 """
@@ -33,7 +33,7 @@ MANDATORY_COLUMNS = [
 ]
 
 def network_universe(
-        resource: Literal['omnipath'] | pd.DataFrame,
+        resource: Literal['omnipath'] | pd.DataFrame = 'omnipath',
         **kwargs
     ) -> Universe:
     """
@@ -54,9 +54,36 @@ def network_universe(
     return Universe(resource, **kwargs)
 
 
-def omnipath(**kwargs):
+def omnipath(**kwargs) -> Universe:
 
     return network_universe('omnipath', **kwargs)
+
+
+def signor(path: str | None = None, **kwargs) -> Universe:
+
+    if path and os.path.exists(path):
+
+        return Universe(_signor.signor(path))
+
+    else:
+
+        raise NotImplementedError(
+            'Direct retrieval of SIGNOR is not implemented. '
+            'Please download manually the TSV file and provide the path.'
+        )
+
+
+def phosphosite(
+        organism: Literal["human", "mouse", "rat"] = 'human',
+        kinase_substrate: str | None = None,
+        regulatory_sites: str | None = None,
+        expand: bool = False,
+        **kwargs
+    ) -> Universe:
+
+    df = _psp.psp(organism, kinase_substrate, regulatory_sites, expand)
+
+    return Universe(df, name = 'phosphosite')
 
 
 class Universe:

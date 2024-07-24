@@ -233,23 +233,6 @@ class Resources():
             # Count True values and compare to half the length of the series
             return series.sum() >= (len(series) / 2)
 
-        def process_consensus(df):
-            new_df = pd.DataFrame({
-                'source': df['source'],
-                'target': df['target'],
-                'is_directed': df['is_directed'],
-                'is_stimulation': df['is_stimulation'],
-                'is_inhibition': df['is_inhibition'],
-                'form_complex': df['form_complex'],
-                'consensus_direction': True,
-                'consensus_stimulation': df['is_stimulation'],
-                'consensus_inhibition': df['is_inhibition'],
-                'curation_effort': df['curation_effort'],
-                'references': df['references'],
-                'sources': df['sources']
-            })
-            return new_df
-
         def process_interaction(df):
             new_df = pd.DataFrame({
                 'source': df['source'],
@@ -259,8 +242,14 @@ class Resources():
                 'is_inhibition': df['is_inhibition'],
                 'form_complex': df['form_complex'],
                 'consensus_direction': True,
-                'consensus_stimulation': False,
-                'consensus_inhibition': False,
+                'consensus_stimulation': (
+                    df['is_stimulation'].sum() >
+                    df['is_inhibition'].sum()
+                ),
+                'consensus_inhibition':  (
+                    df['is_inhibition'].sum() >
+                    df['is_stimulation'].sum()
+                ),
                 'curation_effort': df['curation_effort'],
                 'references': df['references'],
                 'sources': df['sources']
@@ -282,11 +271,7 @@ class Resources():
                 new_df = group_data.groupby(
                     ["source", "target", "is_directed", "consensus_direction", "consensus_stimulation",
                      "consensus_inhibition"]).aggregate(aggregate_functions).reset_index()
-                if len(group_data[group_data["is_stimulation"] == True]) == len(
-                    group_data[group_data["is_inhibition"] == True]):
-                    new_groups.append(process_interaction(new_df))
-                else:
-                    new_groups.append(process_consensus(new_df))
+                new_groups.append(process_interaction(new_df))
             else:
                 new_groups.append(group_data)
 

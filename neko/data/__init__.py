@@ -16,6 +16,6 @@ def phosphosite_kinase_substrate():
     return _retrieve('phosphosite/kinase-substrate.tsv')
 
 
-def phosphosite_regsites():
+def phosphosite_regulatory_sites():
 
     return _retrieve('phosphosite/regulatory-sites.tsv')

@@ -8,7 +8,6 @@ def psp(
     organism: Literal["human", "mouse", "rat"],
     kinase_substrate: str | None = None,
     regulatory_sites: str | None = None,
-    expand: bool = False,
 ) -> pd.DataFrame:
     """
     PhoshpositePlus (PSP) from local file.
@@ -21,8 +20,6 @@ def psp(
         kinase_substrate (str): The path to the kinase interaction file.
         regulatory_sites (str): The path to the phosphorylation effect file.
         organism (str): The organism to filter interactions for.
-        expand (bool, optional): If True, expands each line to include a new interaction from phosphosite to
-        respective protein. Default is False.
 
     Returns:
         ks (pd.DataFrame): The processed interactions dataframe.
@@ -52,7 +49,9 @@ def psp(
 
     # Filter the kinase interaction dataframe to include only interactions from the specified organism
     ks = ks.loc[
-        (ks['KIN_ORGANISM'] == organism) & (ks['SUB_ORGANISM'] == organism)]
+        (ks['KIN_ORGANISM'] == organism) &
+        (ks['SUB_ORGANISM'] == organism)
+    ]
 
     # Concatenate the SUB_GENE and SUB_MOD_RSD columns to create the target column
     ks['target'] = ks['SUB_GENE'] + '_' + ks['SUB_MOD_RSD']
@@ -68,11 +67,11 @@ def psp(
     })
 
     # Filter the phosphorylation effect dataframe to include only interactions from the specified organism
-    rs_filtered = rs.loc[rs['ORGANISM'] == organism]
+    rs = rs.loc[rs['ORGANISM'] == organism]
 
     # Keep only MOD_RSD entries with "-p" suffix and remove it
-    rs_filtered['MOD_RSD'] = rs_filtered['MOD_RSD'].apply(
-        lambda x: x[:-2] if x.endswith('-p') else x)
+    rs = rs[rs['MOD_RSD'].str.endswith('-p')]
+    rs['MOD_RSD'] = rs['MOD_RSD'].apply(lambda x: x[:-2])
 
     # Concatenate the GENE and MOD_RSD columns to create the Prot_site column
     rs['Prot_site'] = rs['GENE'] + '_' + rs[
@@ -123,24 +122,24 @@ def psp(
     ks.drop(columns=['Prot_site', 'ON_FUNCTION'], inplace=True)
 
     # If expand is True, expand each line to include a new interaction from phosphosite to respective protein
-    if expand:
-        expanded_rows = []
-        for index, row in ks.iterrows():
-            source, target = row['source'], row['target']
-            target_protein = target.split('_')[0]
-            expanded_rows.append({'source': target, 'target': target_protein, 'is_directed': True,
-                                  'is_stimulation': row['is_stimulation'], 'is_inhibition': row['is_inhibition'],
-                                  'consensus_direction': False, 'consensus_stimulation': False,
-                                  'consensus_inhibition': False, 'curation_effort': False, 'references': False,
-                                  'sources': False})
-        ks = pd.concat([ks, pd.DataFrame(expanded_rows)], ignore_index=True)
+    expanded_rows = []
+
+    for index, row in ks.iterrows():
+
+        source, target = row['source'], row['target']
+        target_protein = target.split('_')[0]
+        expanded_rows.append({'source': target, 'target': target_protein, 'is_directed': True,
+                              'is_stimulation': row['is_stimulation'], 'is_inhibition': row['is_inhibition'],
+                              'consensus_direction': False, 'consensus_stimulation': False,
+                              'consensus_inhibition': False, 'curation_effort': False, 'references': False,
+                              'sources': False})
+
+    ks = pd.concat([ks, pd.DataFrame(expanded_rows)], ignore_index=True)
 
     # Filter the ks dataframe based on the is_stimulation and is_inhibition columns
     ks = ks[
         (ks['is_stimulation'] != 0) | (ks['is_inhibition'] != 0)]
 
-    # If expand is False, remove duplicates from the dataframe
-    if not expand:
-        ks = ks.drop_duplicates(subset=['source', 'target'])
+    ks = ks.drop_duplicates(subset=['source', 'target'])
 
     return ks

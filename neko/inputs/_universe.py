@@ -77,11 +77,10 @@ def phosphosite(
         organism: Literal["human", "mouse", "rat"] = 'human',
         kinase_substrate: str | None = None,
         regulatory_sites: str | None = None,
-        expand: bool = False,
         **kwargs
     ) -> Universe:
 
-    df = _psp.psp(organism, kinase_substrate, regulatory_sites, expand)
+    df = _psp.psp(organism, kinase_substrate, regulatory_sites)
 
     return Universe(df, name = 'phosphosite')
 

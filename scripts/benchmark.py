@@ -1,5 +1,5 @@
 import random
-import time
+import timeit
 import sys
 
 import numpy as np
@@ -173,6 +173,7 @@ def run(
         network,
         connection_type,
         max_len,
+        pw_genes,
     )
 
     result.update(param)
@@ -182,25 +183,36 @@ def run(
     return result
 
 
-def analyze_network(seeds, resources, connection_type, max_len):
-
-    start_time = time.time()
+def analyze_network(seeds, resources, connection_type, max_len, pw_genes):
 
     network = Network(seeds, resources=resources)
 
-    if connection_type == "complete":
-        network.complete_connection(maxlen=max_len, algorithm="dfs", only_signed=True, connect_with_bias=False,
-                                    consensus=False)
-    elif connection_type == "radial":
-        network.connect_network_radially(max_len=max_len - 1, only_signed=True, consensus=False)
+    calls = {
+        'complete': (
+            'network.complete_connection('
+                'maxlen=max_len, algorithm="dfs", only_signed=True,'
+                'connect_with_bias=False, consensus=False'
+            ')'
+        ),
+        'radial': (
+            'network.complete_radially('
+                'maxlen=max_len - 1, only_signed=True, consensus=False'
+            ')'
+        ),
+    }
 
-    end_time = time.time()
+    exec_time = timeit.timeit(
+        stmt = calls[connection_type],
+        setup = 'from __main__ import network, max_len',
+        globals = globals(),
+        number = 1,
+    )
 
     return {
-        "num_nodes": len(network.nodes),
-        "num_edges": len(network.edges),
-        "nodes_found": [node for node in all_pathway_genes if node in list(network.nodes["Genesymbol"])],
-        "execution_time": end_time - start_time,
+        'num_nodes': len(network.nodes),
+        'num_edges': len(network.edges),
+        'nodes_found': sorted(pw_genes & set(network.nodes['Genesymbol'])),
+        'execution_time': exec_time,
     }
 
 

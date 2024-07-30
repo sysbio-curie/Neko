@@ -2,6 +2,7 @@ import random
 import time
 import sys
 
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -11,10 +12,33 @@ from neko.core.network import Network
 from neko._inputs.resources import Resources
 
 
+NETWORKS = dict()
+
 OP_ANNOT_ARGS = {
     'entity_types': 'protein',
     'wide': True,
 }
+
+MATRIX = {
+    'pathways': 'wikipathways',
+    'seeds_percentage': [0.1, 0.2, 0.3],  # Percentage of pathway genes to use as seeds
+    'max_len': [2, 3],
+    'connection_type': ['complete', 'radial'],
+    'network': ['OmniPath', 'SIGNOR'],
+}
+
+NUM_ITERATIONS = 5  # Number of iterations for bootstrapping
+
+ONLY_PATHWAYS = {
+    'EGF/EGFR': 'WP437',  # Large pathway
+    'Wnt': 'WP428',  # Medium pathway
+    'mTOR': 'WP1471',  # Small pathway
+}
+ONLY_PATHWAYS = set()
+
+#
+# Database access
+#
 
 def ensure_msigdb():
 
@@ -91,11 +115,75 @@ def kegg_pathways():
     }
 
 
-def get_pathway_genes(pathway_id):
-    return pwpw.get_xref_list(pathway_id, 'H')
+def ensure_network(resource: str):
+
+    global NETWORKS
+
+    if resource not in NETWORKS:
+
+        NETWORKS[resource] = neko.Universe(resource)
+
+    return NETWORKS[resource]
+
+#
+# Benchmark workflow
+#
+
+def main():
+
+    result = []
+
+    matrix = MATRIX.copy()
+    matrix['iteration'] = range(NUM_ITERATIONS)
+    pathways = matrix.pop('pathways')
+    pathways = globals()[f'{pathways}_pathways']()
+    pathways = {k: v for k, v in pathways.items() if k in ONLY_PATHWAYS}
+    matrix['pathway'] = pathways.items()
+
+    for param in itertools.product(*matrix.values()):
+
+        param = dict(zip(matrix.keys(), param))
+        result.append(run(param, pathways))
+
+    df = pd.DataFrame(result)
+    df.to_csv('network_analysis_results.csv', index=False)
+
+    return df
+
+
+def run(
+        network,
+        pathway,
+        seed_percentage,
+        max_len,
+        connection_type,
+        iteration,
+    ):
+
+    pw_name, pw_genes = pathway
+    n_seed = max(3, int(np.round(len(pw_genes) * seed_percentage)))
+    seed_genes = random.sample(pw_genes, n_seed)
+    param = locals()
+    del param['pathway']
+
+    network = ensure_network(network)
+
+    result = analyze_network(
+        seed_genes,
+        network,
+        connection_type,
+        max_len,
+    )
+
+    result.update(param)
+    result['pw_size'] = len(pw_genes)
+    result['coverage'] = len(set(result['nodes_found'])) / len(pw_genes)
+
+    return result
 
 
 def analyze_network(seeds, resources, connection_type, max_len):
+
     start_time = time.time()
 
     network = Network(seeds, resources=resources)
@@ -115,74 +203,6 @@ def analyze_network(seeds, resources, connection_type, max_len):
         "execution_time": end_time - start_time,
     }
 
-
-# Main script
-pathways = {
-    "EGF/EGFR": "WP437",  # Large pathway
-    "Wnt": "WP428",  # Medium pathway
-    "mTOR": "WP1471",  # Small pathway
-}
-
-seeds_percentages = [0.1, 0.2, 0.3]  # Percentage of pathway genes to use as seeds
-max_lens = [2, 3]
-connection_types = ["complete", "radial"]
-resource_types = ["Omnipath", "SIGNOR"]
-num_iterations = 5  # Number of iterations for bootstrapping
-
-results = []
-
-print("Building resources...")
-
-# Load SIGNOR resources
-signor_resources = Resources()
-signor_resources.import_signor_tsv("../neko/_data/signor_db.tsv")
-omnipath_resources = op.interactions.AllInteractions().get()
-
-print("Analyzing networks...")
-
-for pathway_name, pathway_id in pathways.items():
-    all_pathway_genes = get_pathway_genes(pathway_id)
-
-    print("Starting analysis for pathway:", pathway_name)
-
-    for seeds_percentage in seeds_percentages: # progressively increase the number of seeds
-        seeds_number = max(3, int(len(all_pathway_genes) * seeds_percentage))  # Ensure at least 3 seeds
-
-        print("for seeds_percentage:", seeds_percentage, "seeds_number:", seeds_number)
-
-        for _ in range(num_iterations): # each iteration is a different random seed
-            random_seeds = random.sample(all_pathway_genes, seeds_number)
-
-            print("Iteration:", _ + 1)
-
-            for connection_type in connection_types:
-                for max_len in max_lens:
-                    for resource_type in resource_types:
-                        resources = signor_resources.interactions if resource_type == "SIGNOR" else omnipath_resources
-
-                        network_analysis = analyze_network(random_seeds, resources, connection_type, max_len)
-
-                        results.append({
-                            "pathway": pathway_name,
-                            "pathway_size": len(all_pathway_genes),
-                            "seeds_percentage": seeds_percentage,
-                            "seeds_number": seeds_number,
-                            "connection_type": connection_type,
-                            "max_len": max_len,
-                            "resource_type": resource_type,
-                            "num_nodes": network_analysis["num_nodes"],
-                            "num_edges": network_analysis["num_edges"],
-                            "nodes_found": len(network_analysis["nodes_found"]),
-                            "coverage": len(network_analysis["nodes_found"]) / len(all_pathway_genes),
-                            "execution_time": network_analysis["execution_time"],
-                            "initial_seeds": ",".join(random_seeds)
-                        })
-
-print("Analysis complete. Processing results...")
-
-# Convert results to DataFrame and save to CSV
-df = pd.DataFrame(results)
-df.to_csv("network_analysis_results.csv", index=False)
 
 # Visualization: Multi-variable comparison
 plt.figure(figsize=(20, 12))

@@ -1,5 +1,6 @@
 import random
 import time
+import sys
 
 import pandas as pd
 import seaborn as sns
@@ -8,6 +9,87 @@ import omnipath as op
 
 from neko.core.network import Network
 from neko._inputs.resources import Resources
+
+
+OP_ANNOT_ARGS = {
+    'entity_types': 'protein',
+    'wide': True,
+}
+
+def ensure_msigdb():
+
+    if not isinstance(globals().get('MSIGDB', None), pd.DataFrame):
+
+        globals()['MSIGDB'] = op.requests.Annotations.get(
+            resources = 'MSigDB',
+            **OP_ANNOT_ARGS,
+        )
+
+    return globals()['MSIGDB'].copy()
+
+
+def msigdb_pathways(resource: str):
+
+    msigdb = ensure_msigdb()
+    msigdb[msigdb.collection == resource]
+    msigdb.geneset.cat.remove_unused_categories()
+    pathways = dictof_sets(msigdb, 'geneset')
+
+    return pathways
+
+
+def dictof_sets(df: pd.DataFrame, groupby: str):
+
+    return df.groupby(groupby).genesymbol.apply(set).to_dict()
+
+
+def other_pathways(resource: str):
+
+    df = op.requests.Annotations.get(resource **OP_ANNOT_ARGS)
+
+    return dictof_sets(df, 'pathway')
+
+
+def signalink_pathways():
+
+    return other_pathways('SignaLink_pathway')
+
+
+def signor_pathways():
+
+    return other_pathways('SIGNOR')
+
+
+def wikipathways_pathways():
+
+    return {
+        k: v
+        for k, v in msigdb_pathways('wikipathways').items()
+        if 'SIGNALING' in k
+    }
+
+
+def biocarta_pathways():
+
+    return msigdb_pathways('biocarta_pathways')
+
+
+def pid_pathways():
+
+    return msigdb_pathways('pid_pathways')
+
+
+def kegg_pathways():
+
+    return {
+        k: v
+        for k, v in msigdb_pathways('kegg_pathways').items()
+        if (
+            'SYNTHESIS' not in k and
+            'DEGRADATION' not in k
+        )
+    }
+
 
 def get_pathway_genes(pathway_id):
     return pwpw.get_xref_list(pathway_id, 'H')

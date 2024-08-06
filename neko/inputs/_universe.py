@@ -111,12 +111,13 @@ class Universe:
         """
 
         self._resources = {}
+        self._directed = {}
         self.interactions = None
         self.add_resources(resources, **param)
         self.build()
 
 
-    def add_resources(self, resources, **param) -> None:
+    def add_resources(self, resources, directed: bool = True, **param) -> None:
 
         if isinstance(resources, str):
 
@@ -133,17 +134,17 @@ class Universe:
         name = param.get('name', '_default')
         columns = param.get('columns', {})
 
+        if isinstance(resources, str) and resources in _METHODS:
+
+            name = name or resources
+            resources = _METHODS[resources](**param)
+
         if isinstance(resources, pd.DataFrame):
 
-            self._resources[name] = self._check_columns(resources, columns)
-
-        elif isinstance(resources, str) and resources in _METHODS:
-
-            name = resources
-
             self._resources[name] = self._check_columns(
-                _METHODS[resources](**param),
+                resources,
                 columns,
+                directed = directed,
             )
 
         elif isinstance(resources, dict):
@@ -152,18 +153,41 @@ class Universe:
                 k: self._check_columns(v, columns)
                 for k, v in resources.items()
             }
-            self._resources.update(resources)
+
+            if isinstance(directed, bool):
+
+                directed = {k: directed for k in resources.keys()}
+
+            for name, resource in resoures.items():
+
+                self.add_resources(
+                    resource,
+                    directed = directed[name],
+                    name = name,
+                    **param,
+                )
 
         elif isinstance(resources, Iterable):
 
-            for r in resources:
+            names = [f'{name}_{i}' for i in range(len(resources))]
 
-                self.add_resources(r, **param)
+            if isinstance(directed, bool):
+
+                directed = [directed] * len(resources)
+
+            for r, d, n in zip(resources, directed, names):
+
+                self.add_resources(r, directed = d, name = n, **param)
 
 
     @staticmethod
-    def _check_columns(df: pd.DataFrame, columns: dict) -> pd.DataFrame:
-            # If columns is provided, rename the columns of the incoming df
+    def _check_columns(
+            df: pd.DataFrame,
+            columns: dict,
+            directed: bool = True,
+        ) -> pd.DataFrame:
+
+        # If columns is provided, rename the columns of the incoming df
         if columns:
             df = df.rename(columns=columns)
 
@@ -182,6 +206,10 @@ class Universe:
 
             logging.warning("The incoming df is missing some required columns: %s", missing_columns)
             logging.warning("This might lead to issues in running the package.")
+
+        if not directed:
+
+            df = _misc.undirected_to_mutual(df)
 
         return df
 

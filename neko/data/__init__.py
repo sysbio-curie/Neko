@@ -19,3 +19,17 @@ def phosphosite_kinase_substrate():
 def phosphosite_regulatory_sites():
 
     return _retrieve('phosphosite/regulatory-sites.tsv')
+
+
+def huri(dataset: str = 'HI-union', translated = True) -> pd.DataFrame:
+
+    url = (
+        'https://github.com/sysbio-curie/Medulloblastoma_project/'
+        'raw/main/Huri_analysis/data/%s%s.csv'
+    )
+
+    url = url % (dataset, '_translated' if translated else '')
+
+    df = _ncdata._open(url, df = True)
+
+    return df

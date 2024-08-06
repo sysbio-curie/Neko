@@ -24,14 +24,19 @@ _REQUIRED_COLS = {
     'target',
 }
 
+MANDATORY_BOOL_COLS = [
+    'is_directed',
+    'is_stimulation',
+    'is_inhibition',
+    'form_complex',
+]
+
 MANDATORY_COLUMNS = [
     'source',
     'target',
-    'is_directed',
-    'is_inhibition',
-    'is_stimulation',
-    'form_complex',
 ]
+MANDATORY_COLUMNS.extend(MANDATORY_BOOL_COLS)
+
 
 def network_universe(
         resource: Literal['omnipath'] | pd.DataFrame = 'omnipath',
@@ -166,8 +171,9 @@ class Universe:
 
             df = _misc.split_effect(df)
 
-        df = _misc.bool_col(df, 'is_stimulation')
-        df = _misc.bool_col(df, 'is_inhibition')
+        for col in MANDATORY_BOOL_COLS:
+
+            df = _misc.bool_col(df, col)
 
         # Check if the df contains the required columns
         missing_columns = set(MANDATORY_COLUMNS) - set(df.columns)

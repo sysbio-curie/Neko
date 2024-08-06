@@ -54,3 +54,25 @@ def split_effect(
     df.rename({col: 'is_stimulation'}, inplace = True, axis = 1)
 
     return df
+
+
+def undirected_to_mutual(
+        df: pd.DataFrame,
+        source_col: str = 'source',
+        target_col: str = 'target',
+    ):
+
+    cols = {source_col: target_col, target_col: source_col}
+
+    df = (
+        pd.concat([
+            df,
+            df.copy().rename(columns = cols),
+        ]).
+        drop_duplicates(
+            subset = [source_col, target_col],
+            ignore_index = True,
+        )
+    )
+
+    return df

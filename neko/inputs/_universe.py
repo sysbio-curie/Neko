@@ -10,6 +10,7 @@ from pypath_common import misc as _common
 from ._db.omnipath import omnipath_universe
 from ._db import psp as _psp
 from ._db import _misc
+from ._db import huri as _huri
 
 """
 Access to generic networks from databases, files and standard formats.
@@ -83,6 +84,13 @@ def phosphosite(
     df = _psp.psp(organism, kinase_substrate, regulatory_sites)
 
     return Universe(df, name = 'phosphosite')
+
+
+def huri(dataset: str = 'HI-union') -> Universe:
+
+    df = _huri.huri(dataset)
+
+    return Universe(df, directed = False, name = 'huri')
 
 
 class Universe:

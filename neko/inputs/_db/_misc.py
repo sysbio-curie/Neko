@@ -13,6 +13,11 @@ def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:
         -1: False,
         0: False,
     }
+
+    if col not in df.columns:
+
+        df[col] = False
+
     df[col] = df[col].replace(mappings).astype(bool)
 
     return df

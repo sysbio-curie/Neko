@@ -23,16 +23,16 @@ def signor(path: str) -> pd.DataFrame:
         return substr in field
 
     # Filter out the rows where EFFECT is "form complex" or "unknown"
-    df = df[~df['EFFECT'] == "unknown"]
+    df = df[df['EFFECT'] != "unknown"]
 
     # Transform the original dataframe into the desired format
     df = pd.DataFrame({
         'source': df['IDA'],
         'target': df['IDB'],
         'is_directed': df['DIRECT'],
-        'is_stimulation': df['EFFECT'].apply(contains, 'up-regulates'),
-        'is_inhibition': df['EFFECT'].apply(contains, 'down-regulates'),
-        'form_complex': df['EFFECT'].apply(contains, 'complex'),
+        'is_stimulation': df['EFFECT'].apply(lambda x: contains(x, 'up-regulates')),
+        'is_inhibition': df['EFFECT'].apply(lambda x: contains(x, 'down-regulates')),
+        'form_complex': df['EFFECT'].apply(lambda x: contains(x, 'complex')),
         'consensus_direction': False,  # Assuming no data provided, set all to False
         'consensus_stimulation': False,  # Assuming no data provided, set all to False
         'consensus_inhibition': False,  # Assuming no data provided, set all to False

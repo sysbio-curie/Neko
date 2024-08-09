@@ -435,7 +435,8 @@ class Network:
 
         # Check if the edge represents inhibition or stimulation and set the effect accordingly
         effect = check_sign(edge)
-        references = edge["references"].values[0]
+        # check if the column reference is present in the edge dataframe
+        references = edge["references"].values[0] if "references" in edge.columns else None
         # Get the type value from the edge DataFrame or set it to None
         edge_type = edge["type"].values[0] if "type" in edge.columns else None
 
@@ -461,7 +462,7 @@ class Network:
         existing_edge = self.edges[(self.edges["source"] == edge["source"].values[0]) &
                                    (self.edges["target"] == edge["target"].values[0]) &
                                    (self.edges["Effect"] == effect)]
-        if not existing_edge.empty:
+        if not existing_edge.empty and references is not None:
             self.edges.loc[existing_edge.index, "References"] += "; " + str(references)
         else:
             # Concatenate the new edge DataFrame with the existing edges in the graph

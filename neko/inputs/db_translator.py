@@ -9,7 +9,7 @@ from typing import List, Dict, Union
 from unipressed.id_mapping.types import From, To
 from unipressed import IdMappingClient
 import itertools
-import sys
+import random
 from IPython.display import display, HTML
 
 class IDTranslator:
@@ -126,7 +126,8 @@ class IDTranslator:
             for attempt in range(max_retries):
                 try:
                     request = IdMappingClient.submit(source=source_type, dest=dest_type, ids={id_})
-                    time.sleep(1)  # Sleep for 1 second
+                    # Add an exponential backoff with jitter to avoid thundering herd problem
+                    time.sleep(min(1 ** attempt + random.uniform(0, 1), 10))
                     result = list(request.each_result())
                     results[id_] = [m['to'] for m in result] if result else []
                     break
@@ -134,7 +135,6 @@ class IDTranslator:
                     if attempt == max_retries - 1:
                         logging.error(f"Error processing {id_} after {max_retries} attempts: {str(e)}")
                         results[id_] = []
-                    time.sleep(min(2 ** attempt, 10))  # Cap the backoff at 10 seconds
         return results
 
     def translate(self):

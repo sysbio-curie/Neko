@@ -329,20 +329,28 @@ class Network:
         This function does not return anything. It modifies the `nodes` attribute of the `Network` object in-place.
         """
         # Get the list of nodes that exist in the resources database
-        existing_nodes = self.check_nodes(self.nodes["Uniprot"].tolist())
+        existing_nodes = list(set(self.check_nodes(self.nodes["Uniprot"].tolist()))
+                              |
+                              set(self.check_nodes(self.nodes["Genesymbol"].tolist())))
 
-        # Find the nodes in the network that are not in the list of existing nodes
-        missing_nodes = [node for node in self.nodes["Uniprot"].tolist() if node not in existing_nodes]
-
-        # Remove the missing nodes from the network
-        self.nodes = self.nodes[~self.nodes["Uniprot"].isin(missing_nodes)]
+        # Create a mask for nodes that exist in either Uniprot or Genesymbol lists
+        existing_mask = self.nodes["Uniprot"].isin(existing_nodes) | self.nodes["Genesymbol"].isin(existing_nodes)
+        # Identify removed nodes
+        removed_nodes = self.nodes[~existing_mask]
 
         # Print a warning with the name of the missing nodes
-        if missing_nodes:
+        if not removed_nodes.empty:
+            missing_uniprot = removed_nodes["Uniprot"].tolist()
+            missing_genesymbol = removed_nodes["Genesymbol"].tolist()
+            missing_identifiers = list(set(missing_uniprot + missing_genesymbol))  # Remove duplicates
             print(
                 "Warning: The following nodes were not found in the resources database and have been removed from the "
                 "network:",
-                ", ".join(missing_nodes))
+                ", ".join(str(node) for node in missing_identifiers if pd.notna(node))
+            )
+        # Keep only the nodes that exist in the resources database
+        self.nodes = self.nodes[existing_mask]
+
         return
 
     def add_node(self, node: str, from_sif: bool = False) -> None:
@@ -386,7 +394,7 @@ class Network:
         else:
             new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
 
-        if not self.check_node(uniprot):
+        if not self.check_node(uniprot) and not self.check_node(genesymbol):
             print("Error: node %s is not present in the resources database" % node)
             return
 

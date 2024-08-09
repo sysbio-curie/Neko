@@ -108,6 +108,10 @@ class NetworkVisualizer:
                 arrowhead = 'diamond'
                 color = 'purple'
                 dir = 'forward'
+            elif effect == 'undefined':
+                arrowhead = 'normal'  # Default arrow
+                color = 'black'
+                dir = 'forward'
             else:
                 arrowhead = 'normal'  # Default arrow
                 color = 'black'

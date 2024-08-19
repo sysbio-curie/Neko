@@ -70,6 +70,8 @@ class NetworkVisualizer:
         self.__dataframe_edges['source'] = self.__dataframe_edges['source'].apply(wrap_node_name)
         self.__dataframe_edges['target'] = self.__dataframe_edges['target'].apply(wrap_node_name)
 
+        self.__dataframe_edges = self.__dataframe_edges.drop_duplicates(subset=['source', 'target', 'Type', 'Effect'])
+
         self.__add_edges_to_graph()
         self.__add_nodes_to_graph()
 

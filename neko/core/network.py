@@ -113,7 +113,7 @@ def mapping_node_identifier(node: str) -> list[str]:
     if mapping.id_from_label0(node):
         # Convert UniProt ID to gene symbol
         uniprot = mapping.id_from_label0(node)
-        if uniprot.startswith("MIMAT"):
+        if uniprot.startswith("MI"):
             genesymbol = uniprot
         else:
             # Set the UniProt ID as the 'Uniprot' value in the new entry

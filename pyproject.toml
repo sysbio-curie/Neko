@@ -33,7 +33,7 @@ readme = "README.rst"
 [tool.poetry.dependencies]
 toml = "*"
 notebook = "*"
-python = ">=3.9,<4.0"
+python = ">=3.10,<4.0"
 omnipath = { git = "https://github.com/saezlab/omnipath.git", branch = "main" }
 pypath-omnipath = { git = "https://github.com/saezlab/pypath.git", branch = "master" }
 networkcommons = { git = "https://github.com/saezlab/networkcommons.git", branch = "dev-stable" }

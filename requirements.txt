@@ -1,0 +1,9 @@
+# Git-based dependencies
+git+https://github.com/saezlab/omnipath.git@main#egg=omnipath
+git+https://github.com/saezlab/pypath.git@master#egg=pypath-omnipath
+git+https://github.com/saezlab/networkcommons.git@dev-stable#egg=networkcommons
+
+# Git-based dev dependencies
+git+https://github.com/deeenes/jupyter_contrib_nbextensions.git@master#egg=jupyter-contrib-nbextensions
+git+https://github.com/deeenes/nbsphinx.git@timings#egg=nbsphinx
+

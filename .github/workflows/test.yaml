@@ -29,14 +29,36 @@ jobs:
         pip install .[dev,test]
         pip install pytest pytest-cov codecov
 
+    - name: Check for test files
+      id: check_tests
+      run: |
+        if ls tests/*_test.py 1> /dev/null 2>&1; then
+          echo "Tests found."
+          echo "tests-found=true" >> $GITHUB_ENV
+        else
+          echo "No tests found. Skipping pytest."
+          echo "tests-found=false" >> $GITHUB_ENV
+        fi
+
     - name: Run tests
+      if: env.tests-found == 'true'
       env:
         MPLBACKEND: agg
         PLATFORM: ${{ matrix.os }}
       run: |
         pytest -v --cov=./ --cov-report=xml
 
+    - name: Check for coverage report
+      if: env.tests-found == 'true'
+      run: |
+        if [ -f ./coverage.xml ]; then
+          echo "coverage-found=true" >> $GITHUB_ENV
+        else
+          echo "coverage-found=false" >> $GITHUB_ENV
+        fi
+
     - name: Upload coverage to Codecov
+      if: env.coverage-found == 'true'
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml

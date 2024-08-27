@@ -1,5 +1,9 @@
+.. figure:: docs/src/neko_logo.png
+   :align: right
+   :figwidth: 200px
+
 ==================
-NeKo
+NeKo: Network Konstructor
 ==================
 
 .. image:: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg
@@ -10,12 +14,9 @@ NeKo
    :target: https://sysbio-curie.github.io/Neko/
    :alt: Documentation
 
-NeKo: Network Konstructor
--------------------------------------------------------------------
-
 Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It's built on top of `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_, and `Atopo <https://github.com/druglogics/atopo>`_.
 
-**Note**: Neko is currently in development and approaching its final stages. It is not yet available on PyPI.
+**Note**: Neko is currently in development and approaching its final stages. It is available on pip under the name "nekomata".
 
 Features
 --------

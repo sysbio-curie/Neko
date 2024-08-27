@@ -47,7 +47,7 @@ Installation
 
    .. code-block:: bash
 
-       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/requirements.txt
+       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
 
 This two-step process will install both the core `NeKo` package and its external dependencies.
 

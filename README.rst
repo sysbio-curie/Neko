@@ -33,11 +33,11 @@ Installation
 
 1. **Install `NeKo` from PyPI**:
 
-   First, install the main package from PyPI (pyneko for python-NeKo):
+   First, install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):
 
    .. code-block:: bash
 
-       pip install pyneko
+       pip install nekomata
 
 2. **Install External Dependencies**:
 
@@ -45,9 +45,12 @@ Installation
 
    .. code-block:: bash
 
-       pip install -r https://github.com/sysbio-curie/Neko/requirements.txt
+       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/requirements.txt
 
 This two-step process will install both the core `NeKo` package and its external dependencies.
+
+Installation from Source
+------------------------
 
 For the latest development version, you can still clone the repository and install directly from the source:
 
@@ -92,9 +95,11 @@ This project is a collaborative effort with Dénes Turei and Asmund Flobak.
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
 
-version 0.9.3
+version 0.9.4
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.
+- Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resource to mine for interactions.
+- Database translation: The package provides methods to convert the identifiers of a database storing edges list, into Uniprot.
 - Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.
 - Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network. There is also an option to compress the network by substituting specified genes with the phenotype name.

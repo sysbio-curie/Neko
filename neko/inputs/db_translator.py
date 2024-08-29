@@ -161,7 +161,7 @@ class IDTranslator:
         self.load_progress()
 
         # calculate the ids that have not been translated yet
-        remaining_ids = set([key for key, value in self.id_mapping.items() if isinstance(value, list) and not value])
+        remaining_ids = self.unique_ids - set(self.id_mapping.keys())
         id_batches = [list(remaining_ids)[i:i + self.batch_size] for i in range(0, len(remaining_ids), self.batch_size)]
 
         with Pool(self.processes) as pool:

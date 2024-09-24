@@ -93,9 +93,9 @@ You can find these notebooks in the `notebooks` directory of the repository.
 Acknowledgements
 ----------------
 
-This project is a collaborative effort with Dénes Turei and Asmund Flobak.
+This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.
 
-Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
 version 0.9.4
 --------------

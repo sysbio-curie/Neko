@@ -65,6 +65,23 @@ For the latest development version, you can still clone the repository and insta
 
 This will give you the latest version of `NeKo` (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.
 
+Troubleshooting
+---------------
+
+If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
+You can install it on Linux system with the following command:
+
+.. code-block:: bash
+
+    sudo apt-get install python3-dev graphviz libgraphviz-dev
+
+or on Mac system:
+
+.. code-block:: bash
+
+    brew install python3-dev graphviz libgraphviz-dev
+
+For more details visit: https://graphviz.org/download/
 
 Documentation
 -------------

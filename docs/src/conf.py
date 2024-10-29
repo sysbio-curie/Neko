@@ -13,9 +13,11 @@ from datetime import datetime
 #
 import sys
 import pathlib
+import os
 
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
+sys.path.insert(0, os.path.abspath('../../'))
 
 from neko._metadata import __version__, __author__  # noqa: E402
 
@@ -23,7 +25,7 @@ from neko._metadata import __version__, __author__  # noqa: E402
 
 project = 'neko'
 version = __version__
-author = ', '.join(__author__)
+author = 'Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone'
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Sysbio-Curie'
 repository_url = 'https://github.com/sysbio-curie/Neko'

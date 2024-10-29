@@ -30,17 +30,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry config virtualenvs.create false
         poetry install --no-interaction
-
-    - name: Install external dependencies
-      run: |
-        pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
 
     - name: Build documentation
       run: |
-        cd docs
-        poetry run make html
+        poetry run sphinx-build -b html docs/src docs/_build/html -v
 
     - name: Debug information
       run: |

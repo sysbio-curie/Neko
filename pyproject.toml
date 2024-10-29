@@ -41,6 +41,11 @@ jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
 pandas = "2.2.2"
+omnipath = "*"
+pypath-omnipath = "*"
+networkcommons = { git = "https://github.com/saezlab/networkcommons.git", branch = "main" }
+nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
+jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
 
 [tool.poetry.dev-dependencies]
 pandoc = "*"

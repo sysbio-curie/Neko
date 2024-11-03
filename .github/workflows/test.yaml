@@ -7,90 +7,85 @@ on:
     branches: [main]
 
 jobs:
+
   test:
+
     runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -e {0}
+
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.10', '3.11', '3.12']
         os: [ubuntu-latest, macos-latest]
 
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python }}
+
     steps:
-    - uses: actions/checkout@v2
+
+    - name: Check out
+      uses: actions/checkout@main
+
+    - name: Install system dependencies on Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y graphviz graphviz-dev
+
+    - name: Install system dependencies on macOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        brew install graphviz
+        echo "PATH=\"$(brew --prefix graphviz)/bin:$PATH\"" >> "$GITHUB_ENV"
+        echo "CFLAGS=\"-I$(brew --prefix graphviz)/include\"" >> "$GITHUB_ENV"
+        echo "LDFLAGS=\"-L$(brew --prefix graphviz)/lib\"" >> "$GITHUB_ENV"
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
-    -   name: Install system dependencies on Ubuntu
-        if: runner.os == 'Linux'
-        run: |
-            sudo apt-get update
-            sudo apt-get install -y graphviz libgraphviz-dev
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
 
-    -   name: Install system dependencies on macOS
-        if: runner.os == 'macOS'
-        run: brew install graphviz
-
-    - name: Install pygraphviz on Ubuntu
-      if: runner.os == 'Linux'
-      run: python -m pip install pygraphviz
-
-    -   name: Install pygraphviz on macOS
-        if: runner.os == 'macOS'
-        env:
-            BREW_GRAPHVIZ_PREFIX: $(brew --prefix graphviz)
-            CFLAGS: -I${BREW_GRAPHVIZ_PREFIX}/include
-            LDFLAGS: -L${BREW_GRAPHVIZ_PREFIX}/lib
-            ARCHFLAGS: "-arch x86_64"
-        run: |
-            echo "Graphviz is installed at: $BREW_GRAPHVIZ_PREFIX"
-            echo "CFLAGS: $CFLAGS"
-            echo "LDFLAGS: $LDFLAGS"
-            echo "ARCHFLAGS: $ARCHFLAGS"
-            python -m pip install pygraphviz --no-binary pygraphviz
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
-        python -m pip install --upgrade pip
-        pip install .[dev,test]
-        pip install pytest pytest-cov codecov
+        poetry install --no-interaction --no-root
 
-    - name: Check for test files
-      id: check_tests
+    - name: Install library
+      run: poetry install --no-interaction
+
+    - name: Tests and coverage
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          poetry run pytest -v --cov --color=yes --durations=0
+
+    - name: Tests
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
-        if ls tests/*_test.py 1> /dev/null 2>&1; then
-          echo "Tests found."
-          echo "tests-found=true" >> $GITHUB_ENV
-        else
-          echo "No tests found. Skipping pytest."
-          echo "tests-found=false" >> $GITHUB_ENV
-        fi
+        poetry run pytest -v --cov --color=yes --durations=0
 
-    - name: Run tests
-      if: env.tests-found == 'true'
+    - name: Upload coverage reports to Codecov
+      if: ${{ github.event_name == 'push' }}
       env:
-        MPLBACKEND: agg
-        PLATFORM: ${{ matrix.os }}
-      run: |
-        pytest -v --cov=./ --cov-report=xml
-
-    - name: Check for coverage report
-      if: env.tests-found == 'true'
-      run: |
-        if [ -f ./coverage.xml ]; then
-          echo "coverage-found=true" >> $GITHUB_ENV
-        else
-          echo "coverage-found=false" >> $GITHUB_ENV
-        fi
-
-    - name: Upload coverage to Codecov
-      if: env.coverage-found == 'true'
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        env_vars: OS,PYTHON
-        name: codecov-umbrella
-        fail_ci_if_error: true
+        CODECOV_NAME: ${{ matrix.python }}-${{ matrix.os }}
+        run: |
+          poetry run codecovcli --verbose upload-process -t ${{ secrets.CODECOV_TOKEN }} -n 'fast'-${{ github.run_id }}
+-F fast

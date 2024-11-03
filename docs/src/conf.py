@@ -13,9 +13,11 @@ from datetime import datetime
 #
 import sys
 import pathlib
+import os
 
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
+sys.path.insert(0, os.path.abspath('../..'))
 
 from neko._metadata import __version__, __author__  # noqa: E402
 
@@ -23,7 +25,7 @@ from neko._metadata import __version__, __author__  # noqa: E402
 
 project = 'neko'
 version = __version__
-author = ', '.join(__author__)
+author = 'Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone'
 years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Sysbio-Curie'
 repository_url = 'https://github.com/sysbio-curie/Neko'
@@ -123,7 +125,7 @@ html_context = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['../src/_static']
+html_static_path = ['./_static']
 
 html_show_sphinx = False
 html_logo = 'neko_logo.png'

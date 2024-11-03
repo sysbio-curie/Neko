@@ -78,5 +78,5 @@ def get_metadata():
 
 metadata = get_metadata()
 __version__ = metadata.get('version', None)
-__author__ = metadata.get('author', None)
+__author__ = ["Marco Ruscone", "Eirini Tsirvouli", "Andrea Checcoli", "Dénes Turei", "Aasmund Flobak", "Emmanuel Barillot", "Loredana Martignetti", "Julio Saez-Rodriguez", "Laurence Calzone"]
 __license__ = metadata.get('license', None)

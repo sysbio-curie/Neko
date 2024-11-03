@@ -277,7 +277,7 @@ class Network:
             self.__drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
 
-        elif sif_files := self._init_args['sif_file']:
+        elif sif_file := self._init_args['sif_file']:
             self.initial_nodes = []
             self.__load_network_from_sif(sif_file)
 

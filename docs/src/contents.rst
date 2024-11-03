@@ -31,6 +31,7 @@ Contents
    notebooks/7_tissue_mapping
    notebooks/8_Compare_networks
    notebooks/9-Recreating_famous_pathways
+   notebooks/10_Import_and_complete_a_network
 
 .. toctree::
    :maxdepth: 1

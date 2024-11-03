@@ -75,11 +75,11 @@ class NetworkVisualizer:
         self.__add_edges_to_graph()
         self.__add_nodes_to_graph()
 
-    def __set_custom_edge_colors(self, custom_edge_colors):
+    def set_custom_edge_colors(self, custom_edge_colors):
         # Update the edge_colors dictionary with custom mappings
         self.__edge_colors.update(custom_edge_colors)
 
-    def __set_node_colors(self, node_colors):
+    def set_node_colors(self, node_colors):
         # Update the node_colors dictionary with custom node colorsdataframe_nodes
         self.__node_colors.update(node_colors)
 
@@ -161,6 +161,12 @@ class NetworkVisualizer:
             highlight_nodes (list): List of nodes to highlight.
             highlight_color (str): Color to use for highlighting nodes.
         """
+        # Apply colors from __node_colors if available
+        if self.__node_colors:
+            for node, color in self.__node_colors.items():
+                if node in self.__dataframe_nodes['Genesymbol'].values:
+                    self.graph.node(node, style='filled', fillcolor=color)
+
         # If highlight_nodes is provided, set the color for each node in the list
         if highlight_nodes is not None:
             for node in highlight_nodes:

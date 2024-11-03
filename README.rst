@@ -1,10 +1,11 @@
+=========================
+NeKo: Network Konstructor
+=========================
+
 .. figure:: docs/src/neko_logo.png
    :align: right
-   :figwidth: 200px
-
-==================
-NeKo: Network Konstructor
-==================
+   :figwidth: 50px
+   :alt: NeKo Logo
 
 .. image:: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg
    :target: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml
@@ -46,7 +47,7 @@ Installation
 
    .. code-block:: bash
 
-       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/requirements.txt
+       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
 
 This two-step process will install both the core `NeKo` package and its external dependencies.
 
@@ -64,6 +65,23 @@ For the latest development version, you can still clone the repository and insta
 
 This will give you the latest version of `NeKo` (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.
 
+Troubleshooting
+---------------
+
+If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
+You can install it on Linux system with the following command:
+
+.. code-block:: bash
+
+    sudo apt-get install python3-dev graphviz libgraphviz-dev
+
+or on Mac system:
+
+.. code-block:: bash
+
+    brew install python3-dev graphviz libgraphviz-dev
+
+For more details visit: https://graphviz.org/download/
 
 Documentation
 -------------
@@ -92,9 +110,9 @@ You can find these notebooks in the `notebooks` directory of the repository.
 Acknowledgements
 ----------------
 
-This project is a collaborative effort with Dénes Turei and Asmund Flobak.
+This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.
 
-Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
 version 0.9.4
 --------------

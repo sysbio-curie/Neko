@@ -1,34 +1,124 @@
 ==================
-Neko
+ Neko 
 ==================
 
+.. figure:: docs/src/neko_logo.png
+   :align: right
+   :figwidth: 50px
+   :alt: NeKo Logo
+
+.. image:: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg
    :target: https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml
    :alt: Tests
 
-.. image:: https://img.shields.io/readthedocs/omniflow_project
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: https://sysbio-curie.github.io/Neko/
    :alt: Documentation
 
-Package to extract, visualize, convert and study interactions from database into executable activity flow based model.
-Neko, is based on `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_ and `Atopo <https://github.com/druglogics/atopo>`_.
+Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It's built on top of `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_, and `Atopo <https://github.com/druglogics/atopo>`_.
 
-This is a work-in-progress package made in collaboration with Dénes Turei and Asmund Flobak.
+**Note**: Neko is currently in development and approaching its final stages. It is available on pip under the name "nekomata".
 
-Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei.
+Features
+--------
 
-Installation:
+- Network creation and manipulation
+- Connection of nodes and subnetworks
+- Gene-to-phenotype mapping
+- Network visualization
+- Interaction database integration
 
-All the dependencies are listed in the pyproject.toml file. To install the package, you can use the following command:
+Installation
+------------
+
+`NeKo` is still in its alpha version. You can install it from PyPI and also install the necessary external dependencies.
+
+1. **Install `NeKo` from PyPI**:
+
+   First, install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):
+
+   .. code-block:: bash
+
+       pip install nekomata
+
+2. **Install External Dependencies**:
+
+   `NeKo` requires some external dependencies that are not available on PyPI. To install these dependencies, run:
+
+   .. code-block:: bash
+
+       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
+
+This two-step process will install both the core `NeKo` package and its external dependencies.
+
+Installation from Source
+------------------------
+
+For the latest development version, you can still clone the repository and install directly from the source:
 
 .. code-block:: bash
 
+    git clone https://github.com/sysbio-curie/Neko.git
+    cd Neko
     pip install .
+    pip install -r requirements.txt
 
-CURRENT FEATURES:
+This will give you the latest version of `NeKo` (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.
 
-version 0.9.1
+Troubleshooting
+---------------
+
+If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
+You can install it on Linux system with the following command:
+
+.. code-block:: bash
+
+    sudo apt-get install python3-dev graphviz libgraphviz-dev
+
+or on Mac system:
+
+.. code-block:: bash
+
+    brew install python3-dev graphviz libgraphviz-dev
+
+For more details visit: https://graphviz.org/download/
+
+Documentation
+-------------
+
+For full documentation, including API reference and detailed tutorials, visit our `GitHub Pages documentation <https://sysbio-curie.github.io/Neko/>`_.
+
+Jupyter Notebooks
+-----------------
+
+We provide a comprehensive set of Jupyter notebooks that offer a detailed and user-friendly explanation of the package. These notebooks cover all modules of NeKo and provide a complete overview of how to use the package:
+
+
+1) Usage
+2) Build network using user-defined resources
+3) Stepwise connection: a focus on the INE algorithm
+4) Connect to upstream components
+5) Build network based on kinase-phosphosite interactions
+6) Connect to downstream Gene Ontology terms.
+7) Map tissue expression
+8) Network comparison
+9) Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo
+
+
+You can find these notebooks in the `notebooks` directory of the repository.
+
+Acknowledgements
+----------------
+
+This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.
+
+Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
+
+version 0.9.4
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.
+- Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resource to mine for interactions.
+- Database translation: The package provides methods to convert the identifiers of a database storing edges list, into Uniprot.
 - Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.
 - Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network. There is also an option to compress the network by substituting specified genes with the phenotype name.

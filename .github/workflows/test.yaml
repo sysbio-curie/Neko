@@ -86,5 +86,5 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         env:
           CODECOV_NAME: ${{ matrix.python }}-${{ matrix.os }}
-          run: |
-            poetry run codecovcli --verbose upload-process -t ${{ secrets.CODECOV_TOKEN }} -n 'fast'-${{ github.run_id }} -F fast
+        run: |
+          poetry run codecovcli --verbose upload-process -t ${{ secrets.CODECOV_TOKEN }} -n 'fast'-${{ github.run_id }} -F fast

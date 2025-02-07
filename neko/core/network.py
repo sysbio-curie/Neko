@@ -1,233 +1,13 @@
 from __future__ import annotations
 from typing import List, Optional
-from pypath.utils import mapping
 from itertools import combinations
-import pandas as pd
 from ..inputs import _universe
 from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 import copy
 from .._annotations.gene_ontology import Ontology
+from tools import *
 
-import networkx as nx
-
-
-def is_connected(network) -> bool:
-    """
-    This function checks if a network is connected. It takes a Network object as input and returns True if the network
-    is connected, otherwise it returns False.
-
-    Args:
-        - network: A Network object representing the network to be checked.
-
-    Returns:
-        - bool
-    """
-    # Create a graph from the edges
-    g = nx.from_pandas_edgelist(network.edges, 'source', 'target')
-    # Add isolated nodes to the graph
-    all_nodes = set(network.nodes['Uniprot'])
-    g.add_nodes_from(all_nodes)
-    # Check if the graph is connected
-    return nx.is_connected(g)
-
-
-def check_sign(interaction: pd.DataFrame, consensus: bool = False) -> str:
-    """
-    This function checks the sign of an interaction in the Omnipath format (Pandas DataFrame or Series).
-    The attribute "consensus" checks for the consistency of the sign of the interaction among the references.
-
-    Args:
-        - interaction: A pandas DataFrame or Series representing the interaction.
-        - consensus: A boolean indicating whether to check for consensus among references.
-
-    Returns:
-        - A string indicating the sign of the interaction: "stimulation", "inhibition", "form complex", or "undefined".
-    """
-    # Handle both DataFrame and Series input
-    if isinstance(interaction, pd.DataFrame):
-        interaction = interaction.iloc[0]
-
-    if consensus:
-        if interaction.get("consensus_inhibition") and interaction.get("consensus_stimulation"):
-            return "bimodal"
-        if interaction.get("consensus_stimulation"):
-            return "stimulation"
-        elif interaction.get("consensus_inhibition"):
-            return "inhibition"
-        else:
-            return "undefined"
-    else:
-        # Check if it is both stimulation and inhibition
-        if interaction.get("is_stimulation", True) and interaction.get("is_inhibition", True):
-            return "bimodal"
-        if interaction.get("is_stimulation", False):
-            return "stimulation"
-        elif interaction.get("is_inhibition", False):
-            return "inhibition"
-        # Check for "form_complex" column existence
-        elif interaction.get("form_complex", False):
-            return "form complex"
-        else:
-            return "undefined"
-
-
-def check_gene_list_format(gene_list: list[str]) -> bool:
-    """
-    This function checks the format of the gene list and returns True if the gene list is in Uniprot format,
-    False if the gene list is in genesymbol format.
-
-    Args:
-        - gene_list: A list of gene identifiers. The gene identifiers can be either Uniprot identifiers or genesymbols.
-
-    Returns:
-        - A boolean indicating whether the gene list is in Uniprot format (True) or genesymbol format (False).
-    """
-    # Check if the gene list contains Uniprot identifiers
-    if all(mapping.id_from_label0(gene) for gene in gene_list):
-        return True
-    # Check if the gene list contains genesymbols
-    elif all(mapping.label(gene) for gene in gene_list):
-        return False
-
-
-def mapping_node_identifier(node: str) -> list[str]:
-    """
-    This function takes a node identifier and returns a list containing the possible identifiers for the node.
-    The identifiers include a complex string, a genesymbol, and a uniprot identifier. The function uses the
-    mapping.id_from_label0 and mapping.label functions from the pypath.utils.mapping module to translate the node
-    identifier into these different formats.
-
-    Args:
-        - node: A string representing the node identifier. The node identifier can be a genesymbol, a uniprot identifier,
-                or a complex string.
-
-    Returns:
-        - A list containing the complex string, genesymbol, and uniprot identifier for the node. If the node identifier
-          cannot be translated into one of these formats, the corresponding value in the list is None.
-    """
-    complex_string = None
-    genesymbol = None
-    uniprot = None
-
-    if mapping.id_from_label0(node):
-        # Convert UniProt ID to gene symbol
-        uniprot = mapping.id_from_label0(node)
-        if uniprot.startswith("MI"):
-            genesymbol = uniprot
-        else:
-            # Set the UniProt ID as the 'Uniprot' value in the new entry
-            genesymbol = mapping.label(uniprot)
-    elif mapping.id_from_label0(node).startswith("COMPLEX"):
-        node = node[8:]
-        node_list = node.split("_")
-
-        # Translate each element in node_list using mapping.label
-        translated_node_list = [mapping.label(mapping.id_from_label0(item)) for item in node_list]
-
-        # Join the elements in node_list with "_"
-        joined_node_string = "_".join(translated_node_list)
-
-        # Add back the "COMPLEX:" prefix to the string
-        complex_string = "COMPLEX:" + joined_node_string
-    elif mapping.label(node):
-        genesymbol = mapping.label(node)
-        uniprot = mapping.id_from_label0(genesymbol)
-    else:
-        print("Error during translation, check syntax for ", node)
-
-    return [complex_string, genesymbol, uniprot]
-
-
-def translate_paths(paths) -> list[list[str]]:
-    """
-    This function translates a list of paths, where each path is a sequence of node identifiers.
-    It uses the helper function `handle_complex_identifier` to translate each node identifier in the paths.
-
-    Args:
-        - paths: A list of paths, where each path is a sequence of node identifiers.
-                 A node identifier can be a string or a list of strings.
-
-    Returns:
-        - A list of translated paths, where each path is a sequence of translated node identifiers.
-    """
-    translated_list = []
-
-    def handle_complex_identifier(item):
-        """
-        This helper function translates a node identifier using the `mapping_node_identifier` function.
-        It checks all possible identifiers (complex, genesymbol, uniprot) and returns the first non-None value.
-
-        Args:
-        - item: A node identifier.
-
-        Returns:
-        - The translated node identifier.
-        """
-        identifiers = mapping_node_identifier(item)
-        return identifiers[0] or identifiers[1] or identifiers[2]
-
-    # If input_list is a list of strings
-    if isinstance(paths[0], str):
-        translated_list = [handle_complex_identifier(item) for item in paths]
-    # If input_list is a list of lists of strings
-    elif isinstance(paths[0], list):
-        for sublist in paths:
-            translated_sublist = [handle_complex_identifier(item) for item in sublist]
-            translated_list.append(translated_sublist)
-
-    return translated_list
-
-
-def join_unique(series) -> str:
-    """
-    This function takes a pandas Series, filters out None values, and returns a string of unique values joined by a comma.
-
-    Args:
-        - series: A pandas Series object.
-
-    Returns: - A string of unique values in the series, joined by a comma. If a value in the series is None,
-                it is not included in the output string.
-    """
-    # Filter out None values before converting to set and joining
-    filtered_series = [str(item) for item in series if item is not None]
-    unique_items = set(filtered_series)
-    return ', '.join(unique_items)
-
-
-def determine_most_frequent_effect(effects):
-    effect_counts = effects.value_counts()
-
-    # If there's only one type of effect, return it
-    if len(effect_counts) == 1:
-        return effect_counts.index[0]
-
-    # Count the occurrences of each effect type
-    stimulation_count = effect_counts.get('stimulation', 0)
-    inhibition_count = effect_counts.get('inhibition', 0)
-    form_complex_count = effect_counts.get('form_complex', 0)
-
-    # Calculate the total of stimulation, inhibition, and form_complex
-    total_known_effects = stimulation_count + inhibition_count + form_complex_count
-
-    # If there are more unknown effects than known ones, return 'undefined'
-    if len(effects) - total_known_effects > total_known_effects:
-        return 'undefined'
-
-    # If form_complex is the most frequent, return it
-    if form_complex_count > stimulation_count and form_complex_count > inhibition_count:
-        return 'form_complex'
-
-    # Handle stimulation and inhibition
-    if stimulation_count > inhibition_count:
-        return 'stimulation'
-    elif inhibition_count > stimulation_count:
-        return 'inhibition'
-    elif stimulation_count == inhibition_count and stimulation_count > 0:
-        return 'bimodal'
-
-    # If we've reached this point, it means there's no clear majority
-    return 'undefined'
 
 
 class Network:
@@ -259,7 +39,7 @@ class Network:
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
         self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         self.initial_nodes = initial_nodes
-        self.__ontology = Ontology()
+        self._ontology = Ontology()
         self._populate()
 
 
@@ -274,15 +54,15 @@ class Network:
         if self.initial_nodes:
             for node in self.initial_nodes:
                 self.add_node(node)
-            self.__drop_missing_nodes()
+            self._drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
 
         elif sif_file := self._init_args['sif_file']:
             self.initial_nodes = []
-            self.__load_network_from_sif(sif_file)
+            self._load_network_from_sif(sif_file)
 
-        self.__connect = Connections(self.resources)
-        self.__algorithms = {
+        self._connect = Connections(self.resources)
+        self._algorithms = {
             'dfs': self.dfs_algorithm,
             'bfs': self.bfs_algorithm
         }
@@ -316,7 +96,7 @@ class Network:
         """
         return True if self.check_nodes([node]) else False
 
-    def __drop_missing_nodes(self) -> None:
+    def _drop_missing_nodes(self) -> None:
         """
         This function drops the nodes that are not present in the resources database and print a warning with the
         name of the missing nodes.
@@ -635,7 +415,7 @@ class Network:
             self.remove_edge(path[i], path[i + 1])
         return
 
-    def __load_network_from_sif(self, sif_file) -> None:
+    def _load_network_from_sif(self, sif_file) -> None:
         """
         Load a network object from a SIF (Simple Interaction Format) file.
 
@@ -710,7 +490,7 @@ class Network:
 
         return
 
-    def __add_paths_to_edge_list(self, paths) -> None:
+    def _add_paths_to_edge_list(self, paths) -> None:
         """
         This method adds paths to the edge list of the network. A path is a sequence of nodes where each node is
         connected to the next node in the sequence. The function checks if there is an interaction between each pair
@@ -753,7 +533,7 @@ class Network:
 
         return
 
-    def __add_cascade_to_edge_list(self, cascades) -> None:
+    def _add_cascade_to_edge_list(self, cascades) -> None:
         """
         This function adds cascades to the edge list of the network. A cascade is a sequence of nodes where each node is
         connected to the next node in the sequence. The function checks if there is an interaction between each pair of nodes
@@ -813,7 +593,7 @@ class Network:
             Returns:
             None. The function modifies the network object in-place.
             """
-            if node2 in self.__connect.find_all_neighbours(node1):
+            if node2 in self._connect.find_all_neighbours(node1):
                 interaction = self.resources.loc[(self.resources["source"] == node1) &
                                                  (self.resources["target"] == node2)]
                 if not interaction.empty and (
@@ -844,7 +624,7 @@ class Network:
         # Function for Depth-First Search
         def dfs(node):
             visited.add(node)
-            for neighbour in self.__connect.find_all_neighbours(node):
+            for neighbour in self._connect.find_all_neighbours(node):
                 if neighbour not in visited:
                     dfs(neighbour)
 
@@ -866,7 +646,7 @@ class Network:
         """
         self.edges = self.edges[self.edges['Effect'] != 'undefined']
 
-    def __filter_unsigned_paths(self,
+    def _filter_unsigned_paths(self,
                                 paths: list[tuple],
                                 consensus: bool
                                 ) -> list[tuple]:
@@ -938,18 +718,18 @@ class Network:
                 paths_out = []
                 while i <= maxlen:
                     if not paths_out:
-                        paths_out = self.__connect.find_paths(node1, node2, maxlen=i)
+                        paths_out = self._connect.find_paths(node1, node2, maxlen=i)
                         if only_signed:
-                            paths_out = self.__filter_unsigned_paths(paths_out, consensus)
+                            paths_out = self._filter_unsigned_paths(paths_out, consensus)
                     if not paths_in:
-                        paths_in = self.__connect.find_paths(node2, node1, maxlen=i)
+                        paths_in = self._connect.find_paths(node2, node1, maxlen=i)
                         if only_signed:
-                            paths_in = self.__filter_unsigned_paths(paths_in, consensus)
+                            paths_in = self._filter_unsigned_paths(paths_in, consensus)
                     if not paths_in or not paths_out and i <= maxlen:
                         i += 1
                     if (paths_in or paths_out) and i > maxlen or (paths_in and paths_out):
                         paths = paths_out + paths_in
-                        self.__add_paths_to_edge_list(paths)
+                        self._add_paths_to_edge_list(paths)
                         break
         return
 
@@ -986,11 +766,11 @@ class Network:
         i = 1
         min_len = 1
         while i <= maxlen:
-            paths = self.__connect.find_paths(start=node1, end=node2, maxlen=i, minlen=min_len)
+            paths = self._connect.find_paths(start=node1, end=node2, maxlen=i, minlen=min_len)
             if only_signed:
-                paths = self.__filter_unsigned_paths(paths, consensus)
+                paths = self._filter_unsigned_paths(paths, consensus)
             if paths:
-                self.__add_paths_to_edge_list(paths)
+                self._add_paths_to_edge_list(paths)
                 if connect_with_bias:
                     self.connect_nodes(only_signed, consensus)
                     self.edges = self.edges.drop_duplicates().reset_index(drop=True)
@@ -1030,11 +810,11 @@ class Network:
 
         """
 
-        paths = self.__connect.bfs(start=node1, end=node2)
+        paths = self._connect.bfs(start=node1, end=node2)
         if only_signed:
-            paths = self.__filter_unsigned_paths(paths, consensus)
+            paths = self._filter_unsigned_paths(paths, consensus)
         if paths:
-            self.__add_paths_to_edge_list(paths)
+            self._add_paths_to_edge_list(paths)
             if connect_with_bias:
                 self.connect_nodes(only_signed, consensus)
                 self.edges = self.edges.drop_duplicates().reset_index(drop=True)
@@ -1090,9 +870,9 @@ class Network:
             paths_out = connect_network.bfs(start=node1, end=node2)
 
             if not paths_in:
-                self.__algorithms[algorithm](node1=node2, node2=node1, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
+                self._algorithms[algorithm](node1=node2, node2=node1, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
             if not paths_out:
-                self.__algorithms[algorithm](node1=node1, node2=node2, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
+                self._algorithms[algorithm](node1=node1, node2=node2, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
 
         # If connect_with_bias is False, connect nodes after all paths have been found
         if not connect_with_bias:
@@ -1128,14 +908,14 @@ class Network:
 
         # Determine the search mode and find paths accordingly
         if mode == "IN":
-            paths_in = self.__connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths_in = self._connect.find_paths(comp_B, comp_A, maxlen=maxlen)
             paths = paths_in
         elif mode == "OUT":
-            paths_out = self.__connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths_out = self._connect.find_paths(comp_A, comp_B, maxlen=maxlen)
             paths = paths_out
         elif mode == "ALL":
-            paths_out = self.__connect.find_paths(comp_A, comp_B, maxlen=maxlen)
-            paths_in = self.__connect.find_paths(comp_B, comp_A, maxlen=maxlen)
+            paths_out = self._connect.find_paths(comp_A, comp_B, maxlen=maxlen)
+            paths_in = self._connect.find_paths(comp_B, comp_A, maxlen=maxlen)
             paths = paths_out + paths_in
         else:
             print("The only accepted modes are IN, OUT or ALL, please check the syntax")
@@ -1143,10 +923,10 @@ class Network:
 
         # Filter unsigned paths if the only_signed flag is set
         if only_signed:
-            paths = self.__filter_unsigned_paths(paths, consensus)
+            paths = self._filter_unsigned_paths(paths, consensus)
 
         # Add the paths to the edge list
-        self.__add_paths_to_edge_list(paths)
+        self._add_paths_to_edge_list(paths)
 
         # Create sets of nodes for each component and the entire network
         all_nodes = set(self.nodes['Uniprot'].values)
@@ -1188,11 +968,11 @@ class Network:
             if nodes_to_connect is None:
                 nodes_to_connect = self.nodes["Uniprot"].tolist()
 
-            cascades = self.__connect.find_upstream_cascades(nodes_to_connect, depth, rank)
+            cascades = self._connect.find_upstream_cascades(nodes_to_connect, depth, rank)
 
             if only_signed:
-                cascades = self.__filter_unsigned_paths(cascades, consensus)
-            self.__add_cascade_to_edge_list(cascades)
+                cascades = self._filter_unsigned_paths(cascades, consensus)
+            self._add_cascade_to_edge_list(cascades)
             self.edges.drop_duplicates().reset_index(drop=True)
         except Exception as e:
             print(f"An error occurred while connecting to upstream nodes: {e}")
@@ -1252,7 +1032,7 @@ class Network:
         genesymbols_genes = []
 
         # Retrieve phenotype markers
-        phenotype_genes = self.__ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
+        phenotype_genes = self._ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
         if not phenotype_genes:
             print("Something went wrong while getting the markers for: ", phenotype, " and ", id_accession)
             print("Check URL and try again")
@@ -1282,7 +1062,7 @@ class Network:
 
         # If compress is True, substitute specified genes with the phenotype name
         if compress:
-            phenotype = phenotype or self.__ontology.accession_to_phenotype_dict[id_accession]
+            phenotype = phenotype or self._ontology.accession_to_phenotype_dict[id_accession]
             phenotype_modified = phenotype.replace(" ", "_")
 
             # Substitute the specified genes with the phenotype name in the nodes dataframe
@@ -1349,13 +1129,13 @@ class Network:
             new_nodes = []
             if direction == 'OUT' or direction is None:
                 for source in source_nodes:
-                    target_neighs = self.__connect.find_target_neighbours(source)
+                    target_neighs = self._connect.find_target_neighbours(source)
                     if source in target_neighs and not loops:
                         target_neighs.remove(source)
                     target_paths = [(source, node) for node in target_neighs]
                     if only_signed:
-                        target_paths = self.__filter_unsigned_paths(target_paths, consensus)
-                    self.__add_paths_to_edge_list(target_paths)
+                        target_paths = self._filter_unsigned_paths(target_paths, consensus)
+                    self._add_paths_to_edge_list(target_paths)
                     target_neighs_filtered = [path[1] for path in target_paths]
                     target_neighs_filtered = [node for node in target_neighs_filtered if node not in initial_nodes_set]
                     new_nodes.extend(target_neighs_filtered)
@@ -1364,13 +1144,13 @@ class Network:
             new_nodes = []
             if direction == 'IN' or direction is None:
                 for target in target_nodes:
-                    source_neighs = self.__connect.find_source_neighbours(target)
+                    source_neighs = self._connect.find_source_neighbours(target)
                     if target in source_neighs and not loops:
                         source_neighs.remove(target)
                     source_paths = [(node, target) for node in source_neighs]
                     if only_signed:
-                        source_paths = self.__filter_unsigned_paths(source_paths, consensus)
-                    self.__add_paths_to_edge_list(source_paths)
+                        source_paths = self._filter_unsigned_paths(source_paths, consensus)
+                    self._add_paths_to_edge_list(source_paths)
                     source_neighs_filtered = [path[0] for path in source_paths]
                     source_neighs_filtered = [node for node in source_neighs_filtered if node not in initial_nodes_set]
                     new_nodes.extend(source_neighs_filtered)

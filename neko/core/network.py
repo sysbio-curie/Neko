@@ -680,6 +680,34 @@ class Network:
 
         return filtered_paths
 
+    def convert_edgelist_into_genesymbol(self) -> pd.DataFrame:
+        """
+        This function generates a new edges dataframe with the source and target identifiers translated (if possible)
+        in Genesymbol format.
+
+        Args:
+             - None
+
+        Returns:
+            - A pandas DataFrame containing the edges with the source and target identifiers translated into Genesymbol
+                format.
+        """
+
+        def convert_identifier(x):
+            identifiers = mapping_node_identifier(x)
+            return identifiers[0] or identifiers[1]
+
+        gs_edges = self.edges.copy()
+
+        gs_edges["source"] = gs_edges["source"].apply(convert_identifier)
+        gs_edges["target"] = gs_edges["target"].apply(convert_identifier)
+
+        return gs_edges
+
+    ###################################################################################################################
+    ######################################### STRATEGY CONNECTIONS ####################################################
+    ###################################################################################################################
+
     def connect_subgroup(self,
                          group: (str | pd.DataFrame | list[str]),
                          maxlen: int = 1,
@@ -977,30 +1005,6 @@ class Network:
         except Exception as e:
             print(f"An error occurred while connecting to upstream nodes: {e}")
         return
-
-    def convert_edgelist_into_genesymbol(self) -> pd.DataFrame:
-        """
-        This function generates a new edges dataframe with the source and target identifiers translated (if possible)
-        in Genesymbol format.
-
-        Args:
-             - None
-
-        Returns:
-            - A pandas DataFrame containing the edges with the source and target identifiers translated into Genesymbol
-                format.
-        """
-
-        def convert_identifier(x):
-            identifiers = mapping_node_identifier(x)
-            return identifiers[0] or identifiers[1]
-
-        gs_edges = self.edges.copy()
-
-        gs_edges["source"] = gs_edges["source"].apply(convert_identifier)
-        gs_edges["target"] = gs_edges["target"].apply(convert_identifier)
-
-        return gs_edges
 
     def connect_genes_to_phenotype(self,
                                    phenotype: str = None,

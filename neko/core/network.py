@@ -6,7 +6,7 @@ from .._methods.enrichment_methods import Connections
 from typing_extensions import Literal
 import copy
 from .._annotations.gene_ontology import Ontology
-from tools import *
+from .tools import *
 
 
 
@@ -52,8 +52,11 @@ class Network:
         )
 
         if self.initial_nodes:
+            nodes_found = []
             for node in self.initial_nodes:
-                self.add_node(node)
+                if self.add_node(node):
+                    nodes_found.append(node)
+            self.initial_nodes = nodes_found
             self._drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
 
@@ -64,7 +67,7 @@ class Network:
         self._connect = Connections(self.resources)
         self._algorithms = {
             'dfs': self.dfs_algorithm,
-            'bfs': self.bfs_algorithm
+            'bfs': self.bfs_algorithm,
         }
 
     def copy(self):
@@ -133,7 +136,7 @@ class Network:
 
         return
 
-    def add_node(self, node: str, from_sif: bool = False) -> None:
+    def add_node(self, node: str, from_sif: bool = False) -> bool:
         """
         Adds a node to the network. The node is added to the nodes DataFrame of the network. The function checks the
         syntax for the genesymbol to ensure it is correct. If the node is a complex, it is added with the
@@ -165,7 +168,7 @@ class Network:
             self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
             self.initial_nodes.append(new_entry["Genesymbol"])
             self.initial_nodes = list(set(self.initial_nodes))
-            return
+            return True
 
         complex_string, genesymbol, uniprot = mapping_node_identifier(node)
 
@@ -176,12 +179,12 @@ class Network:
 
         if not self.check_node(uniprot) and not self.check_node(genesymbol):
             print("Error: node %s is not present in the resources database" % node)
-            return
+            return False
 
         self.nodes.loc[len(self.nodes)] = new_entry
 
         self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
-        return
+        return True
 
     def remove_node(self, node: str) -> None:
         """
@@ -647,9 +650,9 @@ class Network:
         self.edges = self.edges[self.edges['Effect'] != 'undefined']
 
     def _filter_unsigned_paths(self,
-                                paths: list[tuple],
+                                paths: list[list[str]],
                                 consensus: bool
-                                ) -> list[tuple]:
+                                ) -> list[list[str]]:
         """
         This function filters out unsigned paths from the provided list of paths. An unsigned path is a path where at
         least one interaction does not have a defined sign (stimulation or inhibition). The function checks each
@@ -767,7 +770,7 @@ class Network:
                       maxlen: int,
                       only_signed: bool,
                       consensus: bool,
-                      connect_with_bias: bool
+                      connect_with_bias: bool,
                       ) -> None:
 
         """
@@ -791,21 +794,15 @@ class Network:
             - None
         """
 
-        i = 1
-        min_len = 1
-        while i <= maxlen:
-            paths = self._connect.find_paths(start=node1, end=node2, maxlen=i, minlen=min_len)
-            if only_signed:
-                paths = self._filter_unsigned_paths(paths, consensus)
-            if paths:
-                self._add_paths_to_edge_list(paths)
-                if connect_with_bias:
-                    self.connect_nodes(only_signed, consensus)
-                    self.edges = self.edges.drop_duplicates().reset_index(drop=True)
-                break
-            else:
-                i += 1
-                min_len += 1
+
+        paths = self._connect.find_paths(start=node1, end=node2, maxlen=maxlen, minlen=1)
+        if only_signed:
+            paths = self._filter_unsigned_paths(paths, consensus)
+        if paths:
+            self._add_paths_to_edge_list(paths)
+            if connect_with_bias:
+                self.connect_nodes(only_signed, consensus)
+                self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
     def bfs_algorithm(self,
                       node1: str,
@@ -813,7 +810,7 @@ class Network:
                       maxlen: int,
                       only_signed: bool,
                       consensus: bool,
-                      connect_with_bias: bool
+                      connect_with_bias: bool,
                       ) -> None:
 
         """
@@ -838,7 +835,7 @@ class Network:
 
         """
 
-        paths = self._connect.bfs(start=node1, end=node2)
+        paths = self._connect.bfs(start=node1, end=node2, maxlen=maxlen)
         if only_signed:
             paths = self._filter_unsigned_paths(paths, consensus)
         if paths:
@@ -847,13 +844,15 @@ class Network:
                 self.connect_nodes(only_signed, consensus)
                 self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
+
+
     def complete_connection(self,
-                            maxlen: int = 2,
+                            maxlen: Optional[int] = 2,
                             algorithm: Literal['bfs', 'dfs'] = 'dfs',
                             minimal: bool = True,
                             only_signed: bool = False,
                             consensus: bool = False,
-                            connect_with_bias: bool = False
+                            connect_with_bias: bool = False,
                             ) -> None:
         """
         This function attempts to connect all nodes of a network object using one of the methods presented in the
@@ -894,8 +893,8 @@ class Network:
                 connect_network = Connections(self.edges)
 
             # As first step, make sure that there is at least one path between two nodes in the network
-            paths_in = connect_network.bfs(start=node2, end=node1)
-            paths_out = connect_network.bfs(start=node1, end=node2)
+            paths_in = connect_network.bfs(start=node2, end=node1, maxlen=maxlen)
+            paths_out = connect_network.bfs(start=node1, end=node2, maxlen=maxlen)
 
             if not paths_in:
                 self._algorithms[algorithm](node1=node2, node2=node1, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)

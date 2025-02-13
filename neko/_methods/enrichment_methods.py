@@ -1,6 +1,6 @@
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple,Optional
 import pandas as pd
-from collections import deque
+from collections import deque, defaultdict
 import random
 
 
@@ -50,39 +50,55 @@ class Connections:
         source_neighs = self.find_source_neighbours(node)
         return list(set(target_neighs + source_neighs))
 
-    def bfs(self, start: str, end: str) -> List[Tuple[str, ...]]:
+    def bfs(self, start: str, end: str, maxlen: Optional[int]) -> List[List[str]]:
         """
-        Find a path between two nodes using Breadth First Search. Useful to quickly check if two nodes are connected.
+        Returns the shortest path between two nodes (as a list of nodes) using BFS,
+        but stops searching if the path length exceeds `maxlen` edges (if provided).
 
         Args:
             start: The start node.
             end: The end node.
+            maxlen: Maximum number of edges to explore. If None, no limit.
 
         Returns:
-            List of nodes representing the path from start to end. If no path exists, returns an empty list.
+            A list of nodes representing the path from start to end.
+            If no path exists (or no path <= maxlen edges), returns an empty list.
         """
+
+        if start == end:
+            return [[start]]  # trivial path
+
         visited = set()
-        queue = deque([(start, [start])])  # Store the path along with the node
+        # We'll store (node, path_so_far, current_depth)
+        queue = deque([(start, [start], 0)])  # depth = 0 means 0 edges so far
 
         while queue:
-            node, path = queue.popleft()
+            node, path, depth = queue.popleft()
+
+            # If we've reached the target, we have the shortest path
             if node == end:
-                return [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+                return [path]
+
+            # If we've hit the max length, do not expand further
+            if maxlen is not None and depth >= maxlen:
+                continue
 
             if node not in visited:
                 visited.add(node)
-                neighbours = self.find_target_neighbours(node)
-                random.shuffle(neighbours)  # Shuffle the neighbours to avoid bias
-                queue.extend((neighbour, path + [neighbour]) for neighbour in neighbours if neighbour not in visited)
+                # Enqueue neighbors
+                for neighbor in self.find_target_neighbours(node):
+                    if neighbor not in visited:
+                        queue.append((neighbor, path + [neighbor], depth + 1))
 
         return []
+
 
     def find_paths(self,
                    start: Union[str, pd.DataFrame, List[str]],
                    end: Union[str, pd.DataFrame, List[str], None] = None,
                    maxlen: int = 2,
                    minlen: int = 1,
-                   loops: bool = False) -> List[Tuple[str, ...]]:
+                   loops: bool = False) -> List[List[str]]:
         """
         Find paths or motifs in a network.
         """

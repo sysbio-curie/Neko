@@ -1,6 +1,5 @@
 from __future__ import annotations
 from pypath.utils import mapping
-from __future__ import annotations
 import pandas as pd
 import networkx as nx
 

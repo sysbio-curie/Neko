@@ -86,9 +86,12 @@ jobs:
         run: |
           poetry run pytest -v --cov --color=yes --durations=0
 
-      - name: Upload coverage reports to Codecov
-        if: ${{ github.event_name == 'push' }}
-        env:
-          CODECOV_NAME: ${{ matrix.python }}-${{ matrix.os }}
-        run: |
-          poetry run codecovcli --verbose upload-process -t ${{ secrets.CODECOV_TOKEN }} -n 'fast'-${{ github.run_id }} -F fast
+      -   name: Upload coverage reports to Codecov
+          if: ${{ github.event_name == 'push' }}
+          env:
+              CODECOV_NAME: ${{ matrix.python }}-${{ matrix.os }}
+          run: |
+              poetry run codecovcli --verbose upload-process \
+                -t ${{ secrets.CODECOV_TOKEN }} \
+                -n "fast-${{ github.run_id }}" \
+                -F fast

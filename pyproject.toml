@@ -149,6 +149,7 @@ ignore_messages = '(Unknown target name:.*|No (directive|role) entry for "(auto)
 source = ["neko"]
 omit = [
 	"**/test_*.py",
+    "neko/inputs/_def.py",
 ]
 
 [tool.pytest.ini_options]

@@ -107,6 +107,39 @@ We provide a comprehensive set of Jupyter notebooks that offer a detailed and us
 
 You can find these notebooks in the `notebooks` directory of the repository.
 
+Features comparison with similar tools
+----------------
+Below you can find a table displaying the main features of NeKo compared to other similar tools:
+
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Features                                                   | NeKo           | Pathway-       | STRING         | Augusta        | Network-       | phuEGO         |
+|                                                            |                | Commons        |                |                | Commons        |                |
++============================================================+================+================+================+================+================+================+
+| Network Creation and Manipulation                          | Yes            | No             | Yes (limited)  | Yes            | Yes            | Yes            |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Integration of Multiple Databases                          | Yes            | Yes            | Yes            | No             | Yes            | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Gene-to-Phenotype Mapping                                  | Yes            | No             | No             | No             | No             | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Network Visualization                                      | Yes            | Yes            | Yes            | No             | Yes            | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Boolean Network Inference                                  | Yes            | No             | No             | Yes            | No             | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Data Download in Multiple Formats                          | Yes            | Yes            | Yes            | No             | No             | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Web-Based Access                                           | No             | Yes            | Yes            | No             | No             | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Graph (Topology) Based Network Inference                   | Yes            | No             | No             | No             | Yes (limited)  | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Propagation Based Network Inference                        | No             | No             | No             | No             | Yes            | Yes            |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| ILP Based Network Inference                                | No             | No             | No             | No             | Yes            | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Network Contextualization Based on Genes of Interest       | Yes            | No             | No             | No             | No             | Yes            |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+| Network Contextualization Based on Omics Activity Signatures| No             | No             | No             | No             | Yes            | No             |
++------------------------------------------------------------+----------------+----------------+----------------+----------------+----------------+----------------+
+
 Acknowledgements
 ----------------
 
@@ -114,7 +147,7 @@ This project is a collaborative effort between Institut Curie, NTNU, Saez lab an
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
-version 0.9.4
+version 0.9.8
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.

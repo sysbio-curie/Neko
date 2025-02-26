@@ -108,7 +108,7 @@ We provide a comprehensive set of Jupyter notebooks that offer a detailed and us
 You can find these notebooks in the `notebooks` directory of the repository.
 
 Features comparison with similar tools
-----------------
+--------------------------------------
 Below you can find a table displaying the main features of NeKo compared to other similar tools:
 `Features Table on GitHub <https://github.com/sysbio-curie/Neko/blob/main/table.md>`_.
 

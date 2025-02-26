@@ -1,5 +1,5 @@
 ==================
- Neko 
+ Neko
 ==================
 
 .. figure:: docs/src/neko_logo.png
@@ -107,6 +107,11 @@ We provide a comprehensive set of Jupyter notebooks that offer a detailed and us
 
 You can find these notebooks in the `notebooks` directory of the repository.
 
+Features comparison with similar tools
+--------------------------------------
+Below you can find a table displaying the main features of NeKo compared to other similar tools:
+`Features Table on GitHub <https://github.com/sysbio-curie/Neko/blob/main/table.md>`_.
+
 Acknowledgements
 ----------------
 
@@ -114,7 +119,7 @@ This project is a collaborative effort between Institut Curie, NTNU, Saez lab an
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
-version 0.9.4
+version 0.9.8
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.

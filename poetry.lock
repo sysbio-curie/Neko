@@ -3310,22 +3310,22 @@ test = ["matplotlib", "pytest", "pytest-cov"]
 
 [[package]]
 name = "omnipath"
-version = "1.0.8"
+version = "1.0.9"
 description = "Python client for the OmniPath web service"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "omnipath-1.0.8-py3-none-any.whl", hash = "sha256:34dba15830c225421d9464e062e7dd0b4d46b569e7394786ce181f9e294a4442"},
-    {file = "omnipath-1.0.8.tar.gz", hash = "sha256:3821b9ba11957412ff9e4932eb6d0c17242939661468064ad1ce28ee3e27394f"},
+    {file = "omnipath-1.0.9-py3-none-any.whl", hash = "sha256:4f492e88ece3ee117fa242ad49a040010f9f8562749d314373d0b944e855bd31"},
+    {file = "omnipath-1.0.9.tar.gz", hash = "sha256:29127f87658be3b7fae5c4908d75605dea25525e7094b1370eb48b0ab108ff0c"},
 ]
 
 [package.dependencies]
 attrs = ">=20.2.0"
 docrep = ">=0.3.1"
 inflect = ">=4.1.0"
-packaging = "*"
+packaging = ">=24.2"
 pandas = ">=1.2.0"
 requests = ">=2.24.0"
 tqdm = ">=4.51.0"
@@ -3334,8 +3334,7 @@ urllib3 = ">=1.26.0"
 wrapt = ">=1.12.0"
 
 [package.extras]
-dev = ["bump2version", "pre-commit (>=2.7.1)"]
-docs = ["sphinx (>=4)", "sphinx-autodoc-annotation", "sphinx-autodoc-typehints (>=1.10.3)", "sphinx-copybutton", "sphinx-last-updated-by-git", "sphinx-paramlinks", "sphinx-rtd-theme", "sphinx-toolbox"]
+docs = ["attrs (>=20.2.0)", "docrep (>=0.3.1)", "inflect (>=4.1.0)", "packaging (>=24.2)", "pandas (>=1.2.0)", "requests (>=2.24.0)", "sphinx (>=4)", "sphinx-autodoc-annotation (>=1.0.post1)", "sphinx-autodoc-typehints (>=1.10.3)", "sphinx-copybutton (>=0.5.2)", "sphinx-last-updated-by-git (>=0.3.8)", "sphinx-paramlinks (>=0.6.0)", "sphinx-rtd-theme (>=3.0.2)", "sphinx-toolbox (>=3.9.0)", "tqdm (>=4.51.0)", "typing-extensions (>=3.7.4.3)", "urllib3 (>=1.26.0)", "wrapt (>=1.12.0)"]
 graph = ["networkx (>=2.3.0)"]
 tests = ["tox (>=3.20.1)"]
 
@@ -4085,15 +4084,15 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pypath-common"
-version = "0.2.5"
+version = "0.2.6"
 description = "Code shared across pypath modules"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "pypath_common-0.2.5-py3-none-any.whl", hash = "sha256:0c854552e4b1728ab1eba43c01cb2f99bbc503af82b5f2e8b201aaaad04ba2a4"},
-    {file = "pypath_common-0.2.5.tar.gz", hash = "sha256:3014b529f6fc4a75e897c2dc0e6775eea7041bf49cd42aa4ec4e3f189ef27a31"},
+    {file = "pypath_common-0.2.6-py3-none-any.whl", hash = "sha256:f45dc942a6a959c3c73d03c13c3a905ceed577fb389f527e3e4e927ad0667e6c"},
+    {file = "pypath_common-0.2.6.tar.gz", hash = "sha256:c3266c27a4720a5f95a809acc1c9caccffc8712f2de233fcf3ec879d84fc40e6"},
 ]
 
 [package.dependencies]
@@ -4105,18 +4104,21 @@ tabulate = "*"
 
 [[package]]
 name = "pypath-omnipath"
-version = "0.16.19"
+version = "0.16.20"
 description = "Molecular signaling prior knowledge processing"
 optional = false
-python-versions = "^3.9"
+python-versions = "<4.0,>=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
-files = []
-develop = false
+files = [
+    {file = "pypath_omnipath-0.16.20-py3-none-any.whl", hash = "sha256:9223970d4874ef126df7084059e8dc8633a3c4ffaf641349528a36923b9ad80f"},
+    {file = "pypath_omnipath-0.16.20.tar.gz", hash = "sha256:22d696320505486943d00c3b74331d5cefebb5b9ed3c5be0f56b25a7191c5e4b"},
+]
 
 [package.dependencies]
 beautifulsoup4 = "*"
 certifi = ">=2023.7.22"
+cffi = ">=1.17.0,<2.0.0"
 cryptography = ">=41.0.4"
 dill = "*"
 future = "*"
@@ -4128,9 +4130,9 @@ openpyxl = "*"
 pandas = "*"
 psutil = "*"
 pycurl = "*"
-pypath-common = ">=0.2.0"
+pypath-common = ">=0.2.6"
 pyreadr = "*"
-pysftp = "^0.2.9"
+pysftp = ">=0.2.9,<0.3.0"
 PyYAML = "*"
 rdata = "*"
 requests = "*"
@@ -4148,12 +4150,6 @@ xlrd = "*"
 graph = ["python-igraph"]
 metabo = ["epam.indigo", "openbabel", "rdkit"]
 pathophenodb = ["sparqlwrapper"]
-
-[package.source]
-type = "git"
-url = "https://github.com/saezlab/pypath.git"
-reference = "de8d029"
-resolved_reference = "de8d029152313863d9e033c1498ef2ac776f33af"
 
 [[package]]
 name = "pyproject-api"
@@ -6454,4 +6450,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "0de32ea17214c30e5b5b023b296dc8971f2eb864de4df5c470c9c1068f1ecbe0"
+content-hash = "9b72d6d8185c08462a582699512842dea8a06448b4f49ca2b01e73168b453566"

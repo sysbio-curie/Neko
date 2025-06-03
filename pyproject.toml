@@ -41,7 +41,7 @@ jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
 pandas = "2.2.2"
-omnipath = "1.0.9"
+omnipath = "1.0.8"
 pypath-omnipath = { git = "https://github.com/saezlab/pypath.git", rev = "de8d029" }
 networkcommons = "*"
 

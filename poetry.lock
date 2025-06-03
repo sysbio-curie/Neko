@@ -3310,22 +3310,22 @@ test = ["matplotlib", "pytest", "pytest-cov"]
 
 [[package]]
 name = "omnipath"
-version = "1.0.8"
+version = "1.0.9"
 description = "Python client for the OmniPath web service"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "omnipath-1.0.8-py3-none-any.whl", hash = "sha256:34dba15830c225421d9464e062e7dd0b4d46b569e7394786ce181f9e294a4442"},
-    {file = "omnipath-1.0.8.tar.gz", hash = "sha256:3821b9ba11957412ff9e4932eb6d0c17242939661468064ad1ce28ee3e27394f"},
+    {file = "omnipath-1.0.9-py3-none-any.whl", hash = "sha256:4f492e88ece3ee117fa242ad49a040010f9f8562749d314373d0b944e855bd31"},
+    {file = "omnipath-1.0.9.tar.gz", hash = "sha256:29127f87658be3b7fae5c4908d75605dea25525e7094b1370eb48b0ab108ff0c"},
 ]
 
 [package.dependencies]
 attrs = ">=20.2.0"
 docrep = ">=0.3.1"
 inflect = ">=4.1.0"
-packaging = "*"
+packaging = ">=24.2"
 pandas = ">=1.2.0"
 requests = ">=2.24.0"
 tqdm = ">=4.51.0"
@@ -3334,8 +3334,7 @@ urllib3 = ">=1.26.0"
 wrapt = ">=1.12.0"
 
 [package.extras]
-dev = ["bump2version", "pre-commit (>=2.7.1)"]
-docs = ["sphinx (>=4)", "sphinx-autodoc-annotation", "sphinx-autodoc-typehints (>=1.10.3)", "sphinx-copybutton", "sphinx-last-updated-by-git", "sphinx-paramlinks", "sphinx-rtd-theme", "sphinx-toolbox"]
+docs = ["attrs (>=20.2.0)", "docrep (>=0.3.1)", "inflect (>=4.1.0)", "packaging (>=24.2)", "pandas (>=1.2.0)", "requests (>=2.24.0)", "sphinx (>=4)", "sphinx-autodoc-annotation (>=1.0.post1)", "sphinx-autodoc-typehints (>=1.10.3)", "sphinx-copybutton (>=0.5.2)", "sphinx-last-updated-by-git (>=0.3.8)", "sphinx-paramlinks (>=0.6.0)", "sphinx-rtd-theme (>=3.0.2)", "sphinx-toolbox (>=3.9.0)", "tqdm (>=4.51.0)", "typing-extensions (>=3.7.4.3)", "urllib3 (>=1.26.0)", "wrapt (>=1.12.0)"]
 graph = ["networkx (>=2.3.0)"]
 tests = ["tox (>=3.20.1)"]
 
@@ -6450,4 +6449,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "0435118bcecf4ac4e4d96587553257ec7542158a6aa0bb2b8fac39ddc583f1e1"
+content-hash = "559987dd6abcc65fbcf526209d741d35f636378880fa1d4d065ed27a620ef707"

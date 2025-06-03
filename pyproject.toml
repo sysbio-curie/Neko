@@ -41,7 +41,7 @@ jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
 pandas = "2.2.2"
-omnipath = "*"
+omnipath = "1.0.9"
 pypath-omnipath = "*"
 networkcommons = "*"
 

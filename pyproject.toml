@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "nekomata"
-version = "0.9.8"
+version = "0.9.10"
 description = "Package to extract, visualize, convert and study interactions from database into executable activity flow based model"
 license = "GNU General Public License Version 3"
 authors = [
@@ -41,7 +41,7 @@ jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
 pandas = "2.2.2"
-omnipath = "1.0.9"
+omnipath = "1.0.8"
 pypath-omnipath = "*"
 networkcommons = "*"
 

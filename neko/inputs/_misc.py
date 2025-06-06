@@ -37,4 +37,4 @@ def effect(
        If the interaction type is not recognized, it returns "undefined".
     """
 
-    return effect_types.get(str(value).lower(), "undefined")
+    return EFFECT_TYPES.get(str(value).lower(), "undefined")

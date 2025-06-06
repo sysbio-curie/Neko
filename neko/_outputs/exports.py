@@ -53,8 +53,10 @@ class Exports:
         bimodal_targets = bimodal_interactions['target'].tolist()
         permutations = list(itertools.product(['stimulation', 'inhibition'], repeat=len(bimodal_interactions)))
 
-        # Create a directory for the BNet files
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        # Create a directory for the BNet files if a directory is provided
+        directory = os.path.dirname(file_name)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
 
         # Iterate through permutations and create a BNet file for each
         for i, perm in enumerate(permutations):

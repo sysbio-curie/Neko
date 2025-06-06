@@ -100,31 +100,35 @@ def mapping_node_identifier(node: str) -> list[str]:
     genesymbol = None
     uniprot = None
 
-    if mapping.id_from_label0(node):
+    node_id = mapping.id_from_label0(node)
+
+    if node_id:
         # Convert UniProt ID to gene symbol
-        uniprot = mapping.id_from_label0(node)
+        uniprot = node_id
         if uniprot.startswith("MI"):
             genesymbol = uniprot
         else:
-            # Set the UniProt ID as the 'Uniprot' value in the new entry
             genesymbol = mapping.label(uniprot)
-    elif mapping.id_from_label0(node).startswith("COMPLEX"):
-        node = node[8:]
-        node_list = node.split("_")
+    elif isinstance(node, str) and node.startswith("COMPLEX"):
+        node_content = node[8:]
+        node_list = node_content.split("_")
 
         # Translate each element in node_list using mapping.label
-        translated_node_list = [mapping.label(mapping.id_from_label0(item)) for item in node_list]
+        translated_node_list = [mapping.label(mapping.id_from_label0(item)) or item for item in node_list]
 
         # Join the elements in node_list with "_"
         joined_node_string = "_".join(translated_node_list)
 
         # Add back the "COMPLEX:" prefix to the string
         complex_string = "COMPLEX:" + joined_node_string
-    elif mapping.label(node):
-        genesymbol = mapping.label(node)
-        uniprot = mapping.id_from_label0(genesymbol)
+        uniprot = node
     else:
-        print("Error during translation, check syntax for ", node)
+        label = mapping.label(node)
+        if label:
+            genesymbol = label
+            uniprot = mapping.id_from_label0(genesymbol)
+        else:
+            print("Error during translation, check syntax for ", node)
 
     return [complex_string, genesymbol, uniprot]
 

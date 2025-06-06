@@ -445,7 +445,7 @@ class Network:
                 "1": "stimulation",
                 "activate": "stimulation",
                 "stimulate": "stimulation",
-                "phosphorilate": "undefined",
+                "phosphorylate": "undefined",
                 "stimulation": "stimulation",
                 "->": "stimulation",
                 "-|": "inhibition",

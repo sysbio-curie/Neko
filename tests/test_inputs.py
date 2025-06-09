@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from neko.inputs.signor import download_signor_database
+from neko.inputs._db.signor import download_signor_database
 from neko.inputs._db.signor import signor as process_signor_tsv
 from neko.inputs._db.omnipath import omnipath_universe
 

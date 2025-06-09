@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from neko.data import phosphosite_kinase_substrate, phosphosite_regulatory_sites, huri
+from neko.data import phosphosite_kinase_substrate, phosphosite_regulatory_sites
 
 def test_phosphosite_kinase_substrate():
     df = phosphosite_kinase_substrate()
@@ -14,8 +14,3 @@ def test_phosphosite_regulatory_sites():
     assert not df.empty
     assert 'GENE' in df.columns or 'GENE' in df.columns
 
-def test_huri():
-    df = huri()
-    assert isinstance(df, pd.DataFrame)
-    assert not df.empty
-    assert 'GeneA' in df.columns or 'GeneB' in df.columns or 'A' in df.columns

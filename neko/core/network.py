@@ -649,6 +649,12 @@ class Network:
         """
         self.edges = self.edges[self.edges['Effect'] != 'undefined']
 
+    def remove_bimodal_interactions(self):
+        """
+        Removes all bimodal interactions from the network.
+        """
+        self.edges = self.edges[self.edges['Effect'] != 'bimodal']
+
     def _filter_unsigned_paths(self,
                                 paths: list[list[str]],
                                 consensus: bool

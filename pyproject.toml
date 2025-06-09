@@ -44,7 +44,6 @@ pandas = "2.2.2"
 pypath-common = "^0.2.5"
 omnipath = "1.0.9"
 pypath-omnipath = "0.16.20"
-networkcommons = "*"
 
 [tool.poetry.dev-dependencies]
 pandoc = "*"

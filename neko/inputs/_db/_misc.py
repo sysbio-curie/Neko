@@ -15,10 +15,11 @@ def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:
     }
 
     if col not in df.columns:
-
         df[col] = False
 
-    df[col] = df[col].replace(mappings).astype(bool)
+    # Avoid FutureWarning: Downcasting behavior in `replace` is deprecated
+    df[col] = df[col].replace(mappings)
+    df[col] = df[col].infer_objects(copy=False).astype(bool)
 
     return df
 

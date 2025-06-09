@@ -24,25 +24,25 @@ def download_signor_database(save_path: str = None) -> pd.DataFrame:
         raise RuntimeError(f"Error downloading SIGNOR database: {str(e)}")
 
 
-def signor(path: str) -> pd.DataFrame:
+def signor(path: str = None) -> pd.DataFrame:
     """
-    SIGNOR database from TSV.
+    SIGNOR database from TSV or download.
 
-    Processes SIGNOR interactions from a local TSV file.
+    Processes SIGNOR interactions from a local TSV file or downloads if no path is provided.
 
     Parameters:
-        path (str):
-            The path to the SIGNOR TSV.
+        path (str, optional):
+            The path to the SIGNOR TSV. If None, downloads the database.
 
     Returns:
-        None
+        pd.DataFrame: Processed SIGNOR interactions.
     """
-
-    # Read the SIGNOR database file into a pandas DataFrame
-    df = pd.read_table(path)
+    if path is None:
+        df = download_signor_database()
+    else:
+        df = pd.read_table(path)
 
     def contains(field, substr):
-
         return substr in field
 
     # Filter out the rows where EFFECT is "form complex" or "unknown"

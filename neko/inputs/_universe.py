@@ -67,17 +67,12 @@ def omnipath(**kwargs) -> Universe:
 
 
 def signor(path: str | None = None, **kwargs) -> Universe:
-
+    # If path is provided and exists, use it. Otherwise, use the new signor() logic to download/process.
     if path and os.path.exists(path):
-
         return Universe(_signor.signor(path))
-
     else:
-
-        raise NotImplementedError(
-            'Direct retrieval of SIGNOR is not implemented. '
-            'Please download manually the TSV file and provide the path.'
-        )
+        # Use the new signor() logic: download and process if path is None
+        return Universe(_signor.signor())
 
 
 def phosphosite(

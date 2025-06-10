@@ -1,6 +1,9 @@
 import pytest
 import pandas as pd
 from neko.core.network import Network
+import os
+import difflib
+from neko._outputs.exports import Exports
 
 @pytest.fixture
 def sample_genes():
@@ -71,3 +74,33 @@ def test_check_nodes_and_connectivity(sample_genes, sample_resources):
     present = net.check_nodes(["P12931", "P12830", "Q99999"])
     assert "P12931" in present and "Q99999" not in present
     assert isinstance(net.is_connected(), bool)
+
+def test_network_omnipath_benchmark(tmp_path):
+    # 1. Define the gene list
+    genes = ["SRC", "NOTCH1", "FAK", "CDH1", "CDH2", "VIM"]
+
+    # 2. Create the network with Omnipath as resource
+    net = Network(initial_nodes=genes, resources="omnipath")
+
+    # 3. Complete connection (fully connect the network) with explicit parameters
+    net.complete_connection(maxlen=2, algorithm="bfs", minimal=True, only_signed=True, consensus=False, connect_with_bias=False)
+
+    # 4. Export to SIF (temporary output)
+    out_sif = tmp_path / "benchmark_network.sif"
+    Exports(net).export_sif(str(out_sif))
+
+    # 5. Compare with reference SIF if it exists, otherwise create it
+    ref_sif = os.path.join(os.path.dirname(__file__), "benchmark_network.sif")
+    if os.path.exists(ref_sif):
+        with open(ref_sif) as f1, open(out_sif) as f2:
+            ref_lines = f1.readlines()
+            out_lines = f2.readlines()
+        if ref_lines != out_lines:
+            diff = list(difflib.unified_diff(ref_lines, out_lines, fromfile="reference", tofile="current"))
+            print("\n".join(diff))
+            assert False, "benchmark_network.sif differs from reference. See diff above."
+    else:
+        # Save the new SIF as reference for future runs
+        import shutil
+        shutil.copy(str(out_sif), ref_sif)
+        print(f"Reference SIF file created at {ref_sif}. Please review and commit if correct.")

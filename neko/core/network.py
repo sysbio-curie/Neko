@@ -688,24 +688,6 @@ class Network:
         from .strategies import complete_connection
         return complete_connection(self, maxlen=maxlen, algorithm=algorithm, minimal=minimal, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
 
-    def is_connected(self) -> bool:
-        """
-        Checks if the network is connected using an iterative DFS to avoid recursion errors.
-        Returns True if all nodes are reachable from the first node, False otherwise.
-        """
-        if self.nodes.empty:
-            return True
-        visited = set()
-        stack = [self.nodes.iloc[0]['Uniprot']]
-        while stack:
-            node = stack.pop()
-            if node not in visited:
-                visited.add(node)
-                for neighbour in self._connect.find_all_neighbours(node):
-                    if neighbour != node and neighbour not in visited:
-                        stack.append(neighbour)
-        return set(self.nodes['Uniprot']) == visited
-
     def remove_undefined_interactions(self):
         """
         This function removes all undefined interactions from the network.

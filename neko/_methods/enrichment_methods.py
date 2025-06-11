@@ -184,7 +184,7 @@ class Connections:
         def collect_for_depth(current_targets, current_depth):
             if current_depth > max_depth:
                 return []
-
+            
             mcs_regulators = find_minimal_covering_regulators(self.resources, current_targets, selected_rank)
 
             interactions = [(reg, target) for reg in mcs_regulators for target in self.target_neighbours_map.get(reg, []) if target in current_targets]  # this is not working

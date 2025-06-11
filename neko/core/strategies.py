@@ -9,6 +9,7 @@ import pandas as pd
 from itertools import combinations
 from typing_extensions import Literal
 from .._methods.enrichment_methods import Connections
+from .tools import is_connected
 
 def connect_nodes(network, only_signed: bool = False, consensus_only: bool = False) -> None:
     """
@@ -204,7 +205,7 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
         network.add_node(node)
     outputs_uniprot = [network.mapping_node_identifier(i)[2] for i in outputs]
     depth = 1
-    while not network.is_connected():
+    while not is_connected(network):
         connect_to_upstream_nodes(network, outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=only_signed, consensus=consensus)
         new_nodes = set(network.nodes["Uniprot"].tolist()) - starting_nodes
         new_nodes = new_nodes - set(outputs_uniprot)

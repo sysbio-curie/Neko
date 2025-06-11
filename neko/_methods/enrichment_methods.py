@@ -2,6 +2,7 @@ from typing import Union, List, Tuple,Optional
 import pandas as pd
 from collections import deque, defaultdict
 import random
+from neko.core.tools import check_sign
 
 
 class Connections:
@@ -15,6 +16,13 @@ class Connections:
         self.resources = database.copy()
         self.target_neighbours_map = self._preprocess_target_neighbours()
         self.source_neighbours_map = self._preprocess_source_neighbours()
+        # Precompute edge sign cache for both consensus True/False
+        self.signed_edges = {}
+        self.signed_edges_consensus = {}
+        for _, row in self.resources.iterrows():
+            key = (row['source'], row['target'])
+            self.signed_edges[key] = check_sign(row, consensus=False) != "undefined"
+            self.signed_edges_consensus[key] = check_sign(row, consensus=True) != "undefined"
 
     def _preprocess_target_neighbours(self) -> dict:
         """
@@ -50,46 +58,47 @@ class Connections:
         source_neighs = self.find_source_neighbours(node)
         return list(set(target_neighs + source_neighs))
 
-    def bfs(self, start: str, end: str, maxlen: Optional[int]) -> List[List[str]]:
+    def is_signed_edge(self, source, target, consensus=False):
+        """
+        Returns True if the edge from source to target is signed (not undefined), False otherwise.
+        Uses precomputed cache for speed.
+        """
+        key = (source, target)
+        if consensus:
+            result = self.signed_edges_consensus.get(key, False)
+        else:
+            result = self.signed_edges.get(key, False)
+        return result
+
+    def bfs(self, start: str, end: str, maxlen: Optional[int], only_signed: bool = False, consensus: bool = False, force: bool = False) -> List[List[str]]:
         """
         Returns the shortest path between two nodes (as a list of nodes) using BFS,
         but stops searching if the path length exceeds `maxlen` edges (if provided).
-
-        Args:
-            start: The start node.
-            end: The end node.
-            maxlen: Maximum number of edges to explore. If None, no limit.
-
-        Returns:
-            A list of nodes representing the path from start to end.
-            If no path exists (or no path <= maxlen edges), returns an empty list.
+        If only_signed is True, only considers signed edges (not undefined).
+        If force is False and maxlen is None, uses a default upper bound of 10.
         """
-
         if start == end:
             return [[start]]  # trivial path
 
         visited = set()
-        # We'll store (node, path_so_far, current_depth)
-        queue = deque([(start, [start], 0)])  # depth = 0 means 0 edges so far
+        # Set a default upper bound if maxlen is None and not force
+        effective_maxlen = maxlen
+        if maxlen is None and not force:
+            effective_maxlen = 10
+        queue = deque([(start, [start], 0)])  # (node, path_so_far, depth)
 
         while queue:
             node, path, depth = queue.popleft()
-
-            # If we've reached the target, we have the shortest path
             if node == end:
                 return [path]
-
-            # If we've hit the max length, do not expand further
-            if maxlen is not None and depth >= maxlen:
+            if effective_maxlen is not None and depth >= effective_maxlen:
                 continue
-
             if node not in visited:
                 visited.add(node)
-                # Enqueue neighbors
                 for neighbor in self.find_target_neighbours(node):
                     if neighbor not in visited:
-                        queue.append((neighbor, path + [neighbor], depth + 1))
-
+                        if not only_signed or self.is_signed_edge(node, neighbor, consensus):
+                            queue.append((neighbor, path + [neighbor], depth + 1))
         return []
 
 
@@ -98,9 +107,22 @@ class Connections:
                    end: Union[str, pd.DataFrame, List[str], None] = None,
                    maxlen: int = 2,
                    minlen: int = 1,
-                   loops: bool = False) -> List[List[str]]:
+                   loops: bool = False,
+                   only_signed: bool = False,
+                   consensus: bool = False) -> List[List[str]]:
         """
-        Find paths or motifs in a network.
+        Find all paths or motifs in a network, with optional sign/consensus filtering.
+        Uses an iterative DFS with an explicit stack for better performance and memory efficiency.
+        Args:
+            start: Node(s) to start from (str, list of str, or DataFrame with 'name_of_node').
+            end: Node(s) to end at (str, list of str, DataFrame, or None for motif search).
+            maxlen: Maximum path length (number of edges).
+            minlen: Minimum path length (number of edges).
+            loops: Allow cycles/loops if True.
+            only_signed: If True, only consider signed edges (not undefined).
+            consensus: If True, use consensus sign filtering.
+        Returns:
+            List of paths (each path is a list of node names).
         """
 
         def convert_to_string_list(start):
@@ -113,37 +135,37 @@ class Connections:
             else:
                 raise ValueError("Invalid type for 'start' variable")
 
-        def find_all_paths_aux(start, end, path, maxlen):
-            path = path + [start]
-
-            if len(path) >= minlen + 1 and (start == end or (end is None and not loops and len(path) == maxlen + 1) or (
-                loops and path[0] == path[-1])):
-                return [path]
-
-            paths = []
-
-            if len(path) <= maxlen:
-                next_steps = self.find_target_neighbours(start)
-
-                if not loops:
-                    next_steps = list(set(next_steps) - set(path))
-
-                for node in next_steps:
-                    paths.extend(find_all_paths_aux(node, end, path, maxlen))
-
-            return paths
+        def path_generator(start_nodes, end_nodes, maxlen, minlen, loops, only_signed, consensus):
+            for s in start_nodes:
+                for e in end_nodes:
+                    stack = [(s, [s])]
+                    while stack:
+                        current, path = stack.pop()
+                        # Prune if path too long
+                        if len(path) > maxlen + 1:
+                            continue
+                        # Check for valid path
+                        if len(path) >= minlen + 1 and (
+                            (e is not None and current == e) or
+                            (e is None and not loops and len(path) == maxlen + 1) or
+                            (loops and path[0] == path[-1] and len(path) > 1)
+                        ):
+                            yield path
+                        # Continue DFS
+                        if len(path) <= maxlen:
+                            next_steps = self.find_target_neighbours(current)
+                            if only_signed:
+                                next_steps = [n for n in next_steps if self.is_signed_edge(current, n, consensus)]
+                            if not loops:
+                                next_steps = list(set(next_steps) - set(path))
+                            for neighbor in next_steps:
+                                stack.append((neighbor, path + [neighbor]))
 
         start_nodes = convert_to_string_list(start)
         end_nodes = convert_to_string_list(end) if end else [None]
-
         minlen = max(1, minlen)
-        all_paths = []
-
-        for s in start_nodes:
-            for e in end_nodes:
-                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
-
-        return all_paths
+        # Collect all paths in a list for backward compatibility
+        return list(path_generator(start_nodes, end_nodes, maxlen, minlen, loops, only_signed, consensus))
 
     def find_upstream_cascades(self,
                                target_genes: List[str],

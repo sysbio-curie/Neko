@@ -35,21 +35,12 @@ Installation
 
 1. **Install `NeKo` from PyPI**:
 
-   First, install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):
+   Install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):
 
    .. code-block:: bash
 
        pip install nekomata
 
-2. **Install External Dependencies**:
-
-   `NeKo` requires some external dependencies that are not available on PyPI. To install these dependencies, run:
-
-   .. code-block:: bash
-
-       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
-
-This two-step process will install both the core `NeKo` package and its external dependencies.
 
 Installation from Source
 ------------------------
@@ -61,7 +52,6 @@ For the latest development version, you can still clone the repository and insta
     git clone https://github.com/sysbio-curie/Neko.git
     cd Neko
     pip install .
-    pip install -r requirements.txt
 
 This will give you the latest version of `NeKo` (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.
 
@@ -119,7 +109,7 @@ This project is a collaborative effort between Institut Curie, NTNU, Saez lab an
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
-version 0.9.8
+version 0.9.20
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.

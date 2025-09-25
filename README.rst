@@ -17,7 +17,12 @@ NeKo: Network Konstructor
 
 Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It's built on top of `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_, and `Atopo <https://github.com/druglogics/atopo>`_.
 
-**Note**: Neko is currently in development and approaching its final stages. It is available on pip under the name "nekomata".
+Citation
+--------
+
+If you use NeKo in your research, please cite our paper:
+
+Ruscone M, Tsirvouli E, Checcoli A, Turei D, Barillot E, et al. (2025) NeKo: A tool for automatic network construction from prior knowledge. *PLOS Computational Biology* 21(9): e1013300. https://doi.org/10.1371/journal.pcbi.1013300
 
 Features
 --------

@@ -30,8 +30,9 @@ Features
 - Network creation and manipulation
 - Connection of nodes and subnetworks
 - Gene-to-phenotype mapping
-- Network visualization
+- Network visualization and export helpers
 - Interaction database integration
+- Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls
 
 Installation
 ------------
@@ -94,10 +95,12 @@ We provide a comprehensive set of Jupyter notebooks that offer a detailed and us
 3) Stepwise connection: a focus on the INE algorithm
 4) Connect to upstream components
 5) Build network based on kinase-phosphosite interactions
-6) Connect to downstream Gene Ontology terms.
+6) Connect to downstream Gene Ontology terms
 7) Map tissue expression
 8) Network comparison
 9) Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo
+10) Import and complete a network
+11) Network history, branching, and visualisation
 
 
 You can find these notebooks in the `notebooks` directory of the repository.
@@ -114,11 +117,12 @@ This project is a collaborative effort between Institut Curie, NTNU, Saez lab an
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
 
-version 0.9.20
+version 1.1.0
 --------------
 
 - Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.
 - Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resource to mine for interactions.
 - Database translation: The package provides methods to convert the identifiers of a database storing edges list, into Uniprot.
 - Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.
-- Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network. There is also an option to compress the network by substituting specified genes with the phenotype name.
+- Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network.
+- Branching network history: automatic state capture for every enrichment step, undo/redo, HTML/SVG graph visualisation, and configurable pruning via `set_max_history`.

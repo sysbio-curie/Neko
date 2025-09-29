@@ -46,6 +46,9 @@ class Ontology:
         Returns:
         - str: The modified URL.
         """
+        # Ensure we work with plain strings
+        if not isinstance(new_go_code, str):
+            new_go_code = str(new_go_code)
         # Define the prefixes that identify where the replacements should occur,
         go_code_prefix = "isa_partof_closure:%22"
         description_prefix = "annotation_class_label:%22"
@@ -71,7 +74,16 @@ class Ontology:
             genes = fetch_nodes_from_url(url)
             return genes
         elif phenotype and not id_accession:
-            id_accession = {i for i in self.accession_to_phenotype_dict if self.accession_to_phenotype_dict[i]==phenotype}
+            matches = [
+                acc for acc, description in self.accession_to_phenotype_dict.items()
+                if description == phenotype
+            ]
+            if not matches:
+                print("Invalid GO id accession or phenotype description:")
+                print("GO if accession used = ", id_accession)
+                print("Phenotype description used = ", phenotype)
+                return
+            id_accession = matches[0]
             url = self.modify_url_ontology(id_accession, phenotype)
             genes = fetch_nodes_from_url(url)
             return genes

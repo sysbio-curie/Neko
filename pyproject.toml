@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "nekomata"
-version = "1.0.0"
+version = "1.1.0"
 description = "Package to extract, visualize, convert and study interactions from database into executable activity flow based model"
 license = "GNU General Public License Version 3"
 authors = [

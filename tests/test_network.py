@@ -1,5 +1,9 @@
 import pytest
 import pandas as pd
+
+pytest.importorskip("pypath.utils.mapping")
+pytest.importorskip("pypath_common")
+
 from neko.core.network import Network
 import os
 import difflib
@@ -20,7 +24,6 @@ def sample_resources():
         "Type": ["activation", "inhibition", "activation"],
         "Effect": ["stimulation", "inhibition", "stimulation"],
         "References": ["PMID:1", "PMID:2", "PMID:3"],
-        "Provenance": [None, None, None]  # Added Provenance column
     })
 
 def test_network_creation_from_genes(sample_genes, sample_resources):
@@ -49,7 +52,6 @@ def test_add_and_remove_edge(sample_genes, sample_resources):
         "target": ["P19022"],
         "type": ["activation"],
         "references": ["PMID:123"],
-        "Provenance": [None]  # Added Provenance column
     })
     net.add_edge(edge_df)
     assert ((net.edges["source"] == "P12931") & (net.edges["target"] == "P19022")).any()
@@ -64,9 +66,9 @@ def test_connect_nodes_and_complete_connection(sample_genes, sample_resources):
 
 def test_remove_bimodal_and_undefined(sample_genes, sample_resources):
     net = Network(initial_nodes=sample_genes, resources=sample_resources)
-    # Add bimodal and undefined edges (now with Provenance column)
-    net.edges.loc[len(net.edges)] = ["P12931", "P19022", "type", "bimodal", "PMID:4", None]
-    net.edges.loc[len(net.edges)] = ["P12931", "P12830", "type", "undefined", "PMID:5", None]
+    # Add bimodal and undefined edges
+    net.edges.loc[len(net.edges)] = {"source": "P12931", "target": "P19022", "Type": "type", "Effect": "bimodal", "References": "PMID:4"}
+    net.edges.loc[len(net.edges)] = {"source": "P12931", "target": "P12830", "Type": "type", "Effect": "undefined", "References": "PMID:5"}
     net.remove_bimodal_interactions()
     assert not (net.edges["Effect"] == "bimodal").any()
     net.remove_undefined_interactions()

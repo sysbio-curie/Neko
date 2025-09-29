@@ -2,6 +2,8 @@ from __future__ import annotations
 from ..inputs import _universe
 from .._methods.enrichment_methods import Connections
 import copy
+from contextlib import contextmanager
+from functools import wraps
 from .._annotations.gene_ontology import Ontology
 from .tools import *
 from .node import Node
@@ -12,6 +14,62 @@ from typing_extensions import Literal
 from itertools import combinations
 from .algorithms.graph_traversal import bfs_algorithm as _bfs_algorithm
 from .algorithms.graph_traversal import dfs_algorithm as _dfs_algorithm
+import pandas as pd
+from pandas.util import hash_pandas_object
+
+_METADATA_PREVIEW = 120
+
+
+def _truncate_repr(value, limit=_METADATA_PREVIEW):
+    text = repr(value)
+    if len(text) > limit:
+        text = text[: limit - 1] + "…"
+    return text
+
+
+def _frame_fingerprint(df: pd.DataFrame) -> tuple:
+    if df.empty:
+        return (tuple(df.columns), 0, 0)
+    hashed = hash_pandas_object(df, index=True)
+    return (tuple(df.columns), len(df), int(hashed.sum()))
+
+
+def _record_state_operation(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not getattr(self, "_history_enabled", True):
+            return method(self, *args, **kwargs)
+
+        if getattr(self, "_is_initializing", False):
+            return method(self, *args, **kwargs)
+
+        depth = getattr(self, "_auto_state_depth", 0)
+        self._auto_state_depth = depth + 1
+
+        before_nodes = _frame_fingerprint(self.nodes)
+        before_edges = _frame_fingerprint(self.edges)
+
+        try:
+            result = method(self, *args, **kwargs)
+        finally:
+            self._auto_state_depth = depth
+
+        if getattr(self, "_is_initializing", False):
+            return result
+
+        if depth > 0:
+            return result
+
+        nodes_changed = before_nodes != _frame_fingerprint(self.nodes)
+        edges_changed = before_edges != _frame_fingerprint(self.edges)
+
+        if nodes_changed or edges_changed:
+            metadata = self._prepare_history_metadata(method.__name__, args, kwargs)
+            self.save_state(metadata=metadata)
+
+        return result
+
+    return wrapper
 
 
 class Network:
@@ -41,16 +99,25 @@ class Network:
         self._init_args = locals()
         del self._init_args['self']
         self.nodes = pd.DataFrame(columns=["Genesymbol", "Uniprot", "Type"])
-        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References", "Provenance"])
+        self.edges = pd.DataFrame(columns=["source", "target", "Type", "Effect", "References"])
         # Internal object-based storage
         self._node_objs = set()  # Set of Node objects
         self._edge_objs = set()  # Set of Edge objects
         self.initial_nodes = initial_nodes
         self._ontology = Ontology()
-        self._populate()
         # --- NetworkState history tracking ---
-        self._history: list[NetworkState] = []
-        self._history_metadata: list[dict] = []
+        self._states: dict[int, NetworkState] = {}
+        self._state_metadata: dict[int, dict] = {}
+        self._state_log: list[int] = []
+        self._state_counter: int = 0
+        self._current_state_id: Optional[int] = None
+        self._root_state_id: Optional[int] = None
+        self._auto_state_depth: int = 0
+        self._history_enabled: bool = True
+        self._max_history: Optional[int] = None
+        self._is_initializing = True
+        self._populate()
+        self._is_initializing = False
 
     def _add_node_obj(self, genesymbol, uniprot, node_type="NaN", metadata=None):
         node_id = uniprot if pd.notna(uniprot) else genesymbol
@@ -117,6 +184,8 @@ class Network:
             'dfs': self.dfs_algorithm,
             'bfs': self.bfs_algorithm,
         }
+        if self._state_counter == 0:
+            self.save_state(metadata={"label": "initial"})
 
     def copy(self):
         new_instance = copy.deepcopy(self)
@@ -184,6 +253,7 @@ class Network:
 
         return
 
+    @_record_state_operation
     def add_node(self, node: str, from_sif: bool = False) -> bool:
         """
         Adds a node to the network. The node is added to the nodes DataFrame of the network. The function checks the
@@ -232,6 +302,7 @@ class Network:
         self._add_node_obj(new_entry["Genesymbol"], new_entry["Uniprot"], new_entry["Type"])
         return True
 
+    @_record_state_operation
     def remove_node(self, node: str) -> None:
         """
         Removes a node from the network. The node is removed from both the list of nodes and the list of edges.
@@ -254,19 +325,18 @@ class Network:
 
         return
 
-    def add_edge(self, edge: pd.DataFrame, provenance: dict = None) -> None:
+    @_record_state_operation
+    def add_edge(self, edge: pd.DataFrame) -> None:
         """
         This method adds an interaction to the list of interactions while converting it to the NeKo-network format.
         It checks if the edge represents inhibition or stimulation and sets the effect accordingly. It also checks if the
         nodes involved in the interaction are already present in the network, if not, it adds them.
-        Optionally, provenance information can be attached to the edge.
 
         Args:
             - edge: A pandas DataFrame representing the interaction. The DataFrame should contain columns for
             'source', 'target', 'type', and 'references'. The 'source' and 'target' columns represent the nodes involved
             in the interaction. The 'type' column represents the type of interaction. The 'references' column contains
             the references for the interaction.
-            - provenance: Optional dict with provenance info (strategy, parameters, timestamp, etc.)
 
         Returns:
             - None
@@ -276,14 +346,12 @@ class Network:
         effect = check_sign(edge)
         references = edge["references"].values[0] if "references" in edge.columns else None
         edge_type = edge["type"].values[0] if "type" in edge.columns else None
-        provenance_str = str(provenance) if provenance else None
         df_edge = pd.DataFrame({
             "source": edge["source"],
             "target": edge["target"],
             "Type": edge_type,
             "Effect": effect,
-            "References": references,
-            "Provenance": provenance_str
+            "References": references
         })
 
         # Convert the "Uniprot" column to a set for efficient membership test
@@ -301,9 +369,6 @@ class Network:
                                    (self.edges["Effect"] == effect)]
         if not existing_edge.empty and references is not None:
             self.edges.loc[existing_edge.index, "References"] += "; " + str(references)
-            # Merge provenance info if needed
-            if provenance_str:
-                self.edges.loc[existing_edge.index, "Provenance"] = self.edges.loc[existing_edge.index, "Provenance"].astype(str) + "; " + provenance_str
         else:
             # Concatenate the new edge DataFrame with the existing edges in the graph
             self.edges = pd.concat([self.edges, df_edge])
@@ -311,21 +376,7 @@ class Network:
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
         return
 
-    def get_edge_provenance(self, source: str, target: str) -> str:
-        """
-        Return the provenance information for a given edge.
-        """
-        edge_row = self.edges[(self.edges["source"] == source) & (self.edges["target"] == target)]
-        if not edge_row.empty:
-            return edge_row.iloc[0]["Provenance"]
-        return None
-
-    def filter_edges_by_provenance(self, keyword: str) -> pd.DataFrame:
-        """
-        Return all edges whose provenance contains the given keyword.
-        """
-        return self.edges[self.edges["Provenance"].str.contains(keyword, na=False)]
-
+    @_record_state_operation
     def remove_edge(self, node1: str, node2: str) -> None:
         """
         This function removes an edge from the network. It takes the source node and target node as input and removes
@@ -352,6 +403,7 @@ class Network:
                   mapping_node_identifier(node1)[1], " and ", mapping_node_identifier(node2)[1])
         return
 
+    @_record_state_operation
     def remove_disconnected_nodes(self) -> None:
         """
         This function removes nodes from the network that are not connected to any other nodes.
@@ -368,6 +420,7 @@ class Network:
 
         return
 
+    @_record_state_operation
     def modify_node_name(self, old_name: str, new_name: str,
                          type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'
                          ) -> None:
@@ -460,6 +513,7 @@ class Network:
 
         return
 
+    @_record_state_operation
     def remove_path(self, path: list[str]) -> None:
         """
         This function removes a path from the network. It takes a list of nodes representing the path and removes all
@@ -625,6 +679,7 @@ class Network:
 
         return
 
+    @_record_state_operation
     def connect_nodes(self, only_signed: bool = False, consensus_only: bool = False) -> None:
         """
         Delegates to strategies.connect_nodes.
@@ -632,6 +687,7 @@ class Network:
         from .strategies import connect_nodes
         return connect_nodes(self, only_signed=only_signed, consensus_only=consensus_only)
 
+    @_record_state_operation
     def connect_subgroup(self, group, maxlen: int = 1, only_signed: bool = False, consensus: bool = False) -> None:
         """
         Delegates to strategies.connect_subgroup.
@@ -639,6 +695,7 @@ class Network:
         from .strategies import connect_subgroup
         return connect_subgroup(self, group, maxlen=maxlen, only_signed=only_signed, consensus=consensus)
 
+    @_record_state_operation
     def connect_component(self, comp_A, comp_B, maxlen: int = 2, mode: Literal['OUT', 'IN', 'ALL'] = 'OUT', only_signed: bool = False, consensus: bool = False) -> None:
         """
         Delegates to strategies.connect_component.
@@ -646,6 +703,7 @@ class Network:
         from .strategies import connect_component
         return connect_component(self, comp_A, comp_B, maxlen=maxlen, mode=mode, only_signed=only_signed, consensus=consensus)
 
+    @_record_state_operation
     def connect_to_upstream_nodes(self, nodes_to_connect=None, depth: int = 1, rank: int = 1, only_signed: bool = True, consensus: bool = False) -> None:
         """
         Delegates to strategies.connect_to_upstream_nodes.
@@ -653,6 +711,7 @@ class Network:
         from .strategies import connect_to_upstream_nodes
         return connect_to_upstream_nodes(self, nodes_to_connect=nodes_to_connect, depth=depth, rank=rank, only_signed=only_signed, consensus=consensus)
 
+    @_record_state_operation
     def connect_genes_to_phenotype(self, phenotype: str = None, id_accession: str = None, sub_genes: list = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False) -> None:
         """
         Delegates to strategies.connect_genes_to_phenotype.
@@ -660,6 +719,7 @@ class Network:
         from .strategies import connect_genes_to_phenotype
         return connect_genes_to_phenotype(self, phenotype=phenotype, id_accession=id_accession, sub_genes=sub_genes, maxlen=maxlen, only_signed=only_signed, compress=compress)
 
+    @_record_state_operation
     def connect_network_radially(self, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None, loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:
         """
         Delegates to strategies.connect_network_radially.
@@ -667,6 +727,7 @@ class Network:
         from .strategies import connect_network_radially
         return connect_network_radially(self, max_len=max_len, direction=direction, loops=loops, consensus=consensus, only_signed=only_signed)
 
+    @_record_state_operation
     def connect_as_atopo(self, strategy: Literal['radial', 'complete', None] = None, max_len: int = 1, loops: bool = False, outputs=None, only_signed: bool = True, consensus: bool = False) -> None:
         """
         Delegates to strategies.connect_as_atopo.
@@ -674,12 +735,13 @@ class Network:
         from .strategies import connect_as_atopo
         return connect_as_atopo(self, strategy=strategy, max_len=max_len, loops=loops, outputs=outputs, only_signed=only_signed, consensus=consensus)
 
+    @_record_state_operation
     def complete_connection(self,
-                            maxlen: Optional[int] = 2,
-                            algorithm: Literal['bfs', 'dfs'] = 'dfs',
-                            minimal: bool = True,
-                            only_signed: bool = False,
-                            consensus: bool = False,
+                        maxlen: Optional[int] = 2,
+                        algorithm: Literal['bfs', 'dfs'] = 'dfs',
+                        minimal: bool = True,
+                        only_signed: bool = False,
+                        consensus: bool = False,
                             connect_with_bias: bool = False,
                             ) -> None:
         """
@@ -688,6 +750,7 @@ class Network:
         from .strategies import complete_connection
         return complete_connection(self, maxlen=maxlen, algorithm=algorithm, minimal=minimal, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
 
+    @_record_state_operation
     def remove_undefined_interactions(self):
         """
         This function removes all undefined interactions from the network.
@@ -700,6 +763,7 @@ class Network:
         """
         self.edges = self.edges[self.edges['Effect'] != 'undefined']
 
+    @_record_state_operation
     def remove_bimodal_interactions(self):
         """
         Removes all bimodal interactions from the network.
@@ -730,80 +794,311 @@ class Network:
 
         return gs_edges
 
-    def save_state(self, metadata: Optional[dict] = None) -> None:
-        """
-        Save the current state of the network (nodes, edges, and optional metadata) to the history.
-        """
-        state = NetworkState(self.nodes, self.edges, metadata)
-        self._history.append(state)
-        self._history_metadata.append(state.metadata)
+    def _build_state(self, metadata: Optional[dict], parent_id: Optional[int]) -> NetworkState:
+        metadata = metadata or {}
+        state = NetworkState(
+            nodes=self.nodes,
+            edges=self.edges,
+            metadata=metadata,
+            state_id=self._state_counter,
+            parent_ids=[parent_id] if parent_id is not None else [],
+        )
+        return state
 
-    def restore_state(self, index: int = -1) -> None:
-        """
-        Restore the network to a previous state by index (default: last state).
-        """
-        if not self._history:
-            raise ValueError("No saved states to restore.")
-        state = self._history[index]
+    def save_state(self, metadata: Optional[dict] = None) -> int:
+        """Persist the current network snapshot and return its state id."""
+
+        parent_id = self._current_state_id
+        state = self._build_state(metadata, parent_id)
+        state_id = state.state_id
+        self._states[state_id] = state
+        self._state_metadata[state_id] = state.metadata
+        self._state_log.append(state_id)
+
+        if parent_id is None:
+            self._root_state_id = state_id
+        else:
+            parent_state = self._states[parent_id]
+            parent_state.add_child(state_id)
+
+        self._current_state_id = state_id
+        self._state_counter += 1
+        self._enforce_max_history()
+        return state_id
+
+    def _get_state(self, state_id: int) -> NetworkState:
+        try:
+            return self._states[state_id]
+        except KeyError as exc:
+            raise ValueError(f"Unknown state id: {state_id}") from exc
+
+    def _resolve_state_id(self, identifier: int) -> int:
+        if identifier in self._states:
+            return identifier
+        if isinstance(identifier, int) and 0 <= identifier < len(self._state_log):
+            return self._state_log[identifier]
+        raise ValueError(f"Unknown state identifier: {identifier}")
+
+    def set_max_history(self, max_states: Optional[int]) -> None:
+        """Set the maximum number of stored history states (None disables pruning)."""
+
+        if max_states is None:
+            self._max_history = None
+        else:
+            max_states = int(max_states)
+            if max_states < 2:
+                max_states = 2
+            self._max_history = max_states
+        self._enforce_max_history()
+
+    def _enforce_max_history(self) -> None:
+        if self._max_history is None:
+            return
+        idx = 0
+        protected = {self._root_state_id, self._current_state_id}
+        while len(self._state_log) > self._max_history and idx < len(self._state_log):
+            candidate = self._state_log[idx]
+            if candidate in protected:
+                idx += 1
+                continue
+            state = self._states.get(candidate)
+            if state is None:
+                self._state_log = [sid for sid in self._state_log if sid != candidate]
+                idx = 0
+                continue
+            for child_id in list(state.children_ids):
+                child = self._states.get(child_id)
+                if child:
+                    child.parent_ids = [pid for pid in child.parent_ids if pid != candidate]
+                    for parent_id in state.parent_ids:
+                        if parent_id not in child.parent_ids:
+                            child.parent_ids.append(parent_id)
+                        parent_state = self._states.get(parent_id)
+                        if parent_state and child_id not in parent_state.children_ids:
+                            parent_state.children_ids.append(child_id)
+            state.children_ids = []
+            for parent_id in state.parent_ids:
+                parent = self._states.get(parent_id)
+                if parent:
+                    parent.children_ids = [c for c in parent.children_ids if c != candidate]
+            self._states.pop(candidate, None)
+            self._state_metadata.pop(candidate, None)
+            self._state_log = [sid for sid in self._state_log if sid != candidate]
+            idx = 0
+
+    def set_history_tracking(self, enabled: bool) -> None:
+        """Globally enable or disable automatic state capture."""
+
+        self._history_enabled = bool(enabled)
+
+    @contextmanager
+    def suspend_history(self):
+        """Temporarily suspend automatic state capture within the context."""
+
+        previous = self._history_enabled
+        self._history_enabled = False
+        try:
+            yield
+        finally:
+            self._history_enabled = previous
+
+    def checkout(self, state_id: int) -> None:
+        """Restore the network to a previously saved state."""
+
+        state = self._get_state(state_id)
         self.nodes = state.nodes.copy(deep=True)
         self.edges = state.edges.copy(deep=True)
-        # Optionally, restore other attributes if needed
+        self._current_state_id = state_id
+
+    def restore_state(self, state_id: Optional[int] = None) -> None:
+        """Backward compatible wrapper around :meth:`checkout`."""
+
+        target = state_id if state_id is not None else self._current_state_id
+        if target is None:
+            raise ValueError("No saved states to restore.")
+        self.checkout(self._resolve_state_id(target))
 
     def undo(self) -> None:
-        """
-        Undo the last change by restoring the previous state in history.
-        """
-        if len(self._history) < 2:
+        """Move to the parent state if available."""
+
+        if self._current_state_id is None:
             return
-        # Remove the current state
-        self._history.pop()
-        self._history_metadata.pop()
-        # Restore the previous state
-        state = self._history[-1]
-        self.nodes = state.nodes.copy(deep=True)
-        self.edges = state.edges.copy(deep=True)
+        parents = self._get_state(self._current_state_id).parent_ids
+        if not parents:
+            return
+        self.checkout(parents[-1])
 
-    def redo(self) -> None:
-        """
-        Redo is not supported unless branching is implemented. Placeholder for future extension.
-        """
-        pass
+    def redo(self, state_id: Optional[int] = None) -> None:
+        """Move to a child state. If more than one child exists, a specific state id is required."""
 
-    def compare_states(self, idx1: int, idx2: int) -> dict:
-        """
-        Compare two saved network states by index. Returns a dict with added/removed nodes/edges and provenance diffs.
-        Node comparison is now based only on unique Uniprot identifiers to avoid dtype issues and ensure robust diffing.
-        """
-        if idx1 >= len(self._history) or idx2 >= len(self._history):
-            raise IndexError("State index out of range.")
-        state1 = self._history[idx1]
-        state2 = self._history[idx2]
-        nodes1 = set(str(u) for u in state1.nodes["Uniprot"].drop_duplicates().tolist())
-        nodes2 = set(str(u) for u in state2.nodes["Uniprot"].drop_duplicates().tolist())
-        edges1 = set(tuple(row) for row in state1.edges.values.tolist())
-        edges2 = set(tuple(row) for row in state2.edges.values.tolist())
+        if self._current_state_id is None:
+            return
+        children = self._get_state(self._current_state_id).children_ids
+        if not children:
+            return
+        target = state_id
+        if target is None:
+            if len(children) != 1:
+                raise ValueError("Multiple branches available; specify a target state id.")
+            target = children[0]
+        elif target not in children:
+            raise ValueError(f"State {target} is not a child of {self._current_state_id}.")
+        self.checkout(target)
+
+    def compare_states(self, state_a: int, state_b: int) -> dict:
+        """Compare two states identified by their ids."""
+
+        resolved_a = self._resolve_state_id(state_a)
+        resolved_b = self._resolve_state_id(state_b)
+        state1 = self._get_state(resolved_a)
+        state2 = self._get_state(resolved_b)
+        nodes1 = self._state_node_labels(state1)
+        nodes2 = self._state_node_labels(state2)
+        edges1 = self._state_edge_signatures(state1)
+        edges2 = self._state_edge_signatures(state2)
         diff = {
             "added_nodes": list(nodes2 - nodes1),
             "removed_nodes": list(nodes1 - nodes2),
             "added_edges": list(edges2 - edges1),
             "removed_edges": list(edges1 - edges2),
-            "added_provenance": [e for e in (edges2 - edges1) if len(e) > 5 and e[5]],
-            "removed_provenance": [e for e in (edges1 - edges2) if len(e) > 5 and e[5]],
         }
         return diff
 
+    def _prepare_history_metadata(self, method_name: str, args, kwargs) -> dict:
+        return {
+            "method": method_name,
+            "args": [self._serialize_history_value(arg) for arg in args],
+            "kwargs": {key: self._serialize_history_value(val) for key, val in kwargs.items()},
+        }
+
+    def _serialize_history_value(self, value) -> str:
+        if isinstance(value, str):
+            label = self._node_display_label(value)
+            return label if label is not None else value
+        if isinstance(value, (list, tuple, set)):
+            return "[" + ", ".join(self._serialize_history_value(v) for v in value) + "]"
+        if isinstance(value, dict):
+            return "{" + ", ".join(f"{k}={self._serialize_history_value(v)}" for k, v in value.items()) + "}"
+        return _truncate_repr(value)
+
+    def _state_node_labels(self, state: NetworkState) -> set[str]:
+        nodes = state.nodes
+        labels: set[str] = set()
+        if nodes.empty:
+            return labels
+        genes = nodes.get("Genesymbol")
+        uniprots = nodes.get("Uniprot")
+        if genes is not None:
+            genes = genes.fillna("")
+        if uniprots is not None:
+            uniprots = uniprots.fillna("")
+        for idx in range(len(nodes)):
+            label = ""
+            if genes is not None:
+                label = str(genes.iloc[idx]) if genes.iloc[idx] else ""
+            if (not label) and uniprots is not None:
+                label = str(uniprots.iloc[idx]) if uniprots.iloc[idx] else ""
+            if not label:
+                label = str(nodes.index[idx]) if nodes.index is not None else ""
+            if label:
+                labels.add(label)
+        return labels
+
+    def _node_display_label(self, identifier):
+        if pd.isna(identifier):
+            return identifier
+        identifiers = self.mapping_node_identifier(identifier)
+        for candidate in (identifiers[1], identifiers[0], identifiers[2], identifier):
+            if candidate:
+                return candidate
+        return identifier
+
+    def _state_edge_signatures(self, state: NetworkState) -> set[tuple]:
+        edges = state.edges
+        if edges.empty:
+            return set()
+        converted = edges.copy()
+        if "source" in converted.columns:
+            converted["source"] = converted["source"].apply(self._node_display_label)
+        if "target" in converted.columns:
+            converted["target"] = converted["target"].apply(self._node_display_label)
+        return set(tuple(row) for row in converted.to_records(index=False))
+
     def list_states(self) -> list:
-        """
-        List all saved states (returns their metadata).
-        """
-        return self._history_metadata.copy()
+        """Return a creation-ordered list of state metadata."""
+
+        return [
+            {"id": state_id, "metadata": self._state_metadata.get(state_id, {})}
+            for state_id in self._state_log
+        ]
+
+    def describe_history(self) -> None:
+        """Pretty-print the branching history tree."""
+
+        if not self._states:
+            print("<no states recorded>")
+            return
+
+        def _label(state: NetworkState) -> str:
+            meta = state.metadata or {}
+            label = meta.get("label") or meta.get("description")
+            if label:
+                return str(label)
+            if meta:
+                return str(meta)
+            return ""
+
+        def _walk(state_id: int, depth: int) -> None:
+            state = self._get_state(state_id)
+            indent = "  " * depth
+            label = _label(state)
+            suffix = f" - {label}" if label else ""
+            print(f"{indent}State {state_id}{suffix}")
+            for child_id in state.children_ids:
+                _walk(child_id, depth + 1)
+
+        _walk(self._root_state_id, 0)
 
     def describe_states(self) -> None:
-        """
-        Print a summary of all saved states.
-        """
-        for i, meta in enumerate(self._history_metadata):
-            print(f"State {i}: {meta}")
+        """Backward compatible alias for :meth:`describe_history`."""
+
+        self.describe_history()
+
+    @property
+    def current_state_id(self) -> Optional[int]:
+        return self._current_state_id
+
+    @property
+    def root_state_id(self) -> Optional[int]:
+        return self._root_state_id
+
+    def history_graph(self):
+        """Return a networkx DiGraph representing the state transitions."""
+
+        from .._visual.history import build_history_graph
+
+        return build_history_graph(self)
+
+    def history_digraph(self, include_metadata: bool = True):
+        """Return a Graphviz digraph for the history."""
+
+        from .._visual.history import history_digraph
+
+        return history_digraph(self, include_metadata=include_metadata)
+
+    def history_html(self, include_metadata: bool = True, div_class: str = "neko-history-graph") -> str:
+        """Return an HTML snippet embedding the history graph."""
+
+        from .._visual.history import history_html
+
+        return history_html(self, include_metadata=include_metadata, div_class=div_class)
+
+    def history_html(self, include_metadata: bool = True, div_class: str = "neko-history-graph") -> str:
+        """Return an HTML snippet embedding the history graph."""
+
+        from .._visual.history import history_html
+
+        return history_html(self, include_metadata=include_metadata, div_class=div_class)
 
     def check_sign(self, edge, consensus_only=False):
         return check_sign(edge, consensus_only)

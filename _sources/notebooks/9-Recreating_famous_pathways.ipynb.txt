@@ -1,0 +1,1021 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0dc40388-8f54-4433-aa81-9dc643697c76",
+   "metadata": {},
+   "source": [
+    "# Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "a90067aa-8a9c-4ff1-8aac-4f9992094e7e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from neko.core.network import Network\n",
+    "from neko._visual.visualize_network import NetworkVisualizer\n",
+    "from neko.inputs import Universe, signor\n",
+    "import omnipath as op"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "19dc89d3-203b-479a-9d46-3b7846c720bb",
+   "metadata": {},
+   "source": [
+    "## 1) Retrieving the MTOR Signaling from Signor using NeKo "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "0abd6eae-2970-4bdf-82b5-364731270d3e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mtor_nodes = [\"RPS6KA1\", \"SREBF1\", \"MTOR\", \"RPTOR\", \"INSR\", \"RPS6KB1\", \"RHEB\", \"EIF4EBP1\", \"INS\", \"PTEN\",\n",
+    "             \"RPS6\", \"TFEB\", \"PIK3R1\", \"PPARGC1A\", \"PDPK1\", \"AKT1S1\", \"PPARG\", \"PIK3CA\", \"EIF4E\", \"IRS1\", \"GSK3B\", \"ULK1\"]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "2c74b109-7324-4b4f-9c8c-5ffb828fbc32",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import random"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "c91174d0-5b4a-4ebe-aee2-002a246b3416",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "seeds_number = 4\n",
+    "random_seeds = random.sample(mtor_nodes, seeds_number)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "fbb83c00-86c2-4319-b45c-8edbce14ad42",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['AKT1S1', 'TFEB', 'SREBF1', 'RPS6']"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "random_seeds"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "141b4700-e3da-478a-aa6b-19e7d85aa6f4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "resources = Universe()\n",
+    "resources = signor(\"../neko/_data/signor_db.tsv\")  # this function accept only tab separated values\n",
+    "resources.build()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d6049069-ed6f-40ae-bbc3-c65c59ee095e",
+   "metadata": {},
+   "source": [
+    "Let's compare the function commplete_connection (based on the Reciprocal Pathway Extender algorithm) with the function connect_radially (based on the Iterative Neighbor Expansion ). \n",
+    "We are going to create two neko_net, and apply to each of them one of the two functions. \n",
+    "Finally, we are going to compare the resulting networks."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "a7799cae-73d3-48dc-aa73-5cfbc1c40de2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "neko_net1 = Network(random_seeds, resources = resources.interactions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "837ddb95-e22e-44ad-9ac1-6488d7a8b348",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "neko_net2 = Network(random_seeds, resources = resources.interactions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "47575e89-4da0-4a9e-acfa-9d15a98abd90",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 402 ms, sys: 3.1 ms, total: 406 ms\n",
+      "Wall time: 404 ms\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "neko_net1.complete_connection(maxlen=3, algorithm=\"dfs\", only_signed=True, connect_with_bias=False, consensus=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ae162d78-1df1-47a3-b3ce-d442324274e9",
+   "metadata": {},
+   "source": [
+    "### \n",
+    "<div class=\"alert alert-info\">\n",
+    "\n",
+    "**Note**\n",
+    "    \n",
+    "The **max_len** in the function *connect_network_radially* should be kept at 1, max 2. Why? \n",
+    "\n",
+    "The Iterative Neighbour Expansion, as the name suggests, iterates through all the seed nodes and adds to the network all the interactions found. In the next step, it iterates through all the neighbors found and looks for their neighbors. Doing so, the Network size could exponentially increase, if among the neighbor nodes there are some HUB (nodes with a high degree of connection).\n",
+    "</div>  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "5b115402-1a40-4677-9f44-bbcd5ae4bb3f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 6.45 s, sys: 1.39 ms, total: 6.45 s\n",
+      "Wall time: 6.45 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "neko_net2.connect_network_radially(max_len=2, only_signed=True, consensus=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2a80e34b-cb9c-4caf-962f-4738da608fb6",
+   "metadata": {},
+   "source": [
+    "Now let's visualize the network:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "0cf992d7-91d6-4e9d-aa58-ec35be8a9fc3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Visualize network\n",
+    "visualizer1 = NetworkVisualizer(neko_net1, color_by='effect', noi=True)\n",
+    "visualizer1.render(\"./img/Complete_connection_neko_net_sample\", view=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "7d120405-e5f5-4d4a-9a80-c83877a47735",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Visualize network\n",
+    "visualizer2 = NetworkVisualizer(neko_net2, color_by='effect', noi=True)\n",
+    "visualizer2.render(\"./img/Radial_neko_net_sample\", view=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e2024355-1443-40f6-b529-8c94f80d040e",
+   "metadata": {},
+   "source": [
+    "Let's compare the Networks. We will use JUST those nodes in signor that are not complexes or protein families (so we excluded all those nodes that starts with \"SIGNOR_\").\n",
+    "At the following link you can find the full MTOR pathway from SIGNOR: https://signor.uniroma2.it/pathway_browser.php?beta=3.0&organism=&pathway_list=SIGNOR-MS&x=13&y=13"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "9184fb6a-6a5b-4cac-ba3c-677fb646b844",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of nodes of the first NeKo network:  13\n",
+      "Number of nodes of the second NeKo network:  58\n"
+     ]
+    }
+   ],
+   "source": [
+    "net1_nodes_size = len(neko_net1.nodes)\n",
+    "net2_nodes_size = len(neko_net2.nodes)\n",
+    "\n",
+    "print(\"Number of nodes of the first NeKo network: \", net1_nodes_size)\n",
+    "print(\"Number of nodes of the second NeKo network: \", net2_nodes_size)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "c81afa3d-fd2c-43db-acfd-bcb457864fdd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of edges of the first NeKo network:  33\n",
+      "Number of edges of the second NeKo network:  161\n"
+     ]
+    }
+   ],
+   "source": [
+    "net1_edges_size = len(neko_net1.edges)\n",
+    "net2_edges_size = len(neko_net2.edges)\n",
+    "\n",
+    "print(\"Number of edges of the first NeKo network: \", net1_edges_size)\n",
+    "print(\"Number of edges of the second NeKo network: \", net2_edges_size)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8562a1af-20b7-492b-add2-f56f3da93b80",
+   "metadata": {},
+   "source": [
+    "The first consideration to do is that the RPE algorithm, is way faster than the INE one (402 ms vs 6.45 s). Despite being slower, the INE algorithm, provided a much bigger network (13 nodes vs 33, 58 edges vs 161)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "6827eeef-2f4a-4e15-8cd8-f9e00d0aef87",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Initial nodes:  ['AKT1S1', 'TFEB', 'SREBF1', 'RPS6']\n",
+      "Nodes in the MTOR pathways:  ['RPS6KA1', 'SREBF1', 'MTOR', 'RPTOR', 'INSR', 'RPS6KB1', 'RHEB', 'EIF4EBP1', 'INS', 'PTEN', 'RPS6', 'TFEB', 'PIK3R1', 'PPARGC1A', 'PDPK1', 'AKT1S1', 'PPARG', 'PIK3CA', 'EIF4E', 'IRS1', 'GSK3B', 'ULK1']\n",
+      "Nodes founded:  ['SREBF1', 'MTOR', 'RPS6KB1', 'RPS6', 'TFEB', 'AKT1S1']\n"
+     ]
+    }
+   ],
+   "source": [
+    "nodes_found = []\n",
+    "for node in mtor_nodes:\n",
+    "    if node in list(neko_net1.nodes[\"Genesymbol\"]):\n",
+    "        nodes_found.append(node)\n",
+    "\n",
+    "print(\"Initial nodes: \", random_seeds)\n",
+    "print(\"Nodes in the MTOR pathways: \", mtor_nodes)\n",
+    "print(\"Nodes founded: \", nodes_found)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "1c7de0cd-7056-4a95-a762-459116cd26e9",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Percentage of genes covered:  27.27272727272727\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Percentage of genes covered: \", (len(nodes_found)/len(mtor_nodes)) * 100)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "8e5ed381-2eac-4dde-b664-9b8e7a7ad6c4",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Initial nodes:  ['AKT1S1', 'TFEB', 'SREBF1', 'RPS6']\n",
+      "Nodes in the MTOR pathways:  ['RPS6KA1', 'SREBF1', 'MTOR', 'RPTOR', 'INSR', 'RPS6KB1', 'RHEB', 'EIF4EBP1', 'INS', 'PTEN', 'RPS6', 'TFEB', 'PIK3R1', 'PPARGC1A', 'PDPK1', 'AKT1S1', 'PPARG', 'PIK3CA', 'EIF4E', 'IRS1', 'GSK3B', 'ULK1']\n",
+      "Nodes founded:  ['RPS6KA1', 'SREBF1', 'MTOR', 'RPS6KB1', 'PTEN', 'RPS6', 'TFEB', 'PPARGC1A', 'AKT1S1', 'PPARG', 'GSK3B', 'ULK1']\n"
+     ]
+    }
+   ],
+   "source": [
+    "nodes_found = []\n",
+    "for node in mtor_nodes:\n",
+    "    if node in list(neko_net2.nodes[\"Genesymbol\"]):\n",
+    "        nodes_found.append(node)\n",
+    "\n",
+    "print(\"Initial nodes: \", random_seeds)\n",
+    "print(\"Nodes in the MTOR pathways: \", mtor_nodes)\n",
+    "print(\"Nodes founded: \", nodes_found)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "3ce92129-f927-4172-95eb-f71c84188c8f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Percentage of genes covered:  54.54545454545454\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Percentage of genes covered: \", (len(nodes_found)/len(mtor_nodes)) * 100)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98534d1b-0922-491d-8c26-2f8439c5dae7",
+   "metadata": {},
+   "source": [
+    "As expected, due to the network size, the INE algorithm managed to capture more genes belonging to the MTOR pathway compared to the RPE algorithm. This was expected also because the RPE algorithm aims at finding the minimal set of genes that can connect all the seed nodes given by the user, while the INE algorithm does not take into account the shortest paths, but homogeneously explores the surroundings."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c9834d56-3487-484e-8f9b-24f0601b5af0",
+   "metadata": {},
+   "source": [
+    "## 2) Retrieving the EGF/EGFR pathway (source: wikipathway) using Omnipath"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cbdb936-fd71-419a-906a-6a5d7ffcd905",
+   "metadata": {},
+   "source": [
+    "The MTOR pathways we saw in use case 2 is a reletavely small pathway. We decided to test the INE and RPE algorithm to retrieve a bigger one, the EGF/EGFR pathway as shown in wikipathway, fetching interactions from Omnipath."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4bfbaca8-e8b2-48ea-8972-474961f19fba",
+   "metadata": {},
+   "source": [
+    "In order to do so, we can proceed with the installation of the python package pywikipathways to quickly retrieve the genes belonging to the EGF/EGFR pathway (WP437, https://www.wikipathways.org/pathways/WP437.html)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "d70ec715-e387-475e-8816-1a6c8efa855a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting pywikipathways\n",
+      "  Using cached pywikipathways-0.0.3-py3-none-any.whl.metadata (2.5 kB)\n",
+      "Requirement already satisfied: lxml in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (5.3.0)\n",
+      "Requirement already satisfied: pandas in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (2.2.2)\n",
+      "Requirement already satisfied: requests in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (2.32.3)\n",
+      "Requirement already satisfied: numpy>=1.26.0 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas->pywikipathways) (1.26.4)\n",
+      "Requirement already satisfied: python-dateutil>=2.8.2 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas->pywikipathways) (3.9.0)\n",
+      "Requirement already satisfied: pytz>=2020.1 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas->pywikipathways) (2024.1)\n",
+      "Requirement already satisfied: tzdata>=2022.7 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas->pywikipathways) (2024.1)\n",
+      "Requirement already satisfied: six>=1.5 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->pywikipathways) (1.16.0)\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests->pywikipathways) (3.3.2)\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests->pywikipathways) (3.7)\n",
+      "Requirement already satisfied: urllib3<3,>=1.21.1 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests->pywikipathways) (2.2.2)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests->pywikipathways) (2024.7.4)\n",
+      "Using cached pywikipathways-0.0.3-py3-none-any.whl (12 kB)\n",
+      "Installing collected packages: pywikipathways\n",
+      "Successfully installed pywikipathways-0.0.3\n"
+     ]
+    }
+   ],
+   "source": [
+    "# uncomment the following line if you do not have installed pywikipathways\n",
+    "!pip install pywikipathways"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "8177656d-c194-4657-8dd1-4bcdf3afd084",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pywikipathways as pwpw"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "bd661901-52f6-4d9b-949e-cfc539113f47",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'id': 'WP437',\n",
+       " 'url': 'https://classic.wikipathways.org/index.php/Pathway:WP437',\n",
+       " 'name': 'EGF/EGFR signaling',\n",
+       " 'species': 'Homo sapiens',\n",
+       " 'revision': '137261'}"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pwpw.get_pathway_info('WP437')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "81482dd7-9e2b-411e-a1d6-55eed867d220",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "egf_egfr_genes = pwpw.get_xref_list('WP437','H')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "eeec14cd-cf03-4962-a477-6b456d95b279",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "162\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "['ABI1',\n",
+       " 'ABL1',\n",
+       " 'AKT1',\n",
+       " 'AP2A1',\n",
+       " 'AP2B1',\n",
+       " 'AP2M1',\n",
+       " 'AP2S1',\n",
+       " 'ARF6',\n",
+       " 'ARHGEF1',\n",
+       " 'ASAP1',\n",
+       " 'ATF1',\n",
+       " 'ATXN2',\n",
+       " 'AURKA',\n",
+       " 'BCAR1',\n",
+       " 'BRAF',\n",
+       " 'CAMK2A',\n",
+       " 'CAV1',\n",
+       " 'CAV2',\n",
+       " 'CBL',\n",
+       " 'CBLB',\n",
+       " 'CBLC',\n",
+       " 'CDC42',\n",
+       " 'CFL1',\n",
+       " 'CREB1',\n",
+       " 'CRK',\n",
+       " 'CRKL',\n",
+       " 'CSK',\n",
+       " 'DNM1',\n",
+       " 'DOK2',\n",
+       " 'E2F1',\n",
+       " 'EGF',\n",
+       " 'EGFR',\n",
+       " 'EIF4EBP1',\n",
+       " 'ELK1',\n",
+       " 'ELK4',\n",
+       " 'EPN1',\n",
+       " 'EPS15',\n",
+       " 'EPS15L1',\n",
+       " 'EPS8',\n",
+       " 'ERBB2',\n",
+       " 'ERRFI1',\n",
+       " 'FOS',\n",
+       " 'FOSB',\n",
+       " 'FOXO1',\n",
+       " 'FOXO4',\n",
+       " 'GAB1',\n",
+       " 'GAB2',\n",
+       " 'GJA1',\n",
+       " 'GRB10',\n",
+       " 'GRB2',\n",
+       " 'HGS',\n",
+       " 'HRAS',\n",
+       " 'INPP5D',\n",
+       " 'INPPL1',\n",
+       " 'IQGAP1',\n",
+       " 'IQSEC1',\n",
+       " 'ITCH',\n",
+       " 'JAK1',\n",
+       " 'JAK2',\n",
+       " 'JUN',\n",
+       " 'JUND',\n",
+       " 'KRAS',\n",
+       " 'LIMK2',\n",
+       " 'MAP2K1',\n",
+       " 'MAP2K2',\n",
+       " 'MAP2K5',\n",
+       " 'MAP3K1',\n",
+       " 'MAP3K2',\n",
+       " 'MAP3K3',\n",
+       " 'MAP3K4',\n",
+       " 'MAP4K1',\n",
+       " 'MAPK1',\n",
+       " 'MAPK14',\n",
+       " 'MAPK4',\n",
+       " 'MAPK7',\n",
+       " 'MAPK8',\n",
+       " 'MAPK9',\n",
+       " 'MEF2A',\n",
+       " 'MEF2C',\n",
+       " 'MEF2D',\n",
+       " 'MT-CO2',\n",
+       " 'MTOR',\n",
+       " 'MYBL2',\n",
+       " 'NCK1',\n",
+       " 'NCK2',\n",
+       " 'NCOA3',\n",
+       " 'NDUFA13',\n",
+       " 'NEDD4',\n",
+       " 'NEDD8',\n",
+       " 'NOS3',\n",
+       " 'PAK1',\n",
+       " 'PCNA',\n",
+       " 'PDPK1',\n",
+       " 'PEBP1',\n",
+       " 'PIAS3',\n",
+       " 'PIK3C2B',\n",
+       " 'PIK3R1',\n",
+       " 'PIK3R2',\n",
+       " 'PLCE1',\n",
+       " 'PLCG1',\n",
+       " 'PLD1',\n",
+       " 'PLD2',\n",
+       " 'PLSCR1',\n",
+       " 'PRKCA',\n",
+       " 'PRKCB',\n",
+       " 'PRKCD',\n",
+       " 'PRKCI',\n",
+       " 'PRKCZ',\n",
+       " 'PTEN',\n",
+       " 'PTK2',\n",
+       " 'PTK2B',\n",
+       " 'PTK6',\n",
+       " 'PTPN11',\n",
+       " 'PTPN12',\n",
+       " 'PTPN5',\n",
+       " 'PTPRR',\n",
+       " 'PXDN',\n",
+       " 'RAB5A',\n",
+       " 'RAC1',\n",
+       " 'RAF1',\n",
+       " 'RALA',\n",
+       " 'RALB',\n",
+       " 'RALBP1',\n",
+       " 'RALGDS',\n",
+       " 'RAP1A',\n",
+       " 'RASA1',\n",
+       " 'REPS2',\n",
+       " 'RICTOR',\n",
+       " 'RIN1',\n",
+       " 'ROCK1',\n",
+       " 'RPS6KA1',\n",
+       " 'RPS6KA2',\n",
+       " 'RPS6KA3',\n",
+       " 'RPS6KA5',\n",
+       " 'RPS6KB1',\n",
+       " 'SH2D2A',\n",
+       " 'SH3GL2',\n",
+       " 'SH3GL3',\n",
+       " 'SH3KBP1',\n",
+       " 'SHC1',\n",
+       " 'SOS1',\n",
+       " 'SOS2',\n",
+       " 'SP1',\n",
+       " 'SPRY2',\n",
+       " 'SRC',\n",
+       " 'STAM',\n",
+       " 'STAM2',\n",
+       " 'STAMBP',\n",
+       " 'STAT1',\n",
+       " 'STAT3',\n",
+       " 'STAT5A',\n",
+       " 'STAT5B',\n",
+       " 'STMN1',\n",
+       " 'STXBP1',\n",
+       " 'SYNJ1',\n",
+       " 'TNK2',\n",
+       " 'TWIST1',\n",
+       " 'USP6NL',\n",
+       " 'USP8',\n",
+       " 'VAV1',\n",
+       " 'VAV2',\n",
+       " 'VAV3']"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "print(len(egf_egfr_genes))\n",
+    "egf_egfr_genes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c14a30bf-0d45-4aad-b2e5-cec37217040c",
+   "metadata": {},
+   "source": [
+    "Let's select a random number of those genes and proceed with building the network with NeKo!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "0ff8c031-2066-4809-adc4-e9fb6684c021",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "seeds_number = 20\n",
+    "random_seeds = random.sample(egf_egfr_genes, seeds_number)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "ca9cb2f7-39b4-481b-8091-64fef5eba285",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['PEBP1',\n",
+       " 'SOS1',\n",
+       " 'GAB2',\n",
+       " 'CDC42',\n",
+       " 'CBLC',\n",
+       " 'EIF4EBP1',\n",
+       " 'HGS',\n",
+       " 'RICTOR',\n",
+       " 'PTPRR',\n",
+       " 'GRB2',\n",
+       " 'RAF1',\n",
+       " 'RAC1',\n",
+       " 'MTOR',\n",
+       " 'ELK4',\n",
+       " 'RPS6KA5',\n",
+       " 'EPS15L1',\n",
+       " 'USP6NL',\n",
+       " 'PIK3R1',\n",
+       " 'ABL1',\n",
+       " 'PTK2']"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "random_seeds"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e3dccd95-6ee4-42a3-8eb9-dd96141e108a",
+   "metadata": {},
+   "source": [
+    "### \n",
+    "<div class=\"alert alert-info\">\n",
+    "\n",
+    "**TIP**\n",
+    "    \n",
+    "NeKo provides some built-in functions to easily plug some well-known databases, like **Omnipath**, **Signor**, **PhosphositePlus** and **Huri**. More information can be found in the Notebook #2\n",
+    "</div>  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "6302b5bf-0a2e-4e2c-9a88-ba3b505af6fc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "neko_net3 = Network(random_seeds, resources = 'omnipath')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "89a3ad40-ef1e-467f-98dd-e9704fef09e1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "neko_net4 = Network(random_seeds, resources = 'omnipath')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "14468b0d-9972-4e6e-8e8d-e8d9fe2d8f33",
+   "metadata": {},
+   "source": [
+    "Once again, now that we have created the NeKo network, let's use the RPE and INE algorithm to retrieve (hopefully) the full EGF/EGFR pathway. \n",
+    "\n",
+    "**To Notice!**\n",
+    "\n",
+    "Since the AllOmnipath database is very big and we have a higher number of seed nodes, the computational time / cost will be higher too! In some cases, expect both complete_connection and connect_network_radially to take minutes!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "8c51e03a-2878-4783-ac4e-50328b8240d1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 3min 18s, sys: 24.7 ms, total: 3min 18s\n",
+      "Wall time: 3min 18s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "neko_net3.complete_connection(maxlen=3, algorithm=\"dfs\", only_signed=True, connect_with_bias=False, consensus=False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "7291cdef-74dc-4d88-b588-b65404bb60a0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 41.7 s, sys: 3.03 ms, total: 41.7 s\n",
+      "Wall time: 41.7 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "neko_net4.connect_network_radially(max_len=1, only_signed=True, consensus=False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "3793c48c-1c85-47d6-bd23-548094ee8b90",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#This time the network are very big and it can be difficult to visualize them\n",
+    "#visualizer3 = NetworkVisualizer(neko_net3, color_by='effect', noi=True)\n",
+    "#visualizer3.render(\"./img/Complete_connection_neko_net_sample_EGF\", view=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "3b491a47-4d3c-4302-a44a-88fac4d2671f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Visualize network\n",
+    "#visualizer4 = NetworkVisualizer(neko_net4, color_by='effect', noi=True)\n",
+    "#visualizer4.render(\"./img/Radial_neko_net_sample_EGF\", view=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3dfda316-09fb-48ee-a509-451fbdecdd4f",
+   "metadata": {},
+   "source": [
+    "As we did previously, let's compare network's size and check if we found nodes beloning to the EGF/EGFR pathway from wikipathway"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "9edbd689-fa46-4a2c-b18e-b0321b42c9d4",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of nodes of the third NeKo network:  284\n",
+      "Number of nodes of the fourth NeKo network:  273\n"
+     ]
+    }
+   ],
+   "source": [
+    "net3_nodes_size = len(neko_net3.nodes)\n",
+    "net4_nodes_size = len(neko_net4.nodes)\n",
+    "\n",
+    "print(\"Number of nodes of the third NeKo network: \", net3_nodes_size)\n",
+    "print(\"Number of nodes of the fourth NeKo network: \", net4_nodes_size)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "bbca2027-2e28-441c-b258-0b68587b54fd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of edges of the third NeKo network:  5109\n",
+      "Number of edges of the fourth NeKo network:  1107\n"
+     ]
+    }
+   ],
+   "source": [
+    "net3_edges_size = len(neko_net3.edges)\n",
+    "net4_edges_size = len(neko_net4.edges)\n",
+    "\n",
+    "print(\"Number of edges of the third NeKo network: \", net3_edges_size)\n",
+    "print(\"Number of edges of the fourth NeKo network: \", net4_edges_size)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "d4becd12-06c9-48ed-bd85-fa6f7fe7dd60",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Initial nodes:  ['PEBP1', 'SOS1', 'GAB2', 'CDC42', 'CBLC', 'EIF4EBP1', 'HGS', 'RICTOR', 'PTPRR', 'GRB2', 'RAF1', 'RAC1', 'MTOR', 'ELK4', 'RPS6KA5', 'EPS15L1', 'USP6NL', 'PIK3R1', 'ABL1', 'PTK2']\n",
+      "Nodes in the EGF/EGFR pathways:  ['ABI1', 'ABL1', 'AKT1', 'AP2A1', 'AP2B1', 'AP2M1', 'AP2S1', 'ARF6', 'ARHGEF1', 'ASAP1', 'ATF1', 'ATXN2', 'AURKA', 'BCAR1', 'BRAF', 'CAMK2A', 'CAV1', 'CAV2', 'CBL', 'CBLB', 'CBLC', 'CDC42', 'CFL1', 'CREB1', 'CRK', 'CRKL', 'CSK', 'DNM1', 'DOK2', 'E2F1', 'EGF', 'EGFR', 'EIF4EBP1', 'ELK1', 'ELK4', 'EPN1', 'EPS15', 'EPS15L1', 'EPS8', 'ERBB2', 'ERRFI1', 'FOS', 'FOSB', 'FOXO1', 'FOXO4', 'GAB1', 'GAB2', 'GJA1', 'GRB10', 'GRB2', 'HGS', 'HRAS', 'INPP5D', 'INPPL1', 'IQGAP1', 'IQSEC1', 'ITCH', 'JAK1', 'JAK2', 'JUN', 'JUND', 'KRAS', 'LIMK2', 'MAP2K1', 'MAP2K2', 'MAP2K5', 'MAP3K1', 'MAP3K2', 'MAP3K3', 'MAP3K4', 'MAP4K1', 'MAPK1', 'MAPK14', 'MAPK4', 'MAPK7', 'MAPK8', 'MAPK9', 'MEF2A', 'MEF2C', 'MEF2D', 'MT-CO2', 'MTOR', 'MYBL2', 'NCK1', 'NCK2', 'NCOA3', 'NDUFA13', 'NEDD4', 'NEDD8', 'NOS3', 'PAK1', 'PCNA', 'PDPK1', 'PEBP1', 'PIAS3', 'PIK3C2B', 'PIK3R1', 'PIK3R2', 'PLCE1', 'PLCG1', 'PLD1', 'PLD2', 'PLSCR1', 'PRKCA', 'PRKCB', 'PRKCD', 'PRKCI', 'PRKCZ', 'PTEN', 'PTK2', 'PTK2B', 'PTK6', 'PTPN11', 'PTPN12', 'PTPN5', 'PTPRR', 'PXDN', 'RAB5A', 'RAC1', 'RAF1', 'RALA', 'RALB', 'RALBP1', 'RALGDS', 'RAP1A', 'RASA1', 'REPS2', 'RICTOR', 'RIN1', 'ROCK1', 'RPS6KA1', 'RPS6KA2', 'RPS6KA3', 'RPS6KA5', 'RPS6KB1', 'SH2D2A', 'SH3GL2', 'SH3GL3', 'SH3KBP1', 'SHC1', 'SOS1', 'SOS2', 'SP1', 'SPRY2', 'SRC', 'STAM', 'STAM2', 'STAMBP', 'STAT1', 'STAT3', 'STAT5A', 'STAT5B', 'STMN1', 'STXBP1', 'SYNJ1', 'TNK2', 'TWIST1', 'USP6NL', 'USP8', 'VAV1', 'VAV2', 'VAV3']\n",
+      "Nodes founded:  ['ABL1', 'AKT1', 'BRAF', 'CAMK2A', 'CAV1', 'CBL', 'CBLB', 'CBLC', 'CDC42', 'CREB1', 'E2F1', 'EGF', 'EGFR', 'EIF4EBP1', 'ELK4', 'EPN1', 'EPS15', 'EPS15L1', 'ERBB2', 'FOS', 'GAB1', 'GAB2', 'GRB10', 'GRB2', 'HGS', 'HRAS', 'IQGAP1', 'JAK1', 'JAK2', 'KRAS', 'LIMK2', 'MAP2K1', 'MAP3K1', 'MAPK1', 'MAPK14', 'MAPK7', 'MAPK8', 'MAPK9', 'MTOR', 'NCK1', 'PAK1', 'PDPK1', 'PEBP1', 'PIK3R1', 'PIK3R2', 'PLCG1', 'PLD1', 'PRKCA', 'PRKCB', 'PRKCD', 'PRKCZ', 'PTEN', 'PTK2', 'PTK2B', 'PTPN11', 'PTPRR', 'RAC1', 'RAF1', 'RAP1A', 'RASA1', 'RICTOR', 'RPS6KA2', 'RPS6KA5', 'RPS6KB1', 'SH3GL2', 'SHC1', 'SOS1', 'SRC', 'STAT3', 'USP6NL', 'VAV1', 'VAV2', 'VAV3']\n"
+     ]
+    }
+   ],
+   "source": [
+    "nodes_found = []\n",
+    "for node in egf_egfr_genes:\n",
+    "    if node in list(neko_net3.nodes[\"Genesymbol\"]):\n",
+    "        nodes_found.append(node)\n",
+    "\n",
+    "print(\"Initial nodes: \", random_seeds)\n",
+    "print(\"Nodes in the EGF/EGFR pathways: \", egf_egfr_genes)\n",
+    "print(\"Nodes founded: \", nodes_found)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "d2abe68e-8f47-4869-badb-a630c91c220d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Percentage of genes covered:  45.06172839506173\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Percentage of genes covered: \", (len(nodes_found)/len(egf_egfr_genes)) * 100)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "1dd14079-baf4-4431-996d-895c2cc677cc",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Initial nodes:  ['PEBP1', 'SOS1', 'GAB2', 'CDC42', 'CBLC', 'EIF4EBP1', 'HGS', 'RICTOR', 'PTPRR', 'GRB2', 'RAF1', 'RAC1', 'MTOR', 'ELK4', 'RPS6KA5', 'EPS15L1', 'USP6NL', 'PIK3R1', 'ABL1', 'PTK2']\n",
+      "Nodes in the EGF/EGFR pathways:  ['ABI1', 'ABL1', 'AKT1', 'AP2A1', 'AP2B1', 'AP2M1', 'AP2S1', 'ARF6', 'ARHGEF1', 'ASAP1', 'ATF1', 'ATXN2', 'AURKA', 'BCAR1', 'BRAF', 'CAMK2A', 'CAV1', 'CAV2', 'CBL', 'CBLB', 'CBLC', 'CDC42', 'CFL1', 'CREB1', 'CRK', 'CRKL', 'CSK', 'DNM1', 'DOK2', 'E2F1', 'EGF', 'EGFR', 'EIF4EBP1', 'ELK1', 'ELK4', 'EPN1', 'EPS15', 'EPS15L1', 'EPS8', 'ERBB2', 'ERRFI1', 'FOS', 'FOSB', 'FOXO1', 'FOXO4', 'GAB1', 'GAB2', 'GJA1', 'GRB10', 'GRB2', 'HGS', 'HRAS', 'INPP5D', 'INPPL1', 'IQGAP1', 'IQSEC1', 'ITCH', 'JAK1', 'JAK2', 'JUN', 'JUND', 'KRAS', 'LIMK2', 'MAP2K1', 'MAP2K2', 'MAP2K5', 'MAP3K1', 'MAP3K2', 'MAP3K3', 'MAP3K4', 'MAP4K1', 'MAPK1', 'MAPK14', 'MAPK4', 'MAPK7', 'MAPK8', 'MAPK9', 'MEF2A', 'MEF2C', 'MEF2D', 'MT-CO2', 'MTOR', 'MYBL2', 'NCK1', 'NCK2', 'NCOA3', 'NDUFA13', 'NEDD4', 'NEDD8', 'NOS3', 'PAK1', 'PCNA', 'PDPK1', 'PEBP1', 'PIAS3', 'PIK3C2B', 'PIK3R1', 'PIK3R2', 'PLCE1', 'PLCG1', 'PLD1', 'PLD2', 'PLSCR1', 'PRKCA', 'PRKCB', 'PRKCD', 'PRKCI', 'PRKCZ', 'PTEN', 'PTK2', 'PTK2B', 'PTK6', 'PTPN11', 'PTPN12', 'PTPN5', 'PTPRR', 'PXDN', 'RAB5A', 'RAC1', 'RAF1', 'RALA', 'RALB', 'RALBP1', 'RALGDS', 'RAP1A', 'RASA1', 'REPS2', 'RICTOR', 'RIN1', 'ROCK1', 'RPS6KA1', 'RPS6KA2', 'RPS6KA3', 'RPS6KA5', 'RPS6KB1', 'SH2D2A', 'SH3GL2', 'SH3GL3', 'SH3KBP1', 'SHC1', 'SOS1', 'SOS2', 'SP1', 'SPRY2', 'SRC', 'STAM', 'STAM2', 'STAMBP', 'STAT1', 'STAT3', 'STAT5A', 'STAT5B', 'STMN1', 'STXBP1', 'SYNJ1', 'TNK2', 'TWIST1', 'USP6NL', 'USP8', 'VAV1', 'VAV2', 'VAV3']\n",
+      "Nodes founded:  ['ABI1', 'ABL1', 'AKT1', 'ARF6', 'ASAP1', 'BCAR1', 'CAMK2A', 'CAV1', 'CBL', 'CBLB', 'CBLC', 'CDC42', 'CRK', 'CRKL', 'CSK', 'EGF', 'EGFR', 'EIF4EBP1', 'ELK4', 'EPN1', 'EPS15', 'EPS15L1', 'GAB1', 'GAB2', 'GRB10', 'GRB2', 'HGS', 'HRAS', 'INPP5D', 'IQGAP1', 'JAK1', 'JAK2', 'KRAS', 'MAP2K1', 'MAP3K4', 'MAPK1', 'MAPK14', 'MAPK7', 'MAPK8', 'MTOR', 'NCK1', 'NCK2', 'PAK1', 'PEBP1', 'PIK3R1', 'PIK3R2', 'PLCG1', 'PLD1', 'PRKCA', 'PRKCD', 'PRKCZ', 'PTEN', 'PTK2', 'PTK2B', 'PTPN11', 'PTPN12', 'PTPRR', 'RAC1', 'RAF1', 'RALGDS', 'RAP1A', 'RASA1', 'RICTOR', 'RIN1', 'ROCK1', 'RPS6KA5', 'RPS6KB1', 'SH3GL2', 'SHC1', 'SOS1', 'SRC', 'USP6NL', 'VAV1', 'VAV2', 'VAV3']\n"
+     ]
+    }
+   ],
+   "source": [
+    "nodes_found = []\n",
+    "for node in egf_egfr_genes:\n",
+    "    if node in list(neko_net4.nodes[\"Genesymbol\"]):\n",
+    "        nodes_found.append(node)\n",
+    "\n",
+    "print(\"Initial nodes: \", random_seeds)\n",
+    "print(\"Nodes in the EGF/EGFR pathways: \", egf_egfr_genes)\n",
+    "print(\"Nodes founded: \", nodes_found)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "c199f367-d0c4-4c91-8359-a6c03dc54ac7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Percentage of genes covered:  46.2962962962963\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Percentage of genes covered: \", (len(nodes_found)/len(egf_egfr_genes)) * 100)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f0cc73cc-35fe-423d-bdf8-caf91432feb9",
+   "metadata": {},
+   "source": [
+    "Once more, the INE captured better the pathway composition, recovering 40-50% of the genes in the EGF/EGFR pathway from wikipathways (by starting from 10%). This time, INE performed better than RPE. The reason for this resides within the database composition. The Omnipath database contains tons of interaction, which means, many possibilities to go from gene A to gene B in the shortest path possible (with max len = 3). On the other hand, INE runs with max_len = 1, so it just collects all the possible neighbors of the nodes, without looking for extended extra pathways. \n",
+    "\n",
+    "Please remember that the aim of the RPE algorithm is to reduce as much as possible the average network distance. On the other hand, the INE algorithm does not care about it."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f251baa6",
+   "metadata": {},
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "test_env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

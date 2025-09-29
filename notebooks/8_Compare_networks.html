@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network comparison &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo" href="9-Recreating_famous_pathways.html" />
+    <link rel="prev" title="Map tissue expression" href="7_tissue_mapping.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Network comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Define-the-list-of-genes-of-interest">1. Define the list of genes of interest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Create-networks.">2. Create networks.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2A.-Build-first-network">2A. Build first network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2B.-Build-second-network">2B. Build second network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Compare-networks">3. Compare networks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Network comparison</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/8_Compare_networks.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Network-comparison">
+<h1>Network comparison<a class="headerlink" href="#Network-comparison" title="Link to this heading"></a></h1>
+<p>In some cases, it might be of interest to compare two networks with each other. For instance, you might want to compare an existing network with the Neko-generated network, or compare the resulting networks from two different network construction strategies.</p>
+<p>The following code shows the comparison of two networks, built with different input parameters of the <code class="docutils literal notranslate"><span class="pre">complete_connections</span></code> function.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._annotations.gene_ontology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ontology</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._methods.compare</span><span class="w"> </span><span class="kn">import</span> <span class="n">compare_networks</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 5.76 s, sys: 1.66 s, total: 7.42 s
+Wall time: 5.09 s
+</pre></div></div>
+</div>
+<section id="1.-Define-the-list-of-genes-of-interest">
+<h2>1. Define the list of genes of interest<a class="headerlink" href="#1.-Define-the-list-of-genes-of-interest" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAK&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">,</span> <span class="s2">&quot;PTK2B&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="2.-Create-networks.">
+<h2>2. Create networks.<a class="headerlink" href="#2.-Create-networks." title="Link to this heading"></a></h2>
+<p>Please refer to the <code class="docutils literal notranslate"><span class="pre">Usage</span></code> tutorial for a detailed explanation of each step.</p>
+<section id="2A.-Build-first-network">
+<h3>2A. Build first network<a class="headerlink" href="#2A.-Build-first-network" title="Link to this heading"></a></h3>
+<p>For the first network, we specify that we do not want to take into account the concensus sign (i.e. activation vs inhibition) for the interactions.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="2B.-Build-second-network">
+<h3>2B. Build second network<a class="headerlink" href="#2B.-Build-second-network" title="Link to this heading"></a></h3>
+<p>For the second network, we set the <code class="docutils literal notranslate"><span class="pre">consensus</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+<span class="n">new_net2</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;dfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Compare-networks">
+<h2>3. Compare networks<a class="headerlink" href="#3.-Compare-networks" title="Link to this heading"></a></h2>
+<p>The compare_networks functions receives as input the two network objects of interest. Its output is two dataframes; one for the comparison of the edges and for the comparison of nodes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">interaction_comparison</span><span class="p">,</span> <span class="n">node_comparison</span> <span class="o">=</span> <span class="n">compare_networks</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">new_net2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">interaction_comparison</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    source  target           comparison
+0     ABL1     APP  Unique to Network 2
+1     ABL1     BTK  Unique to Network 2
+2     ABL1    CDH2               Common
+3     ABL1  CTNNB1               Common
+4     ABL1    EGFR               Common
+..     ...     ...                  ...
+715   WNT1   ITGB4  Unique to Network 2
+716   WNT1    LEF1  Unique to Network 2
+717   WNT1  MAP3K7  Unique to Network 2
+718   WNT1  NOTCH1  Unique to Network 2
+719    ZYX     SRC               Common
+
+[720 rows x 3 columns]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">node_comparison</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+       node           comparison
+0     IKBKB  Unique to Network 1
+1     ROCK1  Unique to Network 1
+2     SNAI2  Unique to Network 1
+3     PRKG1  Unique to Network 1
+4      TP63  Unique to Network 1
+..      ...                  ...
+101   PTK2B               Common
+102    PTEN               Common
+103    CDH2               Common
+104    CDH1               Common
+105  MAP4K4               Common
+
+[106 rows x 2 columns]
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="7_tissue_mapping.html" class="btn btn-neutral float-left" title="Map tissue expression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="9-Recreating_famous_pathways.html" class="btn btn-neutral float-right" title="Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2025, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

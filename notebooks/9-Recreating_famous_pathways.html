@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build, manipulate, export and import networks" href="10_Import_and_complete_a_network.html" />
+    <link rel="prev" title="Network comparison" href="8_Compare_networks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1)-Retrieving-the-MTOR-Signaling-from-Signor-using-NeKo">1) Retrieving the MTOR Signaling from Signor using NeKo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2)-Retrieving-the-EGF/EGFR-pathway-(source:-wikipathway)-using-Omnipath">2) Retrieving the EGF/EGFR pathway (source: wikipathway) using Omnipath</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/9-Recreating_famous_pathways.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Re-creating-famous-pathways-from-SIGNOR-and-WIKIPATHWAYS-using-NeKo">
+<h1>Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo<a class="headerlink" href="#Re-creating-famous-pathways-from-SIGNOR-and-WIKIPATHWAYS-using-NeKo" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span><span class="p">,</span> <span class="n">signor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="1)-Retrieving-the-MTOR-Signaling-from-Signor-using-NeKo">
+<h2>1) Retrieving the MTOR Signaling from Signor using NeKo<a class="headerlink" href="#1)-Retrieving-the-MTOR-Signaling-from-Signor-using-NeKo" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mtor_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RPS6KA1&quot;</span><span class="p">,</span> <span class="s2">&quot;SREBF1&quot;</span><span class="p">,</span> <span class="s2">&quot;MTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;RPTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;INSR&quot;</span><span class="p">,</span> <span class="s2">&quot;RPS6KB1&quot;</span><span class="p">,</span> <span class="s2">&quot;RHEB&quot;</span><span class="p">,</span> <span class="s2">&quot;EIF4EBP1&quot;</span><span class="p">,</span> <span class="s2">&quot;INS&quot;</span><span class="p">,</span> <span class="s2">&quot;PTEN&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;RPS6&quot;</span><span class="p">,</span> <span class="s2">&quot;TFEB&quot;</span><span class="p">,</span> <span class="s2">&quot;PIK3R1&quot;</span><span class="p">,</span> <span class="s2">&quot;PPARGC1A&quot;</span><span class="p">,</span> <span class="s2">&quot;PDPK1&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1S1&quot;</span><span class="p">,</span> <span class="s2">&quot;PPARG&quot;</span><span class="p">,</span> <span class="s2">&quot;PIK3CA&quot;</span><span class="p">,</span> <span class="s2">&quot;EIF4E&quot;</span><span class="p">,</span> <span class="s2">&quot;IRS1&quot;</span><span class="p">,</span> <span class="s2">&quot;GSK3B&quot;</span><span class="p">,</span> <span class="s2">&quot;ULK1&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seeds_number</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">random_seeds</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">mtor_nodes</span><span class="p">,</span> <span class="n">seeds_number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">random_seeds</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;AKT1S1&#39;, &#39;TFEB&#39;, &#39;SREBF1&#39;, &#39;RPS6&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">Universe</span><span class="p">()</span>
+<span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">(</span><span class="s2">&quot;../neko/_data/signor_db.tsv&quot;</span><span class="p">)</span>  <span class="c1"># this function accept only tab separated values</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s compare the function commplete_connection (based on the Reciprocal Pathway Extender algorithm) with the function connect_radially (based on the Iterative Neighbor Expansion ). We are going to create two neko_net, and apply to each of them one of the two functions. Finally, we are going to compare the resulting networks.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neko_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">random_seeds</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neko_net2</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">random_seeds</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">neko_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;dfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 402 ms, sys: 3.1 ms, total: 406 ms
+Wall time: 404 ms
+</pre></div></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>The <strong>max_len</strong> in the function <em>connect_network_radially</em> should be kept at 1, max 2. Why?</p>
+<p>The Iterative Neighbour Expansion, as the name suggests, iterates through all the seed nodes and adds to the network all the interactions found. In the next step, it iterates through all the neighbors found and looks for their neighbors. Doing so, the Network size could exponentially increase, if among the neighbor nodes there are some HUB (nodes with a high degree of connection).</p>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">neko_net2</span><span class="o">.</span><span class="n">connect_network_radially</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 6.45 s, sys: 1.39 ms, total: 6.45 s
+Wall time: 6.45 s
+</pre></div></div>
+</div>
+<p>Now let’s visualize the network:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize network</span>
+<span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">neko_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;./img/Complete_connection_neko_net_sample&quot;</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize network</span>
+<span class="n">visualizer2</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">neko_net2</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer2</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;./img/Radial_neko_net_sample&quot;</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s compare the Networks. We will use JUST those nodes in signor that are not complexes or protein families (so we excluded all those nodes that starts with “<a href="#id1"><span class="problematic" id="id2">SIGNOR_</span></a>”). At the following link you can find the full MTOR pathway from SIGNOR: <a class="reference external" href="https://signor.uniroma2.it/pathway_browser.php?beta=3.0&amp;organism=&amp;pathway_list=SIGNOR-MS&amp;x=13&amp;y=13">https://signor.uniroma2.it/pathway_browser.php?beta=3.0&amp;organism=&amp;pathway_list=SIGNOR-MS&amp;x=13&amp;y=13</a></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net1_nodes_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net1</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">net2_nodes_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of nodes of the first NeKo network: &quot;</span><span class="p">,</span> <span class="n">net1_nodes_size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of nodes of the second NeKo network: &quot;</span><span class="p">,</span> <span class="n">net2_nodes_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of nodes of the first NeKo network:  13
+Number of nodes of the second NeKo network:  58
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net1_edges_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net1</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="n">net2_edges_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of edges of the first NeKo network: &quot;</span><span class="p">,</span> <span class="n">net1_edges_size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of edges of the second NeKo network: &quot;</span><span class="p">,</span> <span class="n">net2_edges_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of edges of the first NeKo network:  33
+Number of edges of the second NeKo network:  161
+</pre></div></div>
+</div>
+<p>The first consideration to do is that the RPE algorithm, is way faster than the INE one (402 ms vs 6.45 s). Despite being slower, the INE algorithm, provided a much bigger network (13 nodes vs 33, 58 edges vs 161)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes_found</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">mtor_nodes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">neko_net1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]):</span>
+        <span class="n">nodes_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial nodes: &quot;</span><span class="p">,</span> <span class="n">random_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes in the MTOR pathways: &quot;</span><span class="p">,</span> <span class="n">mtor_nodes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes founded: &quot;</span><span class="p">,</span> <span class="n">nodes_found</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial nodes:  [&#39;AKT1S1&#39;, &#39;TFEB&#39;, &#39;SREBF1&#39;, &#39;RPS6&#39;]
+Nodes in the MTOR pathways:  [&#39;RPS6KA1&#39;, &#39;SREBF1&#39;, &#39;MTOR&#39;, &#39;RPTOR&#39;, &#39;INSR&#39;, &#39;RPS6KB1&#39;, &#39;RHEB&#39;, &#39;EIF4EBP1&#39;, &#39;INS&#39;, &#39;PTEN&#39;, &#39;RPS6&#39;, &#39;TFEB&#39;, &#39;PIK3R1&#39;, &#39;PPARGC1A&#39;, &#39;PDPK1&#39;, &#39;AKT1S1&#39;, &#39;PPARG&#39;, &#39;PIK3CA&#39;, &#39;EIF4E&#39;, &#39;IRS1&#39;, &#39;GSK3B&#39;, &#39;ULK1&#39;]
+Nodes founded:  [&#39;SREBF1&#39;, &#39;MTOR&#39;, &#39;RPS6KB1&#39;, &#39;RPS6&#39;, &#39;TFEB&#39;, &#39;AKT1S1&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percentage of genes covered: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes_found</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">mtor_nodes</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Percentage of genes covered:  27.27272727272727
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes_found</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">mtor_nodes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">neko_net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]):</span>
+        <span class="n">nodes_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial nodes: &quot;</span><span class="p">,</span> <span class="n">random_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes in the MTOR pathways: &quot;</span><span class="p">,</span> <span class="n">mtor_nodes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes founded: &quot;</span><span class="p">,</span> <span class="n">nodes_found</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial nodes:  [&#39;AKT1S1&#39;, &#39;TFEB&#39;, &#39;SREBF1&#39;, &#39;RPS6&#39;]
+Nodes in the MTOR pathways:  [&#39;RPS6KA1&#39;, &#39;SREBF1&#39;, &#39;MTOR&#39;, &#39;RPTOR&#39;, &#39;INSR&#39;, &#39;RPS6KB1&#39;, &#39;RHEB&#39;, &#39;EIF4EBP1&#39;, &#39;INS&#39;, &#39;PTEN&#39;, &#39;RPS6&#39;, &#39;TFEB&#39;, &#39;PIK3R1&#39;, &#39;PPARGC1A&#39;, &#39;PDPK1&#39;, &#39;AKT1S1&#39;, &#39;PPARG&#39;, &#39;PIK3CA&#39;, &#39;EIF4E&#39;, &#39;IRS1&#39;, &#39;GSK3B&#39;, &#39;ULK1&#39;]
+Nodes founded:  [&#39;RPS6KA1&#39;, &#39;SREBF1&#39;, &#39;MTOR&#39;, &#39;RPS6KB1&#39;, &#39;PTEN&#39;, &#39;RPS6&#39;, &#39;TFEB&#39;, &#39;PPARGC1A&#39;, &#39;AKT1S1&#39;, &#39;PPARG&#39;, &#39;GSK3B&#39;, &#39;ULK1&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percentage of genes covered: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes_found</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">mtor_nodes</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Percentage of genes covered:  54.54545454545454
+</pre></div></div>
+</div>
+<p>As expected, due to the network size, the INE algorithm managed to capture more genes belonging to the MTOR pathway compared to the RPE algorithm. This was expected also because the RPE algorithm aims at finding the minimal set of genes that can connect all the seed nodes given by the user, while the INE algorithm does not take into account the shortest paths, but homogeneously explores the surroundings.</p>
+</section>
+<section id="2)-Retrieving-the-EGF/EGFR-pathway-(source:-wikipathway)-using-Omnipath">
+<h2>2) Retrieving the EGF/EGFR pathway (source: wikipathway) using Omnipath<a class="headerlink" href="#2)-Retrieving-the-EGF/EGFR-pathway-(source:-wikipathway)-using-Omnipath" title="Link to this heading"></a></h2>
+<p>The MTOR pathways we saw in use case 2 is a reletavely small pathway. We decided to test the INE and RPE algorithm to retrieve a bigger one, the EGF/EGFR pathway as shown in wikipathway, fetching interactions from Omnipath.</p>
+<p>In order to do so, we can proceed with the installation of the python package pywikipathways to quickly retrieve the genes belonging to the EGF/EGFR pathway (WP437, <a class="reference external" href="https://www.wikipathways.org/pathways/WP437.html">https://www.wikipathways.org/pathways/WP437.html</a>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># uncomment the following line if you do not have installed pywikipathways</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>pywikipathways
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Collecting pywikipathways
+  Using cached pywikipathways-0.0.3-py3-none-any.whl.metadata (2.5 kB)
+Requirement already satisfied: lxml in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (5.3.0)
+Requirement already satisfied: pandas in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (2.2.2)
+Requirement already satisfied: requests in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pywikipathways) (2.32.3)
+Requirement already satisfied: numpy&gt;=1.26.0 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas-&gt;pywikipathways) (1.26.4)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas-&gt;pywikipathways) (3.9.0)
+Requirement already satisfied: pytz&gt;=2020.1 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas-&gt;pywikipathways) (2024.1)
+Requirement already satisfied: tzdata&gt;=2022.7 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from pandas-&gt;pywikipathways) (2024.1)
+Requirement already satisfied: six&gt;=1.5 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas-&gt;pywikipathways) (1.16.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests-&gt;pywikipathways) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests-&gt;pywikipathways) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests-&gt;pywikipathways) (2.2.2)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages (from requests-&gt;pywikipathways) (2024.7.4)
+Using cached pywikipathways-0.0.3-py3-none-any.whl (12 kB)
+Installing collected packages: pywikipathways
+Successfully installed pywikipathways-0.0.3
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pywikipathways</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pwpw</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pwpw</span><span class="o">.</span><span class="n">get_pathway_info</span><span class="p">(</span><span class="s1">&#39;WP437&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;id&#39;: &#39;WP437&#39;,
+ &#39;url&#39;: &#39;https://classic.wikipathways.org/index.php/Pathway:WP437&#39;,
+ &#39;name&#39;: &#39;EGF/EGFR signaling&#39;,
+ &#39;species&#39;: &#39;Homo sapiens&#39;,
+ &#39;revision&#39;: &#39;137261&#39;}
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">egf_egfr_genes</span> <span class="o">=</span> <span class="n">pwpw</span><span class="o">.</span><span class="n">get_xref_list</span><span class="p">(</span><span class="s1">&#39;WP437&#39;</span><span class="p">,</span><span class="s1">&#39;H&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">egf_egfr_genes</span><span class="p">))</span>
+<span class="n">egf_egfr_genes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+162
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;ABI1&#39;,
+ &#39;ABL1&#39;,
+ &#39;AKT1&#39;,
+ &#39;AP2A1&#39;,
+ &#39;AP2B1&#39;,
+ &#39;AP2M1&#39;,
+ &#39;AP2S1&#39;,
+ &#39;ARF6&#39;,
+ &#39;ARHGEF1&#39;,
+ &#39;ASAP1&#39;,
+ &#39;ATF1&#39;,
+ &#39;ATXN2&#39;,
+ &#39;AURKA&#39;,
+ &#39;BCAR1&#39;,
+ &#39;BRAF&#39;,
+ &#39;CAMK2A&#39;,
+ &#39;CAV1&#39;,
+ &#39;CAV2&#39;,
+ &#39;CBL&#39;,
+ &#39;CBLB&#39;,
+ &#39;CBLC&#39;,
+ &#39;CDC42&#39;,
+ &#39;CFL1&#39;,
+ &#39;CREB1&#39;,
+ &#39;CRK&#39;,
+ &#39;CRKL&#39;,
+ &#39;CSK&#39;,
+ &#39;DNM1&#39;,
+ &#39;DOK2&#39;,
+ &#39;E2F1&#39;,
+ &#39;EGF&#39;,
+ &#39;EGFR&#39;,
+ &#39;EIF4EBP1&#39;,
+ &#39;ELK1&#39;,
+ &#39;ELK4&#39;,
+ &#39;EPN1&#39;,
+ &#39;EPS15&#39;,
+ &#39;EPS15L1&#39;,
+ &#39;EPS8&#39;,
+ &#39;ERBB2&#39;,
+ &#39;ERRFI1&#39;,
+ &#39;FOS&#39;,
+ &#39;FOSB&#39;,
+ &#39;FOXO1&#39;,
+ &#39;FOXO4&#39;,
+ &#39;GAB1&#39;,
+ &#39;GAB2&#39;,
+ &#39;GJA1&#39;,
+ &#39;GRB10&#39;,
+ &#39;GRB2&#39;,
+ &#39;HGS&#39;,
+ &#39;HRAS&#39;,
+ &#39;INPP5D&#39;,
+ &#39;INPPL1&#39;,
+ &#39;IQGAP1&#39;,
+ &#39;IQSEC1&#39;,
+ &#39;ITCH&#39;,
+ &#39;JAK1&#39;,
+ &#39;JAK2&#39;,
+ &#39;JUN&#39;,
+ &#39;JUND&#39;,
+ &#39;KRAS&#39;,
+ &#39;LIMK2&#39;,
+ &#39;MAP2K1&#39;,
+ &#39;MAP2K2&#39;,
+ &#39;MAP2K5&#39;,
+ &#39;MAP3K1&#39;,
+ &#39;MAP3K2&#39;,
+ &#39;MAP3K3&#39;,
+ &#39;MAP3K4&#39;,
+ &#39;MAP4K1&#39;,
+ &#39;MAPK1&#39;,
+ &#39;MAPK14&#39;,
+ &#39;MAPK4&#39;,
+ &#39;MAPK7&#39;,
+ &#39;MAPK8&#39;,
+ &#39;MAPK9&#39;,
+ &#39;MEF2A&#39;,
+ &#39;MEF2C&#39;,
+ &#39;MEF2D&#39;,
+ &#39;MT-CO2&#39;,
+ &#39;MTOR&#39;,
+ &#39;MYBL2&#39;,
+ &#39;NCK1&#39;,
+ &#39;NCK2&#39;,
+ &#39;NCOA3&#39;,
+ &#39;NDUFA13&#39;,
+ &#39;NEDD4&#39;,
+ &#39;NEDD8&#39;,
+ &#39;NOS3&#39;,
+ &#39;PAK1&#39;,
+ &#39;PCNA&#39;,
+ &#39;PDPK1&#39;,
+ &#39;PEBP1&#39;,
+ &#39;PIAS3&#39;,
+ &#39;PIK3C2B&#39;,
+ &#39;PIK3R1&#39;,
+ &#39;PIK3R2&#39;,
+ &#39;PLCE1&#39;,
+ &#39;PLCG1&#39;,
+ &#39;PLD1&#39;,
+ &#39;PLD2&#39;,
+ &#39;PLSCR1&#39;,
+ &#39;PRKCA&#39;,
+ &#39;PRKCB&#39;,
+ &#39;PRKCD&#39;,
+ &#39;PRKCI&#39;,
+ &#39;PRKCZ&#39;,
+ &#39;PTEN&#39;,
+ &#39;PTK2&#39;,
+ &#39;PTK2B&#39;,
+ &#39;PTK6&#39;,
+ &#39;PTPN11&#39;,
+ &#39;PTPN12&#39;,
+ &#39;PTPN5&#39;,
+ &#39;PTPRR&#39;,
+ &#39;PXDN&#39;,
+ &#39;RAB5A&#39;,
+ &#39;RAC1&#39;,
+ &#39;RAF1&#39;,
+ &#39;RALA&#39;,
+ &#39;RALB&#39;,
+ &#39;RALBP1&#39;,
+ &#39;RALGDS&#39;,
+ &#39;RAP1A&#39;,
+ &#39;RASA1&#39;,
+ &#39;REPS2&#39;,
+ &#39;RICTOR&#39;,
+ &#39;RIN1&#39;,
+ &#39;ROCK1&#39;,
+ &#39;RPS6KA1&#39;,
+ &#39;RPS6KA2&#39;,
+ &#39;RPS6KA3&#39;,
+ &#39;RPS6KA5&#39;,
+ &#39;RPS6KB1&#39;,
+ &#39;SH2D2A&#39;,
+ &#39;SH3GL2&#39;,
+ &#39;SH3GL3&#39;,
+ &#39;SH3KBP1&#39;,
+ &#39;SHC1&#39;,
+ &#39;SOS1&#39;,
+ &#39;SOS2&#39;,
+ &#39;SP1&#39;,
+ &#39;SPRY2&#39;,
+ &#39;SRC&#39;,
+ &#39;STAM&#39;,
+ &#39;STAM2&#39;,
+ &#39;STAMBP&#39;,
+ &#39;STAT1&#39;,
+ &#39;STAT3&#39;,
+ &#39;STAT5A&#39;,
+ &#39;STAT5B&#39;,
+ &#39;STMN1&#39;,
+ &#39;STXBP1&#39;,
+ &#39;SYNJ1&#39;,
+ &#39;TNK2&#39;,
+ &#39;TWIST1&#39;,
+ &#39;USP6NL&#39;,
+ &#39;USP8&#39;,
+ &#39;VAV1&#39;,
+ &#39;VAV2&#39;,
+ &#39;VAV3&#39;]
+</pre></div></div>
+</div>
+<p>Let’s select a random number of those genes and proceed with building the network with NeKo!</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seeds_number</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">random_seeds</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">egf_egfr_genes</span><span class="p">,</span> <span class="n">seeds_number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">random_seeds</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;PEBP1&#39;,
+ &#39;SOS1&#39;,
+ &#39;GAB2&#39;,
+ &#39;CDC42&#39;,
+ &#39;CBLC&#39;,
+ &#39;EIF4EBP1&#39;,
+ &#39;HGS&#39;,
+ &#39;RICTOR&#39;,
+ &#39;PTPRR&#39;,
+ &#39;GRB2&#39;,
+ &#39;RAF1&#39;,
+ &#39;RAC1&#39;,
+ &#39;MTOR&#39;,
+ &#39;ELK4&#39;,
+ &#39;RPS6KA5&#39;,
+ &#39;EPS15L1&#39;,
+ &#39;USP6NL&#39;,
+ &#39;PIK3R1&#39;,
+ &#39;ABL1&#39;,
+ &#39;PTK2&#39;]
+</pre></div></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>TIP</strong></p>
+<p>NeKo provides some built-in functions to easily plug some well-known databases, like <strong>Omnipath</strong>, <strong>Signor</strong>, <strong>PhosphositePlus</strong> and <strong>Huri</strong>. More information can be found in the Notebook #2</p>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neko_net3</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">random_seeds</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neko_net4</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">random_seeds</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Once again, now that we have created the NeKo network, let’s use the RPE and INE algorithm to retrieve (hopefully) the full EGF/EGFR pathway.</p>
+<p><strong>To Notice!</strong></p>
+<p>Since the AllOmnipath database is very big and we have a higher number of seed nodes, the computational time / cost will be higher too! In some cases, expect both complete_connection and connect_network_radially to take minutes!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">neko_net3</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;dfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 3min 18s, sys: 24.7 ms, total: 3min 18s
+Wall time: 3min 18s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">neko_net4</span><span class="o">.</span><span class="n">connect_network_radially</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 41.7 s, sys: 3.03 ms, total: 41.7 s
+Wall time: 41.7 s
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#This time the network are very big and it can be difficult to visualize them</span>
+<span class="c1">#visualizer3 = NetworkVisualizer(neko_net3, color_by=&#39;effect&#39;, noi=True)</span>
+<span class="c1">#visualizer3.render(&quot;./img/Complete_connection_neko_net_sample_EGF&quot;, view=True)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize network</span>
+<span class="c1">#visualizer4 = NetworkVisualizer(neko_net4, color_by=&#39;effect&#39;, noi=True)</span>
+<span class="c1">#visualizer4.render(&quot;./img/Radial_neko_net_sample_EGF&quot;, view=True)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we did previously, let’s compare network’s size and check if we found nodes beloning to the EGF/EGFR pathway from wikipathway</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3_nodes_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">net4_nodes_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net4</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of nodes of the third NeKo network: &quot;</span><span class="p">,</span> <span class="n">net3_nodes_size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of nodes of the fourth NeKo network: &quot;</span><span class="p">,</span> <span class="n">net4_nodes_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of nodes of the third NeKo network:  284
+Number of nodes of the fourth NeKo network:  273
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3_edges_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net3</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="n">net4_edges_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neko_net4</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of edges of the third NeKo network: &quot;</span><span class="p">,</span> <span class="n">net3_edges_size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of edges of the fourth NeKo network: &quot;</span><span class="p">,</span> <span class="n">net4_edges_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of edges of the third NeKo network:  5109
+Number of edges of the fourth NeKo network:  1107
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes_found</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">egf_egfr_genes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">neko_net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]):</span>
+        <span class="n">nodes_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial nodes: &quot;</span><span class="p">,</span> <span class="n">random_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes in the EGF/EGFR pathways: &quot;</span><span class="p">,</span> <span class="n">egf_egfr_genes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes founded: &quot;</span><span class="p">,</span> <span class="n">nodes_found</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial nodes:  [&#39;PEBP1&#39;, &#39;SOS1&#39;, &#39;GAB2&#39;, &#39;CDC42&#39;, &#39;CBLC&#39;, &#39;EIF4EBP1&#39;, &#39;HGS&#39;, &#39;RICTOR&#39;, &#39;PTPRR&#39;, &#39;GRB2&#39;, &#39;RAF1&#39;, &#39;RAC1&#39;, &#39;MTOR&#39;, &#39;ELK4&#39;, &#39;RPS6KA5&#39;, &#39;EPS15L1&#39;, &#39;USP6NL&#39;, &#39;PIK3R1&#39;, &#39;ABL1&#39;, &#39;PTK2&#39;]
+Nodes in the EGF/EGFR pathways:  [&#39;ABI1&#39;, &#39;ABL1&#39;, &#39;AKT1&#39;, &#39;AP2A1&#39;, &#39;AP2B1&#39;, &#39;AP2M1&#39;, &#39;AP2S1&#39;, &#39;ARF6&#39;, &#39;ARHGEF1&#39;, &#39;ASAP1&#39;, &#39;ATF1&#39;, &#39;ATXN2&#39;, &#39;AURKA&#39;, &#39;BCAR1&#39;, &#39;BRAF&#39;, &#39;CAMK2A&#39;, &#39;CAV1&#39;, &#39;CAV2&#39;, &#39;CBL&#39;, &#39;CBLB&#39;, &#39;CBLC&#39;, &#39;CDC42&#39;, &#39;CFL1&#39;, &#39;CREB1&#39;, &#39;CRK&#39;, &#39;CRKL&#39;, &#39;CSK&#39;, &#39;DNM1&#39;, &#39;DOK2&#39;, &#39;E2F1&#39;, &#39;EGF&#39;, &#39;EGFR&#39;, &#39;EIF4EBP1&#39;, &#39;ELK1&#39;, &#39;ELK4&#39;, &#39;EPN1&#39;, &#39;EPS15&#39;, &#39;EPS15L1&#39;, &#39;EPS8&#39;, &#39;ERBB2&#39;, &#39;ERRFI1&#39;, &#39;FOS&#39;, &#39;FOSB&#39;, &#39;FOXO1&#39;, &#39;FOXO4&#39;, &#39;GAB1&#39;, &#39;GAB2&#39;, &#39;GJA1&#39;, &#39;GRB10&#39;, &#39;GRB2&#39;, &#39;HGS&#39;, &#39;HRAS&#39;, &#39;INPP5D&#39;, &#39;INPPL1&#39;, &#39;IQGAP1&#39;, &#39;IQSEC1&#39;, &#39;ITCH&#39;, &#39;JAK1&#39;, &#39;JAK2&#39;, &#39;JUN&#39;, &#39;JUND&#39;, &#39;KRAS&#39;, &#39;LIMK2&#39;, &#39;MAP2K1&#39;, &#39;MAP2K2&#39;, &#39;MAP2K5&#39;, &#39;MAP3K1&#39;, &#39;MAP3K2&#39;, &#39;MAP3K3&#39;, &#39;MAP3K4&#39;, &#39;MAP4K1&#39;, &#39;MAPK1&#39;, &#39;MAPK14&#39;, &#39;MAPK4&#39;, &#39;MAPK7&#39;, &#39;MAPK8&#39;, &#39;MAPK9&#39;, &#39;MEF2A&#39;, &#39;MEF2C&#39;, &#39;MEF2D&#39;, &#39;MT-CO2&#39;, &#39;MTOR&#39;, &#39;MYBL2&#39;, &#39;NCK1&#39;, &#39;NCK2&#39;, &#39;NCOA3&#39;, &#39;NDUFA13&#39;, &#39;NEDD4&#39;, &#39;NEDD8&#39;, &#39;NOS3&#39;, &#39;PAK1&#39;, &#39;PCNA&#39;, &#39;PDPK1&#39;, &#39;PEBP1&#39;, &#39;PIAS3&#39;, &#39;PIK3C2B&#39;, &#39;PIK3R1&#39;, &#39;PIK3R2&#39;, &#39;PLCE1&#39;, &#39;PLCG1&#39;, &#39;PLD1&#39;, &#39;PLD2&#39;, &#39;PLSCR1&#39;, &#39;PRKCA&#39;, &#39;PRKCB&#39;, &#39;PRKCD&#39;, &#39;PRKCI&#39;, &#39;PRKCZ&#39;, &#39;PTEN&#39;, &#39;PTK2&#39;, &#39;PTK2B&#39;, &#39;PTK6&#39;, &#39;PTPN11&#39;, &#39;PTPN12&#39;, &#39;PTPN5&#39;, &#39;PTPRR&#39;, &#39;PXDN&#39;, &#39;RAB5A&#39;, &#39;RAC1&#39;, &#39;RAF1&#39;, &#39;RALA&#39;, &#39;RALB&#39;, &#39;RALBP1&#39;, &#39;RALGDS&#39;, &#39;RAP1A&#39;, &#39;RASA1&#39;, &#39;REPS2&#39;, &#39;RICTOR&#39;, &#39;RIN1&#39;, &#39;ROCK1&#39;, &#39;RPS6KA1&#39;, &#39;RPS6KA2&#39;, &#39;RPS6KA3&#39;, &#39;RPS6KA5&#39;, &#39;RPS6KB1&#39;, &#39;SH2D2A&#39;, &#39;SH3GL2&#39;, &#39;SH3GL3&#39;, &#39;SH3KBP1&#39;, &#39;SHC1&#39;, &#39;SOS1&#39;, &#39;SOS2&#39;, &#39;SP1&#39;, &#39;SPRY2&#39;, &#39;SRC&#39;, &#39;STAM&#39;, &#39;STAM2&#39;, &#39;STAMBP&#39;, &#39;STAT1&#39;, &#39;STAT3&#39;, &#39;STAT5A&#39;, &#39;STAT5B&#39;, &#39;STMN1&#39;, &#39;STXBP1&#39;, &#39;SYNJ1&#39;, &#39;TNK2&#39;, &#39;TWIST1&#39;, &#39;USP6NL&#39;, &#39;USP8&#39;, &#39;VAV1&#39;, &#39;VAV2&#39;, &#39;VAV3&#39;]
+Nodes founded:  [&#39;ABL1&#39;, &#39;AKT1&#39;, &#39;BRAF&#39;, &#39;CAMK2A&#39;, &#39;CAV1&#39;, &#39;CBL&#39;, &#39;CBLB&#39;, &#39;CBLC&#39;, &#39;CDC42&#39;, &#39;CREB1&#39;, &#39;E2F1&#39;, &#39;EGF&#39;, &#39;EGFR&#39;, &#39;EIF4EBP1&#39;, &#39;ELK4&#39;, &#39;EPN1&#39;, &#39;EPS15&#39;, &#39;EPS15L1&#39;, &#39;ERBB2&#39;, &#39;FOS&#39;, &#39;GAB1&#39;, &#39;GAB2&#39;, &#39;GRB10&#39;, &#39;GRB2&#39;, &#39;HGS&#39;, &#39;HRAS&#39;, &#39;IQGAP1&#39;, &#39;JAK1&#39;, &#39;JAK2&#39;, &#39;KRAS&#39;, &#39;LIMK2&#39;, &#39;MAP2K1&#39;, &#39;MAP3K1&#39;, &#39;MAPK1&#39;, &#39;MAPK14&#39;, &#39;MAPK7&#39;, &#39;MAPK8&#39;, &#39;MAPK9&#39;, &#39;MTOR&#39;, &#39;NCK1&#39;, &#39;PAK1&#39;, &#39;PDPK1&#39;, &#39;PEBP1&#39;, &#39;PIK3R1&#39;, &#39;PIK3R2&#39;, &#39;PLCG1&#39;, &#39;PLD1&#39;, &#39;PRKCA&#39;, &#39;PRKCB&#39;, &#39;PRKCD&#39;, &#39;PRKCZ&#39;, &#39;PTEN&#39;, &#39;PTK2&#39;, &#39;PTK2B&#39;, &#39;PTPN11&#39;, &#39;PTPRR&#39;, &#39;RAC1&#39;, &#39;RAF1&#39;, &#39;RAP1A&#39;, &#39;RASA1&#39;, &#39;RICTOR&#39;, &#39;RPS6KA2&#39;, &#39;RPS6KA5&#39;, &#39;RPS6KB1&#39;, &#39;SH3GL2&#39;, &#39;SHC1&#39;, &#39;SOS1&#39;, &#39;SRC&#39;, &#39;STAT3&#39;, &#39;USP6NL&#39;, &#39;VAV1&#39;, &#39;VAV2&#39;, &#39;VAV3&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percentage of genes covered: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes_found</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">egf_egfr_genes</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Percentage of genes covered:  45.06172839506173
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes_found</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">egf_egfr_genes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">neko_net4</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]):</span>
+        <span class="n">nodes_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial nodes: &quot;</span><span class="p">,</span> <span class="n">random_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes in the EGF/EGFR pathways: &quot;</span><span class="p">,</span> <span class="n">egf_egfr_genes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nodes founded: &quot;</span><span class="p">,</span> <span class="n">nodes_found</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial nodes:  [&#39;PEBP1&#39;, &#39;SOS1&#39;, &#39;GAB2&#39;, &#39;CDC42&#39;, &#39;CBLC&#39;, &#39;EIF4EBP1&#39;, &#39;HGS&#39;, &#39;RICTOR&#39;, &#39;PTPRR&#39;, &#39;GRB2&#39;, &#39;RAF1&#39;, &#39;RAC1&#39;, &#39;MTOR&#39;, &#39;ELK4&#39;, &#39;RPS6KA5&#39;, &#39;EPS15L1&#39;, &#39;USP6NL&#39;, &#39;PIK3R1&#39;, &#39;ABL1&#39;, &#39;PTK2&#39;]
+Nodes in the EGF/EGFR pathways:  [&#39;ABI1&#39;, &#39;ABL1&#39;, &#39;AKT1&#39;, &#39;AP2A1&#39;, &#39;AP2B1&#39;, &#39;AP2M1&#39;, &#39;AP2S1&#39;, &#39;ARF6&#39;, &#39;ARHGEF1&#39;, &#39;ASAP1&#39;, &#39;ATF1&#39;, &#39;ATXN2&#39;, &#39;AURKA&#39;, &#39;BCAR1&#39;, &#39;BRAF&#39;, &#39;CAMK2A&#39;, &#39;CAV1&#39;, &#39;CAV2&#39;, &#39;CBL&#39;, &#39;CBLB&#39;, &#39;CBLC&#39;, &#39;CDC42&#39;, &#39;CFL1&#39;, &#39;CREB1&#39;, &#39;CRK&#39;, &#39;CRKL&#39;, &#39;CSK&#39;, &#39;DNM1&#39;, &#39;DOK2&#39;, &#39;E2F1&#39;, &#39;EGF&#39;, &#39;EGFR&#39;, &#39;EIF4EBP1&#39;, &#39;ELK1&#39;, &#39;ELK4&#39;, &#39;EPN1&#39;, &#39;EPS15&#39;, &#39;EPS15L1&#39;, &#39;EPS8&#39;, &#39;ERBB2&#39;, &#39;ERRFI1&#39;, &#39;FOS&#39;, &#39;FOSB&#39;, &#39;FOXO1&#39;, &#39;FOXO4&#39;, &#39;GAB1&#39;, &#39;GAB2&#39;, &#39;GJA1&#39;, &#39;GRB10&#39;, &#39;GRB2&#39;, &#39;HGS&#39;, &#39;HRAS&#39;, &#39;INPP5D&#39;, &#39;INPPL1&#39;, &#39;IQGAP1&#39;, &#39;IQSEC1&#39;, &#39;ITCH&#39;, &#39;JAK1&#39;, &#39;JAK2&#39;, &#39;JUN&#39;, &#39;JUND&#39;, &#39;KRAS&#39;, &#39;LIMK2&#39;, &#39;MAP2K1&#39;, &#39;MAP2K2&#39;, &#39;MAP2K5&#39;, &#39;MAP3K1&#39;, &#39;MAP3K2&#39;, &#39;MAP3K3&#39;, &#39;MAP3K4&#39;, &#39;MAP4K1&#39;, &#39;MAPK1&#39;, &#39;MAPK14&#39;, &#39;MAPK4&#39;, &#39;MAPK7&#39;, &#39;MAPK8&#39;, &#39;MAPK9&#39;, &#39;MEF2A&#39;, &#39;MEF2C&#39;, &#39;MEF2D&#39;, &#39;MT-CO2&#39;, &#39;MTOR&#39;, &#39;MYBL2&#39;, &#39;NCK1&#39;, &#39;NCK2&#39;, &#39;NCOA3&#39;, &#39;NDUFA13&#39;, &#39;NEDD4&#39;, &#39;NEDD8&#39;, &#39;NOS3&#39;, &#39;PAK1&#39;, &#39;PCNA&#39;, &#39;PDPK1&#39;, &#39;PEBP1&#39;, &#39;PIAS3&#39;, &#39;PIK3C2B&#39;, &#39;PIK3R1&#39;, &#39;PIK3R2&#39;, &#39;PLCE1&#39;, &#39;PLCG1&#39;, &#39;PLD1&#39;, &#39;PLD2&#39;, &#39;PLSCR1&#39;, &#39;PRKCA&#39;, &#39;PRKCB&#39;, &#39;PRKCD&#39;, &#39;PRKCI&#39;, &#39;PRKCZ&#39;, &#39;PTEN&#39;, &#39;PTK2&#39;, &#39;PTK2B&#39;, &#39;PTK6&#39;, &#39;PTPN11&#39;, &#39;PTPN12&#39;, &#39;PTPN5&#39;, &#39;PTPRR&#39;, &#39;PXDN&#39;, &#39;RAB5A&#39;, &#39;RAC1&#39;, &#39;RAF1&#39;, &#39;RALA&#39;, &#39;RALB&#39;, &#39;RALBP1&#39;, &#39;RALGDS&#39;, &#39;RAP1A&#39;, &#39;RASA1&#39;, &#39;REPS2&#39;, &#39;RICTOR&#39;, &#39;RIN1&#39;, &#39;ROCK1&#39;, &#39;RPS6KA1&#39;, &#39;RPS6KA2&#39;, &#39;RPS6KA3&#39;, &#39;RPS6KA5&#39;, &#39;RPS6KB1&#39;, &#39;SH2D2A&#39;, &#39;SH3GL2&#39;, &#39;SH3GL3&#39;, &#39;SH3KBP1&#39;, &#39;SHC1&#39;, &#39;SOS1&#39;, &#39;SOS2&#39;, &#39;SP1&#39;, &#39;SPRY2&#39;, &#39;SRC&#39;, &#39;STAM&#39;, &#39;STAM2&#39;, &#39;STAMBP&#39;, &#39;STAT1&#39;, &#39;STAT3&#39;, &#39;STAT5A&#39;, &#39;STAT5B&#39;, &#39;STMN1&#39;, &#39;STXBP1&#39;, &#39;SYNJ1&#39;, &#39;TNK2&#39;, &#39;TWIST1&#39;, &#39;USP6NL&#39;, &#39;USP8&#39;, &#39;VAV1&#39;, &#39;VAV2&#39;, &#39;VAV3&#39;]
+Nodes founded:  [&#39;ABI1&#39;, &#39;ABL1&#39;, &#39;AKT1&#39;, &#39;ARF6&#39;, &#39;ASAP1&#39;, &#39;BCAR1&#39;, &#39;CAMK2A&#39;, &#39;CAV1&#39;, &#39;CBL&#39;, &#39;CBLB&#39;, &#39;CBLC&#39;, &#39;CDC42&#39;, &#39;CRK&#39;, &#39;CRKL&#39;, &#39;CSK&#39;, &#39;EGF&#39;, &#39;EGFR&#39;, &#39;EIF4EBP1&#39;, &#39;ELK4&#39;, &#39;EPN1&#39;, &#39;EPS15&#39;, &#39;EPS15L1&#39;, &#39;GAB1&#39;, &#39;GAB2&#39;, &#39;GRB10&#39;, &#39;GRB2&#39;, &#39;HGS&#39;, &#39;HRAS&#39;, &#39;INPP5D&#39;, &#39;IQGAP1&#39;, &#39;JAK1&#39;, &#39;JAK2&#39;, &#39;KRAS&#39;, &#39;MAP2K1&#39;, &#39;MAP3K4&#39;, &#39;MAPK1&#39;, &#39;MAPK14&#39;, &#39;MAPK7&#39;, &#39;MAPK8&#39;, &#39;MTOR&#39;, &#39;NCK1&#39;, &#39;NCK2&#39;, &#39;PAK1&#39;, &#39;PEBP1&#39;, &#39;PIK3R1&#39;, &#39;PIK3R2&#39;, &#39;PLCG1&#39;, &#39;PLD1&#39;, &#39;PRKCA&#39;, &#39;PRKCD&#39;, &#39;PRKCZ&#39;, &#39;PTEN&#39;, &#39;PTK2&#39;, &#39;PTK2B&#39;, &#39;PTPN11&#39;, &#39;PTPN12&#39;, &#39;PTPRR&#39;, &#39;RAC1&#39;, &#39;RAF1&#39;, &#39;RALGDS&#39;, &#39;RAP1A&#39;, &#39;RASA1&#39;, &#39;RICTOR&#39;, &#39;RIN1&#39;, &#39;ROCK1&#39;, &#39;RPS6KA5&#39;, &#39;RPS6KB1&#39;, &#39;SH3GL2&#39;, &#39;SHC1&#39;, &#39;SOS1&#39;, &#39;SRC&#39;, &#39;USP6NL&#39;, &#39;VAV1&#39;, &#39;VAV2&#39;, &#39;VAV3&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percentage of genes covered: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes_found</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">egf_egfr_genes</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Percentage of genes covered:  46.2962962962963
+</pre></div></div>
+</div>
+<p>Once more, the INE captured better the pathway composition, recovering 40-50% of the genes in the EGF/EGFR pathway from wikipathways (by starting from 10%). This time, INE performed better than RPE. The reason for this resides within the database composition. The Omnipath database contains tons of interaction, which means, many possibilities to go from gene A to gene B in the shortest path possible (with max len = 3). On the other hand, INE runs with max_len = 1, so it just collects all the
+possible neighbors of the nodes, without looking for extended extra pathways.</p>
+<p>Please remember that the aim of the RPE algorithm is to reduce as much as possible the average network distance. On the other hand, the INE algorithm does not care about it.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="8_Compare_networks.html" class="btn btn-neutral float-left" title="Network comparison" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="10_Import_and_complete_a_network.html" class="btn btn-neutral float-right" title="Build, manipulate, export and import networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2025, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

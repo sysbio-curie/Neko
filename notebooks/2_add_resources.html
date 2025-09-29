@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build network using user-defined resources &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Stepwise connection: a focus on the INE algorithm" href="3_stepwise_connection.html" />
+    <link rel="prev" title="Usage" href="1_network_building.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build network using user-defined resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Adding-a-resource-already-in-OmniPath">1. Adding a resource already in OmniPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1A.-Specify-the-interaction-resource-of-interest">1A. Specify the interaction resource of interest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1B.-Add-new-resource-to-the-Resources-object">1B. Add new resource to the Resources object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Adding-a-public-database">2. Adding a public database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2A.-Add-Signor-database">2A. Add Signor database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Build-the-network">3. Build the network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#3A.-Import-genes-as-network-nodes">3A. Import genes as network nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3B.-Create-network-object-by-specifying-the-interaction-resources">3B. Create network object by specifying the interaction resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3C.-Build-network">3C. Build network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Translate-IDs">4. Translate IDs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build network using user-defined resources</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/2_add_resources.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Build-network-using-user-defined-resources">
+<h1>Build network using user-defined resources<a class="headerlink" href="#Build-network-using-user-defined-resources" title="Link to this heading"></a></h1>
+<p>This notebook explores how to add other individual resources from Omnipath or other public databases.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span><span class="p">,</span> <span class="n">signor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 3.52 s, sys: 833 ms, total: 4.35 s
+Wall time: 4.2 s
+</pre></div></div>
+</div>
+<section id="1.-Adding-a-resource-already-in-OmniPath">
+<h2>1. Adding a resource already in OmniPath<a class="headerlink" href="#1.-Adding-a-resource-already-in-OmniPath" title="Link to this heading"></a></h2>
+<section id="1A.-Specify-the-interaction-resource-of-interest">
+<h3>1A. Specify the interaction resource of interest<a class="headerlink" href="#1A.-Specify-the-interaction-resource-of-interest" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">collectri</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">CollecTRI</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="1B.-Add-new-resource-to-the-Resources-object">
+<h3>1B. Add new resource to the Resources object<a class="headerlink" href="#1B.-Add-new-resource-to-the-Resources-object" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">Universe</span><span class="p">()</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">add_resources</span><span class="p">(</span><span class="n">collectri</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;collectri&#39;</span><span class="p">)</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span> <span class="c1"># can be used inside a Network object</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>is_directed</th>
+      <th>is_stimulation</th>
+      <th>is_inhibition</th>
+      <th>consensus_direction</th>
+      <th>consensus_stimulation</th>
+      <th>consensus_inhibition</th>
+      <th>curation_effort</th>
+      <th>references</th>
+      <th>sources</th>
+      <th>n_sources</th>
+      <th>n_primary_sources</th>
+      <th>n_references</th>
+      <th>references_stripped</th>
+      <th>form_complex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>P01106</td>
+      <td>O14746</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>82</td>
+      <td>CollecTRI:10022128;CollecTRI:10491298;CollecTR...</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI;ExTRI_CollecTRI...</td>
+      <td>8</td>
+      <td>1</td>
+      <td>74</td>
+      <td>10022128;10491298;10606235;10637317;10723141;1...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>P17947</td>
+      <td>P02818</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:10022617</td>
+      <td>CollecTRI;ExTRI_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>10022617</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>COMPLEX:P15407_P17275</td>
+      <td>P05412</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>53</td>
+      <td>CollecTRI:10022869;CollecTRI:10037172;CollecTR...</td>
+      <td>CollecTRI;ExTRI_CollecTRI;NTNU.Curated_CollecT...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>49</td>
+      <td>10022869;10037172;10208431;10366004;11281649;1...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>COMPLEX:P01100_P05412</td>
+      <td>P05412</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>53</td>
+      <td>CollecTRI:10022869;CollecTRI:10037172;CollecTR...</td>
+      <td>CollecTRI;ExTRI_CollecTRI;NTNU.Curated_CollecT...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>49</td>
+      <td>10022869;10037172;10208431;10366004;11281649;1...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>COMPLEX:P01100_P17275</td>
+      <td>P05412</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>53</td>
+      <td>CollecTRI:10022869;CollecTRI:10037172;CollecTR...</td>
+      <td>CollecTRI;ExTRI_CollecTRI;NTNU.Curated_CollecT...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>49</td>
+      <td>10022869;10037172;10208431;10366004;11281649;1...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>64490</th>
+      <td>Q01196</td>
+      <td>Q13094</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:20019798</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>20019798</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64491</th>
+      <td>Q01196</td>
+      <td>Q6MZQ0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:20019798</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>20019798</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64492</th>
+      <td>Q15672</td>
+      <td>P08151</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:11948912</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>11948912</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64493</th>
+      <td>P22415</td>
+      <td>Q5SRE5</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:22951020</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>22951020</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64494</th>
+      <td>Q9UQR1</td>
+      <td>Q5VYX0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>CollecTRI:25295465</td>
+      <td>CollecTRI;DoRothEA-A_CollecTRI</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>25295465</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>64495 rows × 16 columns</p>
+</div></div>
+</div>
+<p>It is important once added a new resource, to build the database as showcases in the previous cell. All those steps assure that the incoming database is compatible with the NeKo structure, possibly avoiding mistakes when running the connecting algorithms.</p>
+<p>Sometimes a WARNING can suggest that some interactions could be missing; while this is limiting the amount of knowledge NeKo can extract, it does not prevent the package from working. Other possible cause of a WARNING is the absence of “consensus” columns. To avoid errors while running the package, set always consensus to False.</p>
+</section>
+</section>
+<section id="2.-Adding-a-public-database">
+<h2>2. Adding a public database<a class="headerlink" href="#2.-Adding-a-public-database" title="Link to this heading"></a></h2>
+<p>Alternatively, the user might want to use their own interaction databases. We have already implemented the inclusion of some of widely used databases.</p>
+<p>As example, we show here how to integrate the <a class="reference external" href="https://signor.uniroma2.it/">Signor 3.0</a> database. In order to do so, the User needs to have already downloaded the whole Signor database, available at the following link: <a class="reference external" href="https://signor.uniroma2.it/downloads.php">https://signor.uniroma2.it/downloads.php</a> or with the following code:.</p>
+<section id="2A.-Add-Signor-database">
+<h3>2A. Add Signor database<a class="headerlink" href="#2A.-Add-Signor-database" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>  <span class="c1"># this function accept as argument also a PATH to the signor file</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>is_directed</th>
+      <th>is_stimulation</th>
+      <th>is_inhibition</th>
+      <th>form_complex</th>
+      <th>consensus_direction</th>
+      <th>consensus_stimulation</th>
+      <th>consensus_inhibition</th>
+      <th>curation_effort</th>
+      <th>references</th>
+      <th>sources</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>A0A0B4J2F0</td>
+      <td>P18848</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>31653868</td>
+      <td>SIGNOR-261041</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>A0A0B4J2F0</td>
+      <td>P35638</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>31653868</td>
+      <td>SIGNOR-261043</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>A0A0B4J2F0</td>
+      <td>SIGNOR-PH2</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>31653868</td>
+      <td>SIGNOR-261042</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>A0AVT1</td>
+      <td>SIGNOR-C496</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>24816100</td>
+      <td>SIGNOR-270835</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>A0JLT2</td>
+      <td>SIGNOR-C405</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>28467824</td>
+      <td>SIGNOR-266663</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>28783</th>
+      <td>URS000037EC34_9606</td>
+      <td>SIGNOR-PH37</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>24708856</td>
+      <td>SIGNOR-255763</td>
+    </tr>
+    <tr>
+      <th>28784</th>
+      <td>URS000075AE07_9606</td>
+      <td>SIGNOR-FP4</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>irozzo</td>
+      <td>23132946</td>
+      <td>SIGNOR-255883</td>
+    </tr>
+    <tr>
+      <th>28785</th>
+      <td>URS000075C517_9606</td>
+      <td>SIGNOR-PH109</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>miannu</td>
+      <td>26055960</td>
+      <td>SIGNOR-255801</td>
+    </tr>
+    <tr>
+      <th>28786</th>
+      <td>URS000075C517_9606</td>
+      <td>SIGNOR-PH2</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>Luana</td>
+      <td>26344767</td>
+      <td>SIGNOR-264545</td>
+    </tr>
+    <tr>
+      <th>28787</th>
+      <td>URS000075C517_9606</td>
+      <td>SIGNOR-PH4</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>Luana</td>
+      <td>19219026</td>
+      <td>SIGNOR-268044</td>
+    </tr>
+  </tbody>
+</table>
+<p>28788 rows × 12 columns</p>
+</div></div>
+</div>
+<p>In order to avoid conflict or errors, ensure that the file contains at least the following columns: IDA, IDB, EFFECT, ANNOTATOR, PMID, SIGNOR_ID</p>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>SIGNOR uses has different identifiers for complexes, protein family, phenotype, etc. It is possible that the network contains nodes names like “Signor_pf32” or something like this… This is not yet translated, but if you are interested in what those nodes consist of, you can use download their vocabulary for the entities: <a class="reference external" href="https://signor.uniroma2.it/downloads.php">https://signor.uniroma2.it/downloads.php</a></p>
+</div>
+</section>
+</section>
+<section id="3.-Build-the-network">
+<h2>3. Build the network<a class="headerlink" href="#3.-Build-the-network" title="Link to this heading"></a></h2>
+<section id="3A.-Import-genes-as-network-nodes">
+<h3>3A. Import genes as network nodes<a class="headerlink" href="#3A.-Import-genes-as-network-nodes" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;PTK2&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="3B.-Create-network-object-by-specifying-the-interaction-resources">
+<h3>3B. Create network object by specifying the interaction resources<a class="headerlink" href="#3B.-Create-network-object-by-specifying-the-interaction-resources" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Print node dataframe</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NOTCH1</td>
+      <td>P46531</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CDH2</td>
+      <td>P19022</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>VIM</td>
+      <td>P08670</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MAP4K4</td>
+      <td>O95819</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>LATS1</td>
+      <td>O95835</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>LATS2</td>
+      <td>Q9NRM7</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="3C.-Build-network">
+<h3>3C. Build network<a class="headerlink" href="#3C.-Build-network" title="Link to this heading"></a></h3>
+<p>The downstream steps to connect your nodes, are the same. Please see the <a class="reference external" href="https://omniflow-project.readthedocs.io/en/latest/notebooks/network_building.html">Network building</a> tutorial for detailed explanations of each step.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 30.2 ms, sys: 14 μs, total: 30.2 ms
+Wall time: 30 ms
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_2_add_resources_24_0.svg" src="../_images/notebooks_2_add_resources_24_0.svg" />
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>NB! It is important to note, that not all the databases have the same structure as Omnipath. In particular, if the columns “consensus” are missing, we suggest to avoid to use the flag <code class="docutils literal notranslate"><span class="pre">consensus</span></code> or <code class="docutils literal notranslate"><span class="pre">consensus_only</span></code> when using NeKo with customize databases. As a general advise, we suggest to always use <code class="docutils literal notranslate"><span class="pre">consensus=False</span></code> when you are using a database different from the Omnipath.</p>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 1.18 s, sys: 1.08 ms, total: 1.18 s
+Wall time: 1.18 s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize network</span>
+<span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_2_add_resources_27_0.svg" src="../_images/notebooks_2_add_resources_27_0.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="4.-Translate-IDs">
+<h2>4. Translate IDs<a class="headerlink" href="#4.-Translate-IDs" title="Link to this heading"></a></h2>
+<p>NeKo’s resource object relies on UniProt IDs. In cases where the user-defined database does not have UniProt IDs, NeKo offers the function to translate between different IDs. The translation module is based on the python package “Unipressed” (<a class="reference external" href="https://github.com/multimeric/Unipressed">https://github.com/multimeric/Unipressed</a>).</p>
+<p>In the example below, we use the HURI database (<a class="reference external" href="http://www.interactome-atlas.org/">http://www.interactome-atlas.org/</a>) which provides protein-protein interactions (ppi) with ENSEMBL IDs.</p>
+<p>To run the following example, please download the database at the following link: <a class="reference external" href="http://www.interactome-atlas.org/download">http://www.interactome-atlas.org/download</a>. The example uses the <code class="docutils literal notranslate"><span class="pre">HI-Union</span></code> version of the database in <code class="docutils literal notranslate"><span class="pre">.tsv</span></code> format.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Import the module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs.db_translator</span><span class="w"> </span><span class="kn">import</span> <span class="n">IDTranslator</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">IDTranslator</span></code> function receives as arguments the input and output file names, together with the existing IDs and the target ones (in that case Ensembl to UniProtKB IDs).</p>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>NB! The <code class="docutils literal notranslate"><span class="pre">IDTranslator</span></code> can take several minutes the first time you translate a database, depending on the size of the database.</p>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">translator</span> <span class="o">=</span> <span class="n">IDTranslator</span><span class="p">(</span><span class="s1">&#39;HI-union.tsv&#39;</span><span class="p">,</span> <span class="s1">&#39;genes_translated.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;Ensembl&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProtKB-Swiss-Prot&#39;</span><span class="p">,</span> <span class="n">has_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">],</span> <span class="n">processes</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">translator</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:03:12,217 - IDTranslator_140412855874560 - INFO - Starting ID translation process from Ensembl to UniProtKB-Swiss-Prot</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Starting ID translation process from Ensembl to UniProtKB-Swiss-Prot
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:03:12,301 - IDTranslator_140412855874560 - INFO - Loaded 64006 rows with 9094 unique IDs</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Loaded 64006 rows with 9094 unique IDs
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:03:12,314 - IDTranslator_140412855874560 - INFO - Loaded progress from checkpoint_batch_91.pkl</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Loaded progress from checkpoint_batch_91.pkl
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ea6e682b70b54a9f85465f17641d929e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:03:12,627 - IDTranslator_140412855874560 - INFO - Applying translation to dataframe...</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Applying translation to dataframe...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:01,954 - IDTranslator_140412855874560 - INFO - Results saved to genes_translated.csv</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Results saved to genes_translated.csv
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,150 - IDTranslator_140412855874560 - INFO - ID translation process completed in 109.93 seconds</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:ID translation process completed in 109.93 seconds
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,170 - IDTranslator_140412855874560 - INFO - Original entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Original entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,173 - IDTranslator_140412855874560 - INFO - Translated entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Translated entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,178 - IDTranslator_140412855874560 - INFO - Expansion factor: 1.00</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Expansion factor: 1.00
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,182 - IDTranslator_140412855874560 - INFO - Translation success rate: 100.00%</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Translation success rate: 100.00%
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 1min 49s, sys: 727 ms, total: 1min 49s
+Wall time: 1min 49s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">translator</span><span class="o">.</span><span class="n">remove_untranslated_entries</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,439 - IDTranslator_140412855874560 - INFO - Results saved to genes_translated_cleaned.csv</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Results saved to genes_translated_cleaned.csv
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,442 - IDTranslator_140412855874560 - INFO - Removed 0 untranslated entries.</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Removed 0 untranslated entries.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,446 - IDTranslator_140412855874560 - INFO - Cleaned database saved to genes_translated_cleaned.csv</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Cleaned database saved to genes_translated_cleaned.csv
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,450 - IDTranslator_140412855874560 - INFO - Original entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Original entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,453 - IDTranslator_140412855874560 - INFO - Cleaned entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Cleaned entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,472 - IDTranslator_140412855874560 - INFO - Original entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Original entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,475 - IDTranslator_140412855874560 - INFO - Translated entry count: 64065</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Translated entry count: 64065
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,479 - IDTranslator_140412855874560 - INFO - Expansion factor: 1.00</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Expansion factor: 1.00
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>2024-07-22 12:05:02,483 - IDTranslator_140412855874560 - INFO - Translation success rate: 100.00%</pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:IDTranslator_140412855874560:Translation success rate: 100.00%
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">huri</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;genes_translated_cleaned.csv&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;source_UniProtKB-Swiss-Prot&quot;</span><span class="p">,</span> <span class="s2">&quot;target_UniProtKB-Swiss-Prot&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">huri</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source_UniProtKB-Swiss-Prot</th>
+      <th>target_UniProtKB-Swiss-Prot</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Q9H2S6</td>
+      <td>Q9NPE6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Q9H2S6</td>
+      <td>Q9BXK5</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Q9H2S6</td>
+      <td>O60238</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Q9H2S6</td>
+      <td>P20138</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Q9H2S6</td>
+      <td>Q9UM44</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">Universe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_UniProtKB-Swiss-Prot&quot;</span><span class="p">:</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;target_UniProtKB-Swiss-Prot&quot;</span><span class="p">:</span> <span class="s2">&quot;target&quot;</span><span class="p">}</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">add_resources</span><span class="p">(</span><span class="n">huri</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>  <span class="n">reset_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>is_directed</th>
+      <th>is_stimulation</th>
+      <th>is_inhibition</th>
+      <th>form_complex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Q9H2S6</td>
+      <td>Q9NPE6</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Q9H2S6</td>
+      <td>Q9BXK5</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Q9H2S6</td>
+      <td>O60238</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Q9H2S6</td>
+      <td>P20138</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Q9H2S6</td>
+      <td>Q9UM44</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>64060</th>
+      <td>B2RXH8</td>
+      <td>B2RXH8</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64061</th>
+      <td>Q8NHW4</td>
+      <td>Q6IN84</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64062</th>
+      <td>ENSG00000276076</td>
+      <td>ENSG00000276076</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64063</th>
+      <td>Q9UI36</td>
+      <td>Q9UI36</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>64064</th>
+      <td>ENSG00000280987</td>
+      <td>ENSG00000280987</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>64065 rows × 6 columns</p>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CD33&quot;</span><span class="p">,</span> <span class="s2">&quot;TNMD&quot;</span><span class="p">,</span> <span class="s2">&quot;AMIGO1&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span><span class="o">.</span><span class="n">connect_network_radially</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_2_add_resources_44_0.svg" src="../_images/notebooks_2_add_resources_44_0.svg" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="1_network_building.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="3_stepwise_connection.html" class="btn btn-neutral float-right" title="Stepwise connection: a focus on the INE algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2025, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

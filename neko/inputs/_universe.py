@@ -108,6 +108,7 @@ class Universe:
 
         self._resources = {}
         self._directed = {}
+        self._resource = resources
         self.interactions = None
         self.add_resources(resources, **param)
         self.build()

@@ -1,0 +1,5 @@
+mkdocs>=1.5,<2.0          # pin below MkDocs 2.0 (incompatible with Material 9.x)
+mkdocs-material>=9.5,<10
+mkdocstrings[python]>=0.24
+mkdocs-jupyter>=0.24
+mkdocs-git-revision-date-localized-plugin>=1.2

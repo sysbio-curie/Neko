@@ -1,0 +1,29 @@
+/* NeKo custom Material theme overrides */
+
+:root {
+  --md-primary-fg-color:        #00897b; /* teal 600 */
+  --md-primary-fg-color--light: #4db6ac;
+  --md-primary-fg-color--dark:  #00695c;
+  --md-accent-fg-color:         #00bcd4; /* cyan */
+}
+
+/* Slightly rounded code blocks */
+.highlight pre {
+  border-radius: 6px;
+}
+
+/* Make the logo a bit larger in the header */
+.md-header__button.md-logo img {
+  height: 36px;
+}
+
+/* Widen the content area for API pages */
+.md-content {
+  max-width: 960px;
+}
+
+/* Style the "→ Sphinx docs" nav entry as a badge-like link */
+.md-nav__item--active > .md-nav__link[href$="sphinx/index.html"] {
+  font-style: italic;
+  opacity: 0.7;
+}

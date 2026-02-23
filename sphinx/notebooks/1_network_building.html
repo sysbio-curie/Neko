@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build network using user-defined resources" href="2_add_resources.html" />
+    <link rel="prev" title="neko._visual.visualize_network.NetworkVisualizer.vis_comparison" href="../_autosummary/neko._visual.visualize_network.NetworkVisualizer.vis_comparison.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Define-the-list-of-genes-of-interest">1. Define the list of genes of interest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Create-a-network-using-as-input-the-gene-set.">2. Create a network using as input the gene set.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2A.-Import-genes-as-network-nodes">2A. Import genes as network nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2B.-Explore-if-the-nodes-are-connected-without-introducing-new-intermidiate-nodes">2B. Explore if the nodes are connected without introducing new intermidiate nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2C.-Visualize-the-network-with-the-following-command.">2C. Visualize the network with the following command.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2D.-Connect-disconnected-nodes-by-importing-intermediate-nodes.">2D. Connect disconnected nodes by importing intermediate nodes.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Visualize-final-network">3. Visualize final network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/1_network_building.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Usage">
+<h1>Usage<a class="headerlink" href="#Usage" title="Link to this heading"></a></h1>
+<p>This notebook provides the steps to build a network starting from a list of genes, and using the default functionalities of NeKo.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 3.58 s, sys: 898 ms, total: 4.48 s
+Wall time: 4.48 s
+</pre></div></div>
+</div>
+<section id="1.-Define-the-list-of-genes-of-interest">
+<h2>1. Define the list of genes of interest<a class="headerlink" href="#1.-Define-the-list-of-genes-of-interest" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAK&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">,</span> <span class="s2">&quot;PTK2B&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="2.-Create-a-network-using-as-input-the-gene-set.">
+<h2>2. Create a network using as input the gene set.<a class="headerlink" href="#2.-Create-a-network-using-as-input-the-gene-set." title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
+<p>NB! If no resource is specified, the default used resource by the package is <code class="docutils literal notranslate"><span class="pre">omnipath.interactions.Omnipath()</span></code>. To add new resources, please see the <a class="reference external" href="https://omniflow-project.readthedocs.io/en/latest/notebooks/add_resources.html#">Add resources</a> tutorial.</p>
+</div>
+<section id="2A.-Import-genes-as-network-nodes">
+<h3>2A. Import genes as network nodes<a class="headerlink" href="#2A.-Import-genes-as-network-nodes" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Print node dataframe</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NOTCH1</td>
+      <td>P46531</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CDH2</td>
+      <td>P19022</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>VIM</td>
+      <td>P08670</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MAP4K4</td>
+      <td>O95819</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>LATS1</td>
+      <td>O95835</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>LATS2</td>
+      <td>Q9NRM7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>PTK2B</td>
+      <td>Q14289</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="2B.-Explore-if-the-nodes-are-connected-without-introducing-new-intermidiate-nodes">
+<h3>2B. Explore if the nodes are connected without introducing new intermidiate nodes<a class="headerlink" href="#2B.-Explore-if-the-nodes-are-connected-without-introducing-new-intermidiate-nodes" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 189 ms, sys: 6 μs, total: 189 ms
+Wall time: 188 ms
+</pre></div></div>
+</div>
+</section>
+<section id="2C.-Visualize-the-network-with-the-following-command.">
+<h3>2C. Visualize the network with the following command.<a class="headerlink" href="#2C.-Visualize-the-network-with-the-following-command." title="Link to this heading"></a></h3>
+<p>The network picture is also exported in the working repository, in pdf format.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_1_network_building_11_0.svg" src="../_images/notebooks_1_network_building_11_0.svg" />
+</div>
+</div>
+</section>
+<section id="2D.-Connect-disconnected-nodes-by-importing-intermediate-nodes.">
+<h3>2D. Connect disconnected nodes by importing intermediate nodes.<a class="headerlink" href="#2D.-Connect-disconnected-nodes-by-importing-intermediate-nodes." title="Link to this heading"></a></h3>
+<p>The parameter <em>maxlen</em> sets the maximum length of the paths to be searched of.</p>
+<p>The parameter <em>algorithm</em> sets the base algorithm to use when looking for paths in the resources. It can be ‘bfs’ (Breadth-First Search) or ‘dfs’ (Depth-First Search - iterative). The first one is faster but does not retrieve all the shortest path, just the first one found, while the second one retrieves all the possible shortest paths (but not only the shortest) at higher computational cost.</p>
+<p>The parameter <em>only_signed</em> forces the algorithm to look for just signed interactions.</p>
+<p>The parameter <em>consensus</em> retrieves those interactions with a sign consensus between the references (when possible).</p>
+<p>The parameter <em>connect_with_bias</em>, changes the base algorithm, making it look for possible connection between all the disconnected node in the network when a new bridge-gene is introduced in the network, biasing the final network topology.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 10.5 s, sys: 1.02 ms, total: 10.5 s
+Wall time: 10.5 s
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="3.-Visualize-final-network">
+<h2>3. Visualize final network<a class="headerlink" href="#3.-Visualize-final-network" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize a specific nodes and</span>
+<span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span><span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_1_network_building_15_0.svg" src="../_images/notebooks_1_network_building_15_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Visualize a specific nodes and</span>
+<span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">predefined_node</span> <span class="o">=</span> <span class="s2">&quot;SRC&quot;</span><span class="p">,</span><span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_1_network_building_16_0.svg" src="../_images/notebooks_1_network_building_16_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#We can access to the edges of the network</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>P12931</td>
+      <td>Q05397</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10085298;Adhesome:10592173;Adhesome:1...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>P12830</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>P12931</td>
+      <td>P19022</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>ACSN:15782139;ACSN:16371504;ACSN:16492141;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P12931</td>
+      <td>Q14289</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10329689;Adhesome:10521452;Adhesome:1...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Q14289</td>
+      <td>Q05397</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:16760434;HPRD:16760434;KEA:12960434;K...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>221</th>
+      <td>P01106</td>
+      <td>O95863</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>222</th>
+      <td>P61586</td>
+      <td>P42336</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>223</th>
+      <td>P42336</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>224</th>
+      <td>P05305</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>225</th>
+      <td>Q13043</td>
+      <td>O15151</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+<p>226 rows × 6 columns</p>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_autosummary/neko._visual.visualize_network.NetworkVisualizer.vis_comparison.html" class="btn btn-neutral float-left" title="neko._visual.visualize_network.NetworkVisualizer.vis_comparison" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2_add_resources.html" class="btn btn-neutral float-right" title="Build network using user-defined resources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

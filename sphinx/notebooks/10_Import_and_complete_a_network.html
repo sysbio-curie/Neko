@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build, manipulate, export and import networks &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo" href="9-Recreating_famous_pathways.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build, manipulate, export and import networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Define-a-set-of-genes-we-are-interested-in">1. Define a set of genes we are interested in</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Build-the-network-from-OmniPath">2. Build the network from OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Visualize-the-network">3. Visualize the network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Manipulate-the-network:-remove-a-node">4. Manipulate the network: remove a node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Export-the-network-to-a-SIF-file">5. Export the network to a SIF file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Import-the-network-from-a-SIF-file">6. Import the network from a SIF file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Manipulate-the-network:-add-a-node">7. Manipulate the network: add a node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Manipulate-the-network:-complete-the-network">8. Manipulate the network: complete the network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Manipulate-the-network:-remove-bimodal-interactions">9. Manipulate the network: remove bimodal interactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#10.-Export-the-network-to-a-Bnet-file">10. Export the network to a Bnet file</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build, manipulate, export and import networks</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/10_Import_and_complete_a_network.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Build,-manipulate,-export-and-import-networks">
+<h1>Build, manipulate, export and import networks<a class="headerlink" href="#Build,-manipulate,-export-and-import-networks" title="Link to this heading"></a></h1>
+<p>This notebook provides the code to create a network, manipulate it, complete it, visualize it, export it to a file (.sif) and import it from a file (.sif).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._outputs.exports</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exports</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(CORNETO) Oct 28 05:36:25 PM - WARNING : No backend found. You can install one of the supported backend by `pip install cvxpy` or `pip install picos`.
+</pre></div></div>
+</div>
+<section id="1.-Define-a-set-of-genes-we-are-interested-in">
+<h2>1. Define a set of genes we are interested in<a class="headerlink" href="#1.-Define-a-set-of-genes-we-are-interested-in" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FAK&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:15:41 2024-10-28</p>
+</div>
+</div>
+</div>
+</section>
+<section id="2.-Build-the-network-from-OmniPath">
+<h2>2. Build the network from OmniPath<a class="headerlink" href="#2.-Build-the-network-from-OmniPath" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  2.87s, finished 16:15:48 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;bfs&#39;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  22.40s, finished 16:16:10 2024-10-28</p>
+</div>
+</div>
+</div>
+<p>In the previous cell, we have built a network from the genes we are interested in. We have used the OmniPath database to retrieve the interactions. We have then completed the network using a breadth-first search algorithm, considering only signed interactions. The option <code class="docutils literal notranslate"><span class="pre">connect_with_bias</span></code> allows us to connect the nodes prioritizing already existing interactions in the network, over new ones. This means that the resulting network will have a higher density of interactions between the nodes
+that were already connected. Moreover, our implementation of the bsf algorithm contains a random component, so the resulting network may vary each time you run the code.</p>
+</section>
+<section id="3.-Visualize-the-network">
+<h2>3. Visualize the network<a class="headerlink" href="#3.-Visualize-the-network" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:16:10 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_10_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_10_0.svg" />
+</div>
+</div>
+</section>
+<section id="4.-Manipulate-the-network:-remove-a-node">
+<h2>4. Manipulate the network: remove a node<a class="headerlink" href="#4.-Manipulate-the-network:-remove-a-node" title="Link to this heading"></a></h2>
+<p>We can remove a node from the network using the method <code class="docutils literal notranslate"><span class="pre">remove_node</span></code> from the Network object. When a Node is removed, all the edges connected to it are also removed.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="s2">&quot;SRC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:16:26 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:16:27 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_14_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_14_0.svg" />
+</div>
+</div>
+</section>
+<section id="5.-Export-the-network-to-a-SIF-file">
+<h2>5. Export the network to a SIF file<a class="headerlink" href="#5.-Export-the-network-to-a-SIF-file" title="Link to this heading"></a></h2>
+<p>We can export the network to a file using the method <code class="docutils literal notranslate"><span class="pre">export_sif</span></code> from the Exports object. The file will be saved in the current directory. The Exports object requires a Network object as input, and it allows us to export the network to different formats, including Bnet.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exporter</span> <span class="o">=</span> <span class="n">Exports</span><span class="p">(</span><span class="n">new_net1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:18:36 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exporter</span><span class="o">.</span><span class="n">export_sif</span><span class="p">(</span><span class="s2">&quot;simple_interaction_format.sif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:18:36 2024-10-28</p>
+</div>
+</div>
+</div>
+</section>
+<section id="6.-Import-the-network-from-a-SIF-file">
+<h2>6. Import the network from a SIF file<a class="headerlink" href="#6.-Import-the-network-from-a-SIF-file" title="Link to this heading"></a></h2>
+<p>We can import a network from a file using the method <code class="docutils literal notranslate"><span class="pre">Network</span></code> from the Network object. The file must be in SIF format. The Network object requires the path to the file as input.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">sif_file</span><span class="o">=</span><span class="s2">&quot;simple_interaction_format.sif&quot;</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  1.75s, finished 16:18:42 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer2</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net2</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer2</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:18:42 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_22_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_22_0.svg" />
+</div>
+</div>
+</section>
+<section id="7.-Manipulate-the-network:-add-a-node">
+<h2>7. Manipulate the network: add a node<a class="headerlink" href="#7.-Manipulate-the-network:-add-a-node" title="Link to this heading"></a></h2>
+<p>Just for demonstration purposes, we can add a node to the network using the method <code class="docutils literal notranslate"><span class="pre">add_node</span></code> from the Network object. The node can be connected later to the rest of the network using the same or different algorithms.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;SRC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:20:33 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:20:34 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EPHA2</td>
+      <td>P29317</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>COMPLEX:P06493_P14635</td>
+      <td>COMPLEX:P06493_P14635</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>LATS1</td>
+      <td>O95835</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>PLK1</td>
+      <td>P53350</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>GADD45A</td>
+      <td>P24522</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>CDK1</td>
+      <td>P06493</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>INCENP</td>
+      <td>Q9NQS7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>LATS2</td>
+      <td>Q9NRM7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>MAP3K1</td>
+      <td>Q13233</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>MAP3K7</td>
+      <td>O43318</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>NF2</td>
+      <td>P35240</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>GSK3B</td>
+      <td>P49841</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>PRKCA</td>
+      <td>P17252</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>CDH2</td>
+      <td>P19022</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>VIM</td>
+      <td>P08670</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>FLT4</td>
+      <td>P35916</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>MAP4K4</td>
+      <td>O95819</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>RAP1A</td>
+      <td>P62834</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>FOS</td>
+      <td>P01100</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>CDC42</td>
+      <td>P60953</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>ITGB1</td>
+      <td>P05556</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>PTPN1</td>
+      <td>P18031</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>INSR</td>
+      <td>P06213</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>TP53</td>
+      <td>P04637</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>NOTCH1</td>
+      <td>P46531</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer2</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net2</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer2</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:20:36 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_27_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_27_0.svg" />
+</div>
+</div>
+</section>
+<section id="8.-Manipulate-the-network:-complete-the-network">
+<h2>8. Manipulate the network: complete the network<a class="headerlink" href="#8.-Manipulate-the-network:-complete-the-network" title="Link to this heading"></a></h2>
+<p>We can now complete the network and connect the disconnected node that we have previously added. Moreover, by choosing a different algorithm, we can obtain a different network structure, and get interactions that we have not considered before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;dfs&#39;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  13.11s, finished 16:22:36 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer2</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net2</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer2</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  1.56s, finished 16:22:37 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_31_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_31_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:22:37 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>P46531</td>
+      <td>P35916</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SIF file; nan</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>P35916</td>
+      <td>Q05397</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SIF file; HPRD:16452200</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>P49841</td>
+      <td>P46531</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SIF file; ACSN:11967263;ACSN:14663202;ACSN:150...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P49841</td>
+      <td>P12830</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SIF file; ACSN:10671551;ACSN:10671552;ACSN:112...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>P12830</td>
+      <td>P29317</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SIF file; nan</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>187</th>
+      <td>P29353</td>
+      <td>P62993</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10049786;Adhesome:10080542;Adhesome:1...</td>
+    </tr>
+    <tr>
+      <th>188</th>
+      <td>P62993</td>
+      <td>P29353</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10049786;Adhesome:10080542;Adhesome:1...</td>
+    </tr>
+    <tr>
+      <th>189</th>
+      <td>P62993</td>
+      <td>P19174</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10940929;Adhesome:15953601;Adhesome:7...</td>
+    </tr>
+    <tr>
+      <th>190</th>
+      <td>P19174</td>
+      <td>P17612</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:2479646</td>
+    </tr>
+    <tr>
+      <th>191</th>
+      <td>P17612</td>
+      <td>P19174</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>Adhesome:2479646;CA1:2479646;ProtMapper:137047...</td>
+    </tr>
+  </tbody>
+</table>
+<p>192 rows × 5 columns</p>
+</div></div>
+</div>
+<p>As we can see the Network contains bimodal interactions. We can remove them from the network if we consider that they are not relevant for our analysis.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s2">&quot;Effect&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bimodal&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:23:22 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>16</th>
+      <td>P17252</td>
+      <td>P08670</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; Adhesome:2500966;HPRD-phos:11895474;...</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>P18031</td>
+      <td>P06213</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; Adhesome:10592173;Adhesome:10751417;...</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>P06213</td>
+      <td>P18031</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; Adhesome:10592173;Adhesome:10751417;...</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>P49841</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; ELM:11483158;HPRD-phos:11483158;HPRD...</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>P06493</td>
+      <td>P08670</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; HPRD-phos:15345747;HPRD-phos:1656522...</td>
+    </tr>
+    <tr>
+      <th>74</th>
+      <td>P12931</td>
+      <td>P29317</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>ProtMapper:24457997;ProtMapper:26788993;ProtMa...</td>
+    </tr>
+    <tr>
+      <th>91</th>
+      <td>P17612</td>
+      <td>P35240</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>KEA:15378014;KEA:18071304;PhosphoSite:11703924...</td>
+    </tr>
+    <tr>
+      <th>110</th>
+      <td>P17612</td>
+      <td>P49841</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>HPRD-phos:12054501;HPRD-phos:18669648;HPRD-pho...</td>
+    </tr>
+    <tr>
+      <th>111</th>
+      <td>P17252</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>ACSN:11313945;ACSN:11447289;ACSN:11940581;ACSN...</td>
+    </tr>
+    <tr>
+      <th>118</th>
+      <td>P17252</td>
+      <td>P19174</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:10592173;Adhesome:1370476;Adhesome:28...</td>
+    </tr>
+    <tr>
+      <th>132</th>
+      <td>P17612</td>
+      <td>P62834</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>CA1:8463283;CA1:9867809;HPRD-phos:9867809;HPRD...</td>
+    </tr>
+    <tr>
+      <th>145</th>
+      <td>P05556</td>
+      <td>P29353</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:10964917;Adhesome:19889638;InnateDB:1...</td>
+    </tr>
+    <tr>
+      <th>149</th>
+      <td>P18031</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:11007774;Adhesome:12857726;Adhesome:1...</td>
+    </tr>
+    <tr>
+      <th>162</th>
+      <td>P12931</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:10592173;SIGNOR:23027962</td>
+    </tr>
+    <tr>
+      <th>163</th>
+      <td>P12931</td>
+      <td>P20936</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:11389730;Adhesome:1717825;BioGRID:171...</td>
+    </tr>
+    <tr>
+      <th>170</th>
+      <td>P63000</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:10592173</td>
+    </tr>
+    <tr>
+      <th>181</th>
+      <td>P56945</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>183</th>
+      <td>P17612</td>
+      <td>P61586</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:12654918;Adhesome:8599934;HPRD-phos:1...</td>
+    </tr>
+    <tr>
+      <th>190</th>
+      <td>P19174</td>
+      <td>P17612</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>Adhesome:2479646</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="9.-Manipulate-the-network:-remove-bimodal-interactions">
+<h2>9. Manipulate the network: remove bimodal interactions<a class="headerlink" href="#9.-Manipulate-the-network:-remove-bimodal-interactions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:26:13 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># remove from the Network object all the interaction that are bimodal with less than X references (each reference is separated by ;)</span>
+
+<span class="n">number_of_references</span> <span class="o">=</span> <span class="mi">55</span>
+
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s2">&quot;Effect&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bimodal&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;References&quot;</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;References&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">number_of_references</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removing edge between&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
+        <span class="n">new_net2</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:26:17 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Removing edge between P17252 and P08670
+Removing edge between P49841 and P04637
+Removing edge between P12931 and P29317
+Removing edge between P17612 and P35240
+Removing edge between P17612 and P49841
+Removing edge between P17252 and P12931
+Removing edge between P17252 and P19174
+Removing edge between P17612 and P62834
+Removing edge between P05556 and P29353
+Removing edge between P18031 and P12931
+Removing edge between P12931 and P61586
+Removing edge between P12931 and P20936
+Removing edge between P63000 and P61586
+Removing edge between P56945 and P61586
+Removing edge between P17612 and P61586
+Removing edge between P19174 and P17612
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">new_net2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s2">&quot;Effect&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bimodal&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 16:27:29 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>22</th>
+      <td>P18031</td>
+      <td>P06213</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; Adhesome:10592173;Adhesome:10751417;...</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>P06213</td>
+      <td>P18031</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; Adhesome:10592173;Adhesome:10751417;...</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>P06493</td>
+      <td>P08670</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>SIF file; HPRD-phos:15345747;HPRD-phos:1656522...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer2</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net2</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">)</span>
+<span class="n">visualizer2</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in  1.46s, finished 16:27:32 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_10_Import_and_complete_a_network_40_0.svg" src="../_images/notebooks_10_Import_and_complete_a_network_40_0.svg" />
+</div>
+</div>
+</section>
+<section id="10.-Export-the-network-to-a-Bnet-file">
+<h2>10. Export the network to a Bnet file<a class="headerlink" href="#10.-Export-the-network-to-a-Bnet-file" title="Link to this heading"></a></h2>
+<p>We can export the network to a file using the method <code class="docutils literal notranslate"><span class="pre">export_bnet</span></code> from the Exports object. The file will be saved in the current directory. The user must specify the name of the file WITHOUT the extension. In case the Network contains bimodal interactions, the function will export a file for each possible permutation of the interactions. This number scales exponentially with the number of bimodal interactions in the network, resulting in a large number of files. BE CAREFUL when exporting a
+network with bimodal interactions!</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exporter2</span> <span class="o">=</span> <span class="n">Exports</span><span class="p">(</span><span class="n">new_net2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 15:53:38 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exporter2</span><span class="o">.</span><span class="n">export_bnet</span><span class="p">(</span><span class="s2">&quot;./logical_models/logical_model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="timing docutils container">
+<p>executed in 0ms, finished 15:53:40 2024-10-28</p>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning: The network has 3 BIMODAL interaction(s).
+Bimodal interactions:
+PTPN1 -&gt; INSR
+Reference: SIF file; Adhesome:10592173;Adhesome:10751417;Adhesome:10807907;Adhesome:11163213;Adhesome:11506178;Adhesome:11579209;Adhesome:11726652;Adhesome:12237455;Adhesome:12612081;Adhesome:12634852;Adhesome:14722096;Adhesome:15588987;Adhesome:16271887;Adhesome:16582879;Adhesome:16926280;Adhesome:17092689;Adhesome:17159996;Adhesome:17481567;Adhesome:19029027;Adhesome:21806020;Adhesome:8702689;Adhesome:8999839;CA1:14722096;DEPOD:11163213;DEPOD:11579209;DEPOD:12237455;DEPOD:12634852;DEPOD:14722096;DEPOD:15588987;DEPOD:16271887;DEPOD:16582879;DEPOD:17159996;DEPOD:17481567;DEPOD:8826975;DEPOD:8999839;DIP:16271887;DOMINO:11163213;DOMINO:11579209;DOMINO:12237455;DOMINO:12634852;DOMINO:15588987;DOMINO:16926280;DOMINO:17481567;HPRD-phos:16582879;HPRD:11506178;HPRD:12237455;HPRD:16582879;HPRD:8826975;HPRD:9355745;InnateDB:11579209;InnateDB:12237455;InnateDB:12612081;InnateDB:14722096;InnateDB:17481567;IntAct:11163213;IntAct:11506178;IntAct:11579209;IntAct:12237455;IntAct:12634852;IntAct:14722096;IntAct:15588987;IntAct:16582879;IntAct:16926280;IntAct:17092689;IntAct:17159996;IntAct:17481567;IntAct:19029027;IntAct:21806020;IntAct:8702689;IntAct:8999839;KEA:10852715;KEA:11850117;Lit-BM-17:11163213;Lit-BM-17:11506178;Lit-BM-17:11579209;Lit-BM-17:11726652;Lit-BM-17:12237455;Lit-BM-17:12634852;Lit-BM-17:14722096;Lit-BM-17:15588987;Lit-BM-17:16271887;Lit-BM-17:16582879;Lit-BM-17:16926280;Lit-BM-17:17092689;Lit-BM-17:17159996;Lit-BM-17:17481567;Lit-BM-17:19029027;Lit-BM-17:21806020;Lit-BM-17:8999839;ProtMapper:10066179;ProtMapper:11579209;ProtMapper:12612081;ProtMapper:1321126;ProtMapper:15192089;ProtMapper:15632081;ProtMapper:1599438;ProtMapper:16582879;ProtMapper:8244979;SIGNOR:11579209;SIGNOR:16582879;SPIKE_LC:8999839;SignaLink3:11506178;SignaLink3:12237455;SignaLink3:15632081;SignaLink3:16582879;SignaLink3:23331499;SignaLink3:8826975;SignaLink3:9355745
+INSR -&gt; PTPN1
+Reference: SIF file; Adhesome:10592173;Adhesome:10751417;Adhesome:10807907;Adhesome:11163213;Adhesome:11506178;Adhesome:11579209;Adhesome:11726652;Adhesome:12237455;Adhesome:12612081;Adhesome:12634852;Adhesome:14722096;Adhesome:15588987;Adhesome:16271887;Adhesome:16582879;Adhesome:16926280;Adhesome:17092689;Adhesome:17159996;Adhesome:17481567;Adhesome:19029027;Adhesome:21806020;Adhesome:8702689;Adhesome:8999839;DIP:16271887;DOMINO:11163213;DOMINO:11579209;DOMINO:12237455;DOMINO:12634852;DOMINO:15588987;DOMINO:16926280;DOMINO:17481567;HPRD-phos:11506178;HPRD-phos:9355745;HPRD:11506178;HPRD:12237455;HPRD:16582879;HPRD:8826975;HPRD:9355745;InnateDB:11579209;InnateDB:12237455;InnateDB:12612081;InnateDB:14722096;InnateDB:17481567;IntAct:11163213;IntAct:11506178;IntAct:11579209;IntAct:12237455;IntAct:12634852;IntAct:14722096;IntAct:15588987;IntAct:16582879;IntAct:16926280;IntAct:17092689;IntAct:17159996;IntAct:17481567;IntAct:19029027;IntAct:21806020;IntAct:8702689;IntAct:8999839;KEA:11106648;KEA:11506178;KEA:17570479;KEA:8999839;KEA:9355745;Lit-BM-17:11163213;Lit-BM-17:11506178;Lit-BM-17:11579209;Lit-BM-17:11726652;Lit-BM-17:12237455;Lit-BM-17:12634852;Lit-BM-17:14722096;Lit-BM-17:15588987;Lit-BM-17:16271887;Lit-BM-17:16582879;Lit-BM-17:16926280;Lit-BM-17:17092689;Lit-BM-17:17159996;Lit-BM-17:17481567;Lit-BM-17:19029027;Lit-BM-17:21806020;Lit-BM-17:8999839;ProtMapper:11506178;ProtMapper:11579209;ProtMapper:15212693;SIGNOR:11506178;SPIKE_LC:8999839;iPTMnet:11106648;iPTMnet:11506178;iPTMnet:9355745;phosphoELM:11106648
+CDK1 -&gt; VIM
+Reference: SIF file; HPRD-phos:15345747;HPRD-phos:16565220;HPRD-phos:16964243;HPRD-phos:17287340;HPRD-phos:17924679;HPRD-phos:18212344;HPRD-phos:18491316;HPRD-phos:18578522;HPRD-phos:18669648;HPRD-phos:18691976;HPRD-phos:18707149;HPRD-phos:18767875;HPRD-phos:19007248;HPRD-phos:19413330;HPRD-phos:19415658;HPRD-phos:19651622;HPRD-phos:19664995;HPRD-phos:19691289;HPRD-phos:20058876;HPRD-phos:20068230;HPRD-phos:20068231;HPRD-phos:7983050;HPRD:15345747;HPRD:7983050;KEA:12761892;KEA:15345747;KEA:15713670;KEA:15766329;KEA:16565220;KEA:16964243;KEA:17081983;KEA:17570479;KEA:7983050;PhosphoSite:19584300;ProtMapper:16260496;ProtMapper:16542212;ProtMapper:21422740;ProtMapper:22120848;ProtMapper:24073199;ProtMapper:25184044;ProtMapper:25960391;ProtMapper:27603133;ProtMapper:7983050;ProtMapper:9168797;SIGNOR:7983050;dbPTM:16565220;dbPTM:16964243;dbPTM:17081983;dbPTM:17287340;dbPTM:17924679;dbPTM:18669648;dbPTM:18691976;dbPTM:19007248;dbPTM:19369195;dbPTM:19413330;dbPTM:19690332;dbPTM:21465480;iPTMnet:15345747;iPTMnet:16260496;iPTMnet:16565220;iPTMnet:16964243;iPTMnet:17287340;iPTMnet:17924679;iPTMnet:18212344;iPTMnet:18491316;iPTMnet:18578522;iPTMnet:18669648;iPTMnet:18691976;iPTMnet:18707149;iPTMnet:18767875;iPTMnet:19007248;iPTMnet:19413330;iPTMnet:19415658;iPTMnet:19651622;iPTMnet:19664995;iPTMnet:19691289;iPTMnet:20058876;iPTMnet:20068230;iPTMnet:20068231;iPTMnet:27603133;iPTMnet:7983050;phosphoELM:7983050
+Created BNet file: ./logical_models/logical_model_1.bnet
+Created BNet file: ./logical_models/logical_model_2.bnet
+Created BNet file: ./logical_models/logical_model_3.bnet
+Created BNet file: ./logical_models/logical_model_4.bnet
+Created BNet file: ./logical_models/logical_model_5.bnet
+Created BNet file: ./logical_models/logical_model_6.bnet
+Created BNet file: ./logical_models/logical_model_7.bnet
+Created BNet file: ./logical_models/logical_model_8.bnet
+Generated 8 BNet files.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="9-Recreating_famous_pathways.html" class="btn btn-neutral float-left" title="Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

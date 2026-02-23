@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stepwise connection: a focus on the INE algorithm &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Connect to upstream components" href="4_Connect_upstream.html" />
+    <link rel="prev" title="Build network using user-defined resources" href="2_add_resources.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stepwise connection: a focus on the INE algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Define-the-list-of-genes-of-interest">1. Define the list of genes of interest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Specify-SIGNOR-resource">2. Specify SIGNOR resource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Create-a-network-using-as-input-the-gene-set.">3. Create a network using as input the gene set.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#3A.-Import-genes-as-network-nodes">3A. Import genes as network nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3B.-Connect-nodes">3B. Connect nodes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Stepwise connection: a focus on the INE algorithm</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/3_stepwise_connection.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Stepwise-connection:-a-focus-on-the-INE-algorithm">
+<h1>Stepwise connection: a focus on the INE algorithm<a class="headerlink" href="#Stepwise-connection:-a-focus-on-the-INE-algorithm" title="Link to this heading"></a></h1>
+<p>This notebook provides the steps to build a network starting from a list of genes, and using the Iterative Neighbor Expansion (INE) algorithm.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span><span class="p">,</span> <span class="n">signor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._annotations.gene_ontology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ontology</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 3.62 s, sys: 758 ms, total: 4.38 s
+Wall time: 4.72 s
+</pre></div></div>
+</div>
+<section id="1.-Define-the-list-of-genes-of-interest">
+<h2>1. Define the list of genes of interest<a class="headerlink" href="#1.-Define-the-list-of-genes-of-interest" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PIK3CA&quot;</span><span class="p">,</span><span class="s2">&quot;MAP2K1&quot;</span><span class="p">,</span><span class="s2">&quot;GSK3B&quot;</span><span class="p">,</span><span class="s2">&quot;MAPK14&quot;</span><span class="p">,</span><span class="s2">&quot;CTNNB1&quot;</span><span class="p">,</span><span class="s2">&quot;AKT1&quot;</span><span class="p">,</span><span class="s2">&quot;MAP3K7&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_nodes_prosurvival</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CCND1&#39;</span><span class="p">,</span><span class="s1">&#39;MYC&#39;</span><span class="p">,</span><span class="s1">&#39;TCF7L2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="2.-Specify-SIGNOR-resource">
+<h2>2. Specify SIGNOR resource<a class="headerlink" href="#2.-Specify-SIGNOR-resource" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>  <span class="c1"># this function accept only tab separated values</span>
+<span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="3.-Create-a-network-using-as-input-the-gene-set.">
+<h2>3. Create a network using as input the gene set.<a class="headerlink" href="#3.-Create-a-network-using-as-input-the-gene-set." title="Link to this heading"></a></h2>
+<section id="3A.-Import-genes-as-network-nodes">
+<h3>3A. Import genes as network nodes<a class="headerlink" href="#3A.-Import-genes-as-network-nodes" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">initial_nodes</span> <span class="o">=</span> <span class="n">genes</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="3B.-Connect-nodes">
+<h3>3B. Connect nodes<a class="headerlink" href="#3B.-Connect-nodes" title="Link to this heading"></a></h3>
+<p>The INE algorith connects the input nodes by looking and introducing all their immediate neighbors into the network. If the nodes remain unconnected, the immediate neighbors of the newly introduced nodes are added into the network. The process ends either when a complete network is reached or until the user-specified threshold of expansion steps (i.e., <code class="docutils literal notranslate"><span class="pre">max_len</span></code>) is specified.</p>
+<p>The algorithm also allows the definition of <code class="docutils literal notranslate"><span class="pre">outputs</span></code>, which are nodes that should be connected to the network with only incoming edges. For instance, these nodes might represent phenotypic markers (e.g., proliferation) of interest.</p>
+<p>At the end of the algorithm, any nodes that do not have a source in the edge dataframe and are not in the output node are removed..</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">new_net</span><span class="o">.</span><span class="n">connect_as_atopo</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;radial&quot;</span><span class="p">,</span><span class="n">outputs</span><span class="o">=</span><span class="n">output_nodes_prosurvival</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 6.91 s, sys: 6.27 ms, total: 6.92 s
+Wall time: 6.92 s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Q16539</td>
+      <td>SIGNOR-PF24</td>
+      <td>None</td>
+      <td>bimodal</td>
+      <td>20626350; 12181443</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Q16539</td>
+      <td>P04150</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>20660302; 15817653</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Q16539</td>
+      <td>P11362</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>20626350</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Q16539</td>
+      <td>Q15750</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>19393267; 14592977</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Q16539</td>
+      <td>P49841</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>18451303; 17726008</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>261</th>
+      <td>P35222</td>
+      <td>P01106</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>16510874</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>263</th>
+      <td>P49840</td>
+      <td>P01106</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>16023596</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>266</th>
+      <td>Q16539</td>
+      <td>P24385</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>8702807</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>269</th>
+      <td>P01106</td>
+      <td>P24385</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>12835716</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>270</th>
+      <td>SIGNOR-PF1</td>
+      <td>P01106</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>11018017</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+<p>178 rows × 6 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_3_stepwise_connection_13_0.svg" src="../_images/notebooks_3_stepwise_connection_13_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">predefined_node</span><span class="o">=</span><span class="s2">&quot;CCND1&quot;</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_3_stepwise_connection_14_0.svg" src="../_images/notebooks_3_stepwise_connection_14_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">predefined_node</span><span class="o">=</span><span class="s2">&quot;MYC&quot;</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_3_stepwise_connection_15_0.svg" src="../_images/notebooks_3_stepwise_connection_15_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="n">noi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">predefined_node</span><span class="o">=</span><span class="s2">&quot;TCF7L2&quot;</span><span class="p">)</span>
+<span class="n">visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_3_stepwise_connection_16_0.svg" src="../_images/notebooks_3_stepwise_connection_16_0.svg" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="2_add_resources.html" class="btn btn-neutral float-left" title="Build network using user-defined resources" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4_Connect_upstream.html" class="btn btn-neutral float-right" title="Connect to upstream components" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neko &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="contents.html">
+            
+              <img src="_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Neko</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="neko">
+<h1>Neko<a class="headerlink" href="#neko" title="Link to this heading"></a></h1>
+<figure class="align-right" style="width: 50px">
+<img alt="NeKo Logo" src="docs/src/neko_logo.png" />
+</figure>
+<a class="reference external image-reference" href="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml"><img alt="Tests" src="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg" /></a>
+<a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/"><img alt="Documentation" src="https://img.shields.io/badge/docs-latest-brightgreen.svg" /></a>
+<p>Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It’s built on top of <a class="reference external" href="https://github.com/saezlab/omnipath">Omnipath</a>, <a class="reference external" href="https://github.com/saezlab/pypath">Pypath</a>, and <a class="reference external" href="https://github.com/druglogics/atopo">Atopo</a>.</p>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
+<p>If you use NeKo in your research, please cite our paper:</p>
+<p>Ruscone M, Tsirvouli E, Checcoli A, Turei D, Barillot E, et al. (2025) NeKo: A tool for automatic network construction from prior knowledge. <em>PLOS Computational Biology</em> 21(9): e1013300. <a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1013300">https://doi.org/10.1371/journal.pcbi.1013300</a></p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Network creation and manipulation</p></li>
+<li><p>Connection of nodes and subnetworks</p></li>
+<li><p>Gene-to-phenotype mapping</p></li>
+<li><p>Network visualization and export helpers</p></li>
+<li><p>Interaction database integration</p></li>
+<li><p>Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">NeKo</span></code> is still in its alpha version. You can install it from PyPI and also install the necessary external dependencies.</p>
+<ol class="arabic">
+<li><p><strong>Install `NeKo` from PyPI</strong>:</p>
+<p>Install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>nekomata
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="installation-from-source">
+<h2>Installation from Source<a class="headerlink" href="#installation-from-source" title="Link to this heading"></a></h2>
+<p>For the latest development version, you can still clone the repository and install directly from the source:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sysbio-curie/Neko.git
+<span class="nb">cd</span><span class="w"> </span>Neko
+pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+<p>This will give you the latest version of <code class="docutils literal notranslate"><span class="pre">NeKo</span></code> (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<p>If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
+You can install it on Linux system with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>graphviz<span class="w"> </span>libgraphviz-dev
+</pre></div>
+</div>
+<p>or on Mac system:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>graphviz<span class="w"> </span>libgraphviz-dev
+</pre></div>
+</div>
+<p>For more details visit: <a class="reference external" href="https://graphviz.org/download/">https://graphviz.org/download/</a></p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p>For full documentation, including API reference and detailed tutorials, visit our <a class="reference external" href="https://sysbio-curie.github.io/Neko/">GitHub Pages documentation</a>.</p>
+</section>
+<section id="jupyter-notebooks">
+<h2>Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Link to this heading"></a></h2>
+<p>We provide a comprehensive set of Jupyter notebooks that offer a detailed and user-friendly explanation of the package. These notebooks cover all modules of NeKo and provide a complete overview of how to use the package:</p>
+<ol class="arabic simple">
+<li><p>Usage</p></li>
+<li><p>Build network using user-defined resources</p></li>
+<li><p>Stepwise connection: a focus on the INE algorithm</p></li>
+<li><p>Connect to upstream components</p></li>
+<li><p>Build network based on kinase-phosphosite interactions</p></li>
+<li><p>Connect to downstream Gene Ontology terms</p></li>
+<li><p>Map tissue expression</p></li>
+<li><p>Network comparison</p></li>
+<li><p>Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</p></li>
+<li><p>Import and complete a network</p></li>
+<li><p>Network history, branching, and visualisation</p></li>
+</ol>
+<p>You can find these notebooks in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory of the repository.</p>
+</section>
+<section id="features-comparison-with-similar-tools">
+<h2>Features comparison with similar tools<a class="headerlink" href="#features-comparison-with-similar-tools" title="Link to this heading"></a></h2>
+<p>Below you can find a table displaying the main features of NeKo compared to other similar tools:
+<a class="reference external" href="https://github.com/sysbio-curie/Neko/blob/main/table.md">Features Table on GitHub</a>.</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.</p>
+<p>Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.</p>
+</section>
+<section id="version-1-1-0">
+<h2>version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.</p></li>
+<li><p>Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resource to mine for interactions.</p></li>
+<li><p>Database translation: The package provides methods to convert the identifiers of a database storing edges list, into Uniprot.</p></li>
+<li><p>Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.</p></li>
+<li><p>Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network.</p></li>
+<li><p>Branching network history: automatic state capture for every enrichment step, undo/redo, HTML/SVG graph visualisation, and configurable pruning via <code class="docutils literal notranslate"><span class="pre">set_max_history</span></code>.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

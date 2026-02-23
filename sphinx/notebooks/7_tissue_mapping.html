@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map tissue expression &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Network comparison" href="8_Compare_networks.html" />
+    <link rel="prev" title="Connect to downstream Gene Ontology terms." href="6_ontology.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Map tissue expression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Import-genes-as-network-nodes">1. Import genes as network nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Check-if-the-genes-are-annotated-in-the-tissue-of-interest-(e.g.,-in-colorectal-cancer)">2. Check if the genes are annotated in the tissue of interest (e.g., in colorectal cancer)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Color-nodes-based-on-their-presence/absence-in-the-tissue-of-interest">3. Color nodes based on their presence/absence in the tissue of interest</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Map tissue expression</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/7_tissue_mapping.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Map-tissue-expression">
+<h1>Map tissue expression<a class="headerlink" href="#Map-tissue-expression" title="Link to this heading"></a></h1>
+<p>This notebook explores how you can explore whether the nodes in your network are expressed in a tissue of interest. The annotations are accessed from the Annotation object of Omnipath, and are based on expression data from the Human Protein Atlas.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko._annotations.gene_ontology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ontology</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 6.01 s, sys: 1.56 s, total: 7.57 s
+Wall time: 5.17 s
+</pre></div></div>
+</div>
+<section id="1.-Import-genes-as-network-nodes">
+<h2>1. Import genes as network nodes<a class="headerlink" href="#1.-Import-genes-as-network-nodes" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTCH1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAK&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH2&quot;</span><span class="p">,</span> <span class="s2">&quot;VIM&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP4K4&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS1&quot;</span><span class="p">,</span> <span class="s2">&quot;LATS2&quot;</span><span class="p">,</span> <span class="s2">&quot;PTK2B&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Print node dataframe</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NOTCH1</td>
+      <td>P46531</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CDH2</td>
+      <td>P19022</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>VIM</td>
+      <td>P08670</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MAP4K4</td>
+      <td>O95819</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>LATS1</td>
+      <td>O95835</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>LATS2</td>
+      <td>Q9NRM7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>PTK2B</td>
+      <td>Q14289</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="2.-Check-if-the-genes-are-annotated-in-the-tissue-of-interest-(e.g.,-in-colorectal-cancer)">
+<h2>2. Check if the genes are annotated in the tissue of interest (e.g., in colorectal cancer)<a class="headerlink" href="#2.-Check-if-the-genes-are-annotated-in-the-tissue-of-interest-(e.g.,-in-colorectal-cancer)" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">annot</span> <span class="o">=</span> <span class="n">Ontology</span><span class="p">()</span>
+<span class="n">results_df</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">check_tissue_annotations</span><span class="p">(</span><span class="n">genes_df</span> <span class="o">=</span> <span class="n">new_net1</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">tissue</span> <span class="o">=</span> <span class="s1">&#39;colorectal cancer&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "80151a3033954c7fa432793ba3ac15cb", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6be86b4c527b4b4c8daaee10cb5f8a8f", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "938c2adaa3d942fe85b19157c20d7025", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e32beb2f17c64e868bd4cd0f9207bd77", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "06c3b91dfd154c9bb5fda9b2395ef29a", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cfb49cab545748538ecc178511211064", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ab64e58ee2a444edad4b08fa9d50a997", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "812a372fa0c74f2ea040c03cbd5ca784", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "51ecd65707fd449785a2d8f5d5d85c5b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "99c44916b0cd42b2857a5f406cbd0522", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  Genesymbol  in_tissue
+0        SRC       True
+1     NOTCH1       True
+2       PTK2       True
+3       CDH1       True
+4       CDH2       True
+5        VIM       True
+6     MAP4K4       True
+7      LATS1       True
+8      LATS2       True
+9      PTK2B       True
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Color-nodes-based-on-their-presence/absence-in-the-tissue-of-interest">
+<h2>3. Color nodes based on their presence/absence in the tissue of interest<a class="headerlink" href="#3.-Color-nodes-based-on-their-presence/absence-in-the-tissue-of-interest" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">tissue_mapping</span></code> functions highligts as light blue all the nodes of the network that are expressed in the used-defined system.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_visualizer</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">)</span>
+<span class="n">network_visualizer</span><span class="o">.</span><span class="n">tissue_mapping</span><span class="p">(</span><span class="n">results_df</span><span class="p">)</span>
+<span class="n">network_visualizer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_7_tissue_mapping_9_0.svg" src="../_images/notebooks_7_tissue_mapping_9_0.svg" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="6_ontology.html" class="btn btn-neutral float-left" title="Connect to downstream Gene Ontology terms." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="8_Compare_networks.html" class="btn btn-neutral float-right" title="Network comparison" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

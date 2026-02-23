@@ -21,3 +21,6 @@ __pycache__/
 /.pytest_cache/
 /.cache/
 /data/
+
+# MkDocs build output
+site/

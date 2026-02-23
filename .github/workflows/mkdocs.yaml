@@ -1,0 +1,81 @@
+name: Build and Deploy MkDocs Documentation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Allow only one concurrent deployment to avoid gh-pages conflicts
+concurrency:
+  group: "pages-mkdocs"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write   # needed to push to gh-pages
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history for git-revision-date plugin
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y graphviz libgraphviz-dev pandoc
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install package (for mkdocstrings API introspection)
+        run: poetry install --no-interaction
+
+      - name: Install MkDocs dependencies
+        run: poetry run pip install -r docs_mkdocs/requirements.txt
+
+      - name: Copy notebooks into docs_mkdocs/tutorials/
+        run: |
+          mkdir -p docs_mkdocs/tutorials
+          cp docs/src/notebooks/*.ipynb docs_mkdocs/tutorials/
+          # Remove any symlinks committed by setup_mkdocs_tutorials.sh before copying
+          rm -rf docs_mkdocs/tutorials/img docs_mkdocs/assets/neko_logo.png
+          if [ -d docs/src/notebooks/img ]; then
+            cp -r docs/src/notebooks/img docs_mkdocs/tutorials/
+          fi
+
+      - name: Copy logo into docs_mkdocs/assets/
+        run: |
+          mkdir -p docs_mkdocs/assets
+          cp docs/src/neko_logo.png docs_mkdocs/assets/
+
+      - name: Build MkDocs site
+        run: |
+          poetry run mkdocs build --verbose
+        env:
+          # Suppress OmniPath download attempts during API introspection
+          OMNIPATH_OFFLINE: "1"
+          JUPYTER_PLATFORM_DIRS: "1"
+
+      - name: Deploy to GitHub Pages (root of gh-pages)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          destination_dir: .       # MkDocs is served from the root
+          keep_files: true         # keep the sphinx/ subdirectory built by the other workflow
+          force_orphan: false

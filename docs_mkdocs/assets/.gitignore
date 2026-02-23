@@ -1,0 +1,3 @@
+# Logo is copied from docs/src/neko_logo.png at build time.
+# Run scripts/setup_mkdocs_tutorials.sh to create local symlinks.
+neko_logo.png

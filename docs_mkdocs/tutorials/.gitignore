@@ -1,0 +1,4 @@
+# Notebooks are symlinked from docs/src/notebooks/ for local development
+# and copied by the CI workflow (mkdocs.yaml). Do not commit them here.
+*.ipynb
+img/

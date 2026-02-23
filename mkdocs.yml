@@ -1,0 +1,138 @@
+site_name: NeKo – Network Konstructor
+site_url: https://sysbio-curie.github.io/Neko/
+site_author: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli
+site_description: >-
+  NeKo is a Python package for extracting, visualising, converting,
+  and studying interactions from databases into executable
+  activity flow-based models.
+
+repo_name: sysbio-curie/Neko
+repo_url: https://github.com/sysbio-curie/Neko
+edit_uri: edit/main/docs_mkdocs/
+
+copyright: Copyright &copy; 2022–2026 Sysbio-Curie
+
+docs_dir: docs_mkdocs
+
+theme:
+  name: material
+  logo: assets/neko_logo.png
+  favicon: assets/neko_logo.png
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_category_heading: true
+            members_order: source
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            filters:
+              - "!^_"     # exclude private members
+  - mkdocs-jupyter:
+      execute: false
+      include_source: true
+      allow_errors: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      fallback_to_build_date: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - "01 · Network Building": tutorials/1_network_building.ipynb
+      - "02 · Add Resources": tutorials/2_add_resources.ipynb
+      - "03 · Stepwise Connection": tutorials/3_stepwise_connection.ipynb
+      - "04 · Connect Upstream": tutorials/4_Connect_upstream.ipynb
+      - "05 · Phosphosite Network": tutorials/5_build_phosphosite_network.ipynb
+      - "06 · Ontology": tutorials/6_ontology.ipynb
+      - "07 · Tissue Mapping": tutorials/7_tissue_mapping.ipynb
+      - "08 · Compare Networks": tutorials/8_Compare_networks.ipynb
+      - "09 · Recreating Famous Pathways": tutorials/9-Recreating_famous_pathways.ipynb
+      - "10 · Import & Complete a Network": tutorials/10_Import_and_complete_a_network.ipynb
+      - "11 · Network History": tutorials/11_network_history.ipynb
+  - API Reference:
+      - Overview: api/index.md
+      - Network: api/network.md
+      - NetworkVisualizer: api/visualizer.md
+      - Connections: api/connections.md
+      - Ontology: api/ontology.md
+      - Exports: api/exports.md
+  - Development:
+      - Contributing: contributing.md
+      - Changelog: changelog.md
+  - "→ Sphinx docs": https://sysbio-curie.github.io/Neko/sphinx/
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sysbio-curie/Neko
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css

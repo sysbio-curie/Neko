@@ -18,7 +18,7 @@ class Exports:
         self.interactions = df_edges
         return
 
-    def export_bnet(self, file_name="logic_model.bnet"):
+    def export_bnet(self, file_name="logic_model.bnet", n=None):
         """
         Function to export the network in bnet format, creating multiple files for bimodal interactions.
         """
@@ -52,6 +52,10 @@ class Exports:
         bimodal_sources = bimodal_interactions['source'].tolist()
         bimodal_targets = bimodal_interactions['target'].tolist()
         permutations = list(itertools.product(['stimulation', 'inhibition'], repeat=len(bimodal_interactions)))
+        if not n:
+            continue
+        else:
+            permutations = permutations[:n]
 
         # Create a directory for the BNet files if a directory is provided
         directory = os.path.dirname(file_name)

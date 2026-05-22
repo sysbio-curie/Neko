@@ -86,7 +86,7 @@ class Exports:
                     node = entry[0]
 
                     # Replace special characters in node names
-                    node = re.sub(r"[\/\-\s\#]", "_", node)
+                    node = re.sub(r"[\/\-\s\#:]", "_", node)
 
                     formula_on = [re.sub(r"[\/\-\s\#]", "_", src) for src in
                                   stimulations[stimulations["target"] == node]["source"].to_list()]

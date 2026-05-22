@@ -52,9 +52,7 @@ class Exports:
         bimodal_sources = bimodal_interactions['source'].tolist()
         bimodal_targets = bimodal_interactions['target'].tolist()
         permutations = list(itertools.product(['stimulation', 'inhibition'], repeat=len(bimodal_interactions)))
-        if not n:
-            continue
-        else:
+        if n is not None:
             permutations = permutations[:n]
 
         # Create a directory for the BNet files if a directory is provided

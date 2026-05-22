@@ -88,11 +88,11 @@ class Exports:
                     # Replace special characters in node names
                     node = re.sub(r"[\/\-\s\#:]", "_", node)
 
-                    formula_on = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                    formula_on = [re.sub(r"[\/\-\s\#:]", "_", src) for src in
                                   stimulations[stimulations["target"] == node]["source"].to_list()]
-                    formula_off = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                    formula_off = [re.sub(r"[\/\-\s\#:]", "_", src) for src in
                                    inhibitions[inhibitions["target"] == node]["source"].to_list()]
-                    formula_complex = [re.sub(r"[\/\-\s\#]", "_", src) for src in
+                    formula_complex = [re.sub(r"[\/\-\s\#:]", "_", src) for src in
                                        complex_formation[complex_formation["target"] == node]["source"].to_list()]
 
                     # Constructing the formula

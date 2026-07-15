@@ -12,13 +12,13 @@
         <meta name="author" content="Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli">
       
       
-        <link rel="canonical" href="https://sysbio-curie.github.io/Neko/tutorials/5_build_phosphosite_network/">
+        <link rel="canonical" href="https://sysbio-curie.github.io/Neko/tutorials/11_network_history/">
       
       
-        <link rel="prev" href="../4_Connect_upstream/">
+        <link rel="prev" href="../10_Import_and_complete_a_network/">
       
       
-        <link rel="next" href="../6_ontology/">
+        <link rel="next" href="../../api/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Build network based on kinase-phosphosite interactions - NeKo – Network Konstructor</title>
+        <title>Exploring Network History in NeKo - NeKo – Network Konstructor</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#build-network-based-on-kinase-phosphosite-interactions" class="md-skip">
+        <a href="#exploring-network-history-in-neko" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Build network based on kinase-phosphosite interactions
+              Exploring Network History in NeKo
             
           </span>
         </div>
@@ -648,37 +648,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Build network based on kinase-phosphosite interactions
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../5_build_phosphosite_network/" class="md-nav__link">
         
   
   
@@ -694,70 +667,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-specify-kinase-substrate-interaction-file-and-phosphosite-effect-annotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Specify kinase-substrate interaction file and phosphosite effect annotation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-add-interactions-as-a-resource-database" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Add interactions as a resource database
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-define-a-set-of-phosphosites-we-are-interested-in" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Define a set of phosphosites we are interested in
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-build-network" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Build network
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -907,10 +816,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../11_network_history/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exploring Network History in NeKo
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -926,6 +862,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-a-network-using-the-omnipath-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Create a network using the Omnipath database
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-automatic-history-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Automatic history capture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-visualising-the-history-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Visualising the history graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-working-with-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Working with branches
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-suspension-and-toggles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Suspension and toggles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pruning-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pruning history
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1338,10 +1360,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-specify-kinase-substrate-interaction-file-and-phosphosite-effect-annotation" class="md-nav__link">
+  <a href="#1-create-a-network-using-the-omnipath-database" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Specify kinase-substrate interaction file and phosphosite effect annotation
+        1. Create a network using the Omnipath database
       
     </span>
   </a>
@@ -1349,10 +1371,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-add-interactions-as-a-resource-database" class="md-nav__link">
+  <a href="#2-automatic-history-capture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Add interactions as a resource database
+        2. Automatic history capture
       
     </span>
   </a>
@@ -1360,10 +1382,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-define-a-set-of-phosphosites-we-are-interested-in" class="md-nav__link">
+  <a href="#3-visualising-the-history-graph" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Define a set of phosphosites we are interested in
+        3. Visualising the history graph
       
     </span>
   </a>
@@ -1371,10 +1393,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-build-network" class="md-nav__link">
+  <a href="#4-working-with-branches" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Build network
+        4. Working with branches
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-suspension-and-toggles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Suspension and toggles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pruning-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pruning history
       
     </span>
   </a>
@@ -1446,7 +1490,7 @@
 
 
   
-    <a href="https://github.com/sysbio-curie/Neko/edit/main/docs_mkdocs/tutorials/5_build_phosphosite_network.ipynb" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/sysbio-curie/Neko/edit/main/docs_mkdocs/tutorials/11_network_history.ipynb" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1455,7 +1499,7 @@
     
       
     
-    <a href="https://github.com/sysbio-curie/Neko/raw/main/docs_mkdocs/tutorials/5_build_phosphosite_network.ipynb" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/sysbio-curie/Neko/raw/main/docs_mkdocs/tutorials/11_network_history.ipynb" title="View source of this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
     </a>
@@ -1898,18 +1942,36 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </style>
 <!-- End of mermaid configuration --><div class="jupyter-wrapper">
 <div class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4feb78a3-acc2-455c-b206-c37b7ea47932">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1a559f45">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="build-network-based-on-kinase-phosphosite-interactions">Build network based on kinase-phosphosite interactions<a class="anchor-link" href="#build-network-based-on-kinase-phosphosite-interactions">¶</a></h1><p>This notebook provides the code to create a network based on kinase-substrate interactions and the annotated effect of phosphorylation (based on PhosphositePlus) on the activity of the substrate.</p>
+<h1 id="exploring-network-history-in-neko">Exploring Network History in NeKo<a class="anchor-link" href="#exploring-network-history-in-neko">¶</a></h1>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3c317de8">
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=917acf9c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>This notebook demonstrates the new history facilities in NeKo. You will learn how to:</p>
+<ul>
+<li>capture network states automatically while you enrich a network</li>
+<li>inspect branches and metadata associated with each state</li>
+<li>visualise the history graph as both a <code>networkx</code> object and an embedded SVG</li>
+<li>control the history recorder with context managers and global toggles</li>
+<li>prune older history entries using <code>set_max_history</code></li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=3e253976">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -1927,64 +1989,31 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="o">%%</span><span class="n">time</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">neko._visual.visualize_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkVisualizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span><span class="p">,</span> <span class="n">phosphosite</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">neko._annotations.gene_ontology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ontology</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-1">%%time
-from neko.core.network import Network
-from neko._visual.visualize_network import NetworkVisualizer
-from neko.inputs import Universe, phosphosite
-from neko._annotations.gene_ontology import Ontology
-import omnipath as op
-import pandas as pd</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>CPU times: user 3.53 s, sys: 835 ms, total: 4.37 s
-Wall time: 4.28 s
-</pre>
+<div class="clipboard-copy-txt" id="cell-1">import pandas as pd
+from IPython.display import display, HTML
+from neko.core.network import Network</div>
 </div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e41d36f1-b603-4d04-bea5-972c03764c92">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=aeced087">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="1-specify-kinase-substrate-interaction-file-and-phosphosite-effect-annotation">1. Specify kinase-substrate interaction file and phosphosite effect annotation<a class="anchor-link" href="#1-specify-kinase-substrate-interaction-file-and-phosphosite-effect-annotation">¶</a></h2><p>In this example, both files we utilize are from PhosphositePlus.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d0fd3a1c-8419-4aa7-a7bd-30f92df14c69">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="2-add-interactions-as-a-resource-database">2. Add interactions as a resource database<a class="anchor-link" href="#2-add-interactions-as-a-resource-database">¶</a></h2><p>The <em>_process_psp_interactions_</em> function parses the provided files to create an interaction database in the Omnipath format.</p>
+<h2 id="1-create-a-network-using-the-omnipath-database">1. Create a network using the Omnipath database<a class="anchor-link" href="#1-create-a-network-using-the-omnipath-database">¶</a></h2>
 </div>
 </div>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4d4cfe2f-fe7c-4764-9100-9543ac1a9a1b">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c5589026">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -2002,9 +2031,11 @@ Wall time: 4.28 s
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">phosphosite</span><span class="p">()</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">initial_nodes</span><span class="o">=</span><span class="p">[</span><span class="s2">"SRC"</span><span class="p">,</span> <span class="s2">"CDH1"</span><span class="p">,</span> <span class="s2">"TP53"</span><span class="p">],</span> <span class="n">resources</span><span class="o">=</span><span class="s2">"omnipath"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-2">resources = phosphosite()</div>
+<div class="clipboard-copy-txt" id="cell-2">net = Network(initial_nodes=["SRC", "CDH1", "TP53"], resources="omnipath")
+net.list_states()</div>
 </div>
 </div>
 </div>
@@ -2013,32 +2044,28 @@ Wall time: 4.28 s
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages/neko/inputs/_db/_misc.py:21: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
-  df[col] = df[col].replace(mappings)
-/home/mruscone/Desktop/github/Neko/test_env/lib/python3.12/site-packages/neko/inputs/_db/_misc.py:21: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
-  df[col] = df[col].replace(mappings)
-</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[{'id': 0, 'metadata': {'label': 'initial'}}]</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7fe1b7d5">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9ef99407">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="3-define-a-set-of-phosphosites-we-are-interested-in">3. Define a set of phosphosites we are interested in<a class="anchor-link" href="#3-define-a-set-of-phosphosites-we-are-interested-in">¶</a></h2>
+<h2 id="2-automatic-history-capture">2. Automatic history capture<a class="anchor-link" href="#2-automatic-history-capture">¶</a></h2><p>Every mutating API call creates a new state with metadata describing the operation.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=a3fea926-81f1-4826-b91c-3b04124de715">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=604934ad">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -2056,32 +2083,50 @@ Wall time: 4.28 s
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'AKT1S1_T246'</span><span class="p">,</span> <span class="s1">'GSK3B_S9'</span><span class="p">,</span> <span class="s1">'AKT1_S473'</span><span class="p">,</span> <span class="s1">'HSPB1_S78'</span><span class="p">,</span> <span class="s1">'HSPB1_S82'</span><span class="p">,</span> <span class="s1">'MAPK14_T180'</span><span class="p">,</span> <span class="s1">'MAPK14_Y182'</span><span class="p">,</span> <span class="s1">'MAP2K1_S218'</span><span class="p">,</span> <span class="s1">'MAP2K1_S222'</span><span class="p">,</span> <span class="s1">'RPS6KA1_S380'</span><span class="p">,</span> <span class="s1">'MTOR_S2448'</span><span class="p">,</span> <span class="s1">'JUN_S63'</span><span class="p">,</span> <span class="s1">'MAPK3_T202'</span><span class="p">,</span> <span class="s1">'MAPK3_Y204'</span><span class="p">]</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"TP63"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"FAK"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-3">genes = ['AKT1S1_T246', 'GSK3B_S9', 'AKT1_S473', 'HSPB1_S78', 'HSPB1_S82', 'MAPK14_T180', 'MAPK14_Y182', 'MAP2K1_S218', 'MAP2K1_S222', 'RPS6KA1_S380', 'MTOR_S2448', 'JUN_S63', 'MAPK3_T202', 'MAPK3_Y204']</div>
+<div class="clipboard-copy-txt" id="cell-3">net.add_node("TP63")
+net.add_node("FAK")
+net.list_states()</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[3]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[{'id': 0, 'metadata': {'label': 'initial'}},
+ {'id': 1, 'metadata': {'method': 'add_node', 'args': ['TP63'], 'kwargs': {}}},
+ {'id': 2, 'metadata': {'method': 'add_node', 'args': ['PTK2'], 'kwargs': {}}}]</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=59d3c824-ad97-43ae-9bf4-6657e7bcf72f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=625aabdc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="4-build-network">4. Build network<a class="anchor-link" href="#4-build-network">¶</a></h2>
+<p>We can compare branches or move around the history using <code>checkout</code>, <code>undo</code>, and <code>redo</code>.</p>
 </div>
 </div>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9c824c50">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bc79704a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-4">
@@ -2094,11 +2139,11 @@ Wall time: 4.28 s
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="o">%%</span><span class="n">time</span>
-<span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="n">resources</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">current</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">current_state_id</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Current state ID:"</span><span class="p">,</span> <span class="n">current</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-4">%%time
-new_net1 = Network(genes, resources=resources.interactions)</div>
+<div class="clipboard-copy-txt" id="cell-4">current = net.current_state_id
+print("Current state ID:", current)</div>
 </div>
 </div>
 </div>
@@ -2110,35 +2155,20 @@ new_net1 = Network(genes, resources=resources.interactions)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>CPU times: user 203 ms, sys: 2.08 ms, total: 205 ms
-Wall time: 205 ms
+<pre>Current state ID: 2
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=65f04b49-f5dc-4fe1-bc20-7a4094f011b3">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<div class="alert alert-info">
-<p><strong>Note</strong></p>
-<p>Neko is based on UniProt IDs. It is still possible to use databases with other IDs, but an error message will appear during the translation progress, as in the example below.</p>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9a07d77b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=62f7274d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-5">
@@ -2151,37 +2181,21 @@ Wall time: 205 ms
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="o">%%</span><span class="n">time</span>
-<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span> <span class="s1">'bfs'</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">undo</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-5">%%time
-new_net1.complete_connection(algorithm= 'bfs', maxlen=None, only_signed=True, connect_with_bias=True)</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>CPU times: user 1.09 s, sys: 368 μs, total: 1.09 s
-Wall time: 1.09 s
-</pre>
+<div class="clipboard-copy-txt" id="cell-5">net.undo()</div>
 </div>
 </div>
 </div>
 </div>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=152b9434">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1d27c579">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-6">
@@ -2194,11 +2208,9 @@ Wall time: 1.09 s
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">visualizer1</span> <span class="o">=</span> <span class="n">NetworkVisualizer</span><span class="p">(</span><span class="n">new_net1</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="s1">'effect'</span><span class="p">)</span>
-<span class="n">visualizer1</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-6">visualizer1 = NetworkVisualizer(new_net1, color_by='effect')
-visualizer1.render()</div>
+<div class="clipboard-copy-txt" id="cell-6">net.nodes</div>
 </div>
 </div>
 </div>
@@ -2207,10 +2219,2318 @@ visualizer1.render()</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedSVG jp-OutputArea-output" data-mime-type="image/svg+xml" tabindex="0">
-<img alt="No description has been provided for this image" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIKICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIEdlbmVyYXRlZCBieSBncmFwaHZpeiB2ZXJzaW9uIDIuNDMuMCAoMCkKIC0tPgo8IS0tIFRpdGxlOiAlMyBQYWdlczogMSAtLT4KPHN2ZyB3aWR0aD0iMTU5NnB0IiBoZWlnaHQ9IjExOTZwdCIKIHZpZXdCb3g9IjAuMDAgMC4wMCAxNTk2LjE0IDExOTYuMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgo8ZyBpZD0iZ3JhcGgwIiBjbGFzcz0iZ3JhcGgiIHRyYW5zZm9ybT0ic2NhbGUoMSAxKSByb3RhdGUoMCkgdHJhbnNsYXRlKDQgMTE5MikiPgo8dGl0bGU+JTM8L3RpdGxlPgo8cG9seWdvbiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ0cmFuc3BhcmVudCIgcG9pbnRzPSItNCw0IC00LC0xMTkyIDE1OTIuMTQsLTExOTIgMTU5Mi4xNCw0IC00LDQiLz4KPCEtLSBHU0szQl9TOSAtLT4KPGcgaWQ9Im5vZGUxIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5HU0szQl9TOTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjE1MjcuNjkiIGN5PSItMTE3MCIgcng9IjYwLjM5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTUyNy42OSIgeT0iLTExNjYuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5HU0szQl9TOTwvdGV4dD4KPC9nPgo8IS0tIEdTSzNCIC0tPgo8ZyBpZD0ibm9kZTIiIGNsYXNzPSJub2RlIj4KPHRpdGxlPkdTSzNCPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTMyMC42OSIgY3k9Ii0xMDk4IiByeD0iNDQuMzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMzIwLjY5IiB5PSItMTA5NC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkdTSzNCPC90ZXh0Pgo8L2c+CjwhLS0gR1NLM0JfUzkmIzQ1OyZndDtHU0szQiAtLT4KPGcgaWQ9ImVkZ2UxIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5HU0szQl9TOSYjNDU7Jmd0O0dTSzNCPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZWQiIGQ9Ik0xNDg5LjI0LC0xMTU2QzE0NTEuODcsLTExNDMuMzYgMTM5NS40NywtMTEyNC4yOSAxMzU4LjM2LC0xMTExLjc0Ii8+Cjxwb2x5Z29uIGZpbGw9InJlZCIgc3Ryb2tlPSJyZWQiIHBvaW50cz0iMTM1Mi44MywtMTExNS4xNSAxMzU2LjAzLC0xMTA1LjY3IDEzNTcuOTMsLTExMDYuMzEgMTM1NC43MywtMTExNS43OSAxMzUyLjgzLC0xMTE1LjE1Ii8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxMzUzLjQ5LC0xMTEwLjA5IDEzNTguMjIsLTExMTEuNjkgIi8+CjwvZz4KPCEtLSBUQksxX1MxNzIgLS0+CjxnIGlkPSJub2RlMyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+VEJLMV9TMTcyPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iNjQxLjY5IiBjeT0iLTEwMjYiIHJ4PSI2NC4xOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjY0MS42OSIgeT0iLTEwMjIuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5UQksxX1MxNzI8L3RleHQ+CjwvZz4KPCEtLSBHU0szQiYjNDU7Jmd0O1RCSzFfUzE3MiAtLT4KPGcgaWQ9ImVkZ2UyIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5HU0szQiYjNDU7Jmd0O1RCSzFfUzE3MjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMjc4LjQ4LC0xMDkyLjY1QzExNjQuNzgsLTEwODAuOTMgODUxLjI4LC0xMDQ4LjYxIDcxMS4wNiwtMTAzNC4xNSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI3MTEuMTcsLTEwMzAuNjQgNzAwLjg2LC0xMDMzLjEgNzEwLjQ1LC0xMDM3LjYxIDcxMS4xNywtMTAzMC42NCIvPgo8L2c+CjwhLS0gU1JDX1M1MSAtLT4KPGcgaWQ9Im5vZGUzMCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+U1JDX1M1MTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjEwNDkuNjkiIGN5PSItMTAyNiIgcng9IjUzLjA5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTA0OS42OSIgeT0iLTEwMjIuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5TUkNfUzUxPC90ZXh0Pgo8L2c+CjwhLS0gR1NLM0ImIzQ1OyZndDtTUkNfUzUxIC0tPgo8ZyBpZD0iZWRnZTMxIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5HU0szQiYjNDU7Jmd0O1NSQ19TNTE8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9InB1cnBsZSIgZD0iTTEyODQuNDMsLTEwODcuNjNDMTIzNy42MywtMTA3NS41NCAxMTU1Ljg4LC0xMDU0LjQzIDExMDIuMjcsLTEwNDAuNTgiLz4KPHBvbHlnb24gZmlsbD0icHVycGxlIiBzdHJva2U9InB1cnBsZSIgcG9pbnRzPSIxMTAyLjIzLC0xMDQwLjU3IDEwOTUuNDIsLTEwNDIuOTQgMTA5MC42MSwtMTAzNy41NyAxMDk3LjQyLC0xMDM1LjIgMTEwMi4yMywtMTA0MC41NyIvPgo8L2c+CjwhLS0gTUFQM0sxMV9TNzg5IC0tPgo8ZyBpZD0ibm9kZTQwIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVAzSzExX1M3ODk8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMzc2LjY5IiBjeT0iLTEwMjYiIHJ4PSI4NS4yOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzNzYuNjkiIHk9Ii0xMDIyLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQM0sxMV9TNzg5PC90ZXh0Pgo8L2c+CjwhLS0gR1NLM0ImIzQ1OyZndDtNQVAzSzExX1M3ODkgLS0+CjxnIGlkPSJlZGdlNDEiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPkdTSzNCJiM0NTsmZ3Q7TUFQM0sxMV9TNzg5PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEzMzMuNjgsLTEwODAuNzZDMTM0MC40OCwtMTA3Mi4yNyAxMzQ4Ljk1LC0xMDYxLjY4IDEzNTYuNTgsLTEwNTIuMTUiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTM1OS40OCwtMTA1NC4xMiAxMzYzLC0xMDQ0LjEyIDEzNTQuMDIsLTEwNDkuNzUgMTM1OS40OCwtMTA1NC4xMiIvPgo8L2c+CjwhLS0gVEJLMSAtLT4KPGcgaWQ9Im5vZGU0IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5UQksxPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMjA2LjY5IiBjeT0iLTgxMCIgcng9IjM2LjI5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjA2LjY5IiB5PSItODA2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+VEJLMTwvdGV4dD4KPC9nPgo8IS0tIFRCSzFfUzE3MiYjNDU7Jmd0O1RCSzEgLS0+CjxnIGlkPSJlZGdlMyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+VEJLMV9TMTcyJiM0NTsmZ3Q7VEJLMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik02MTEuMTEsLTEwMDkuOTVDNTMyLjUsLTk3MS4yOCAzMjMuODEsLTg2OC42MiAyNDEuMTMsLTgyNy45NCIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIyNDIuMjEsLTgyNC41NyAyMzEuNjksLTgyMy4zIDIzOS4xMiwtODMwLjg1IDI0Mi4yMSwtODI0LjU3Ii8+CjwvZz4KPCEtLSBBS1QxX1QzMDggLS0+CjxnIGlkPSJub2RlNSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+QUtUMV9UMzA4PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iNjMuNjkiIGN5PSItMzc4IiByeD0iNjMuODkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2My42OSIgeT0iLTM3NC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkFLVDFfVDMwODwvdGV4dD4KPC9nPgo8IS0tIFRCSzEmIzQ1OyZndDtBS1QxX1QzMDggLS0+CjxnIGlkPSJlZGdlNCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+VEJLMSYjNDU7Jmd0O0FLVDFfVDMwODwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xODQuMzMsLTc5NS41MkMxNTAuNjIsLTc3My4zIDkwLjY5LC03MjUuNTcgOTAuNjksLTY2NyA5MC42OSwtNjY3IDkwLjY5LC02NjcgOTAuNjksLTUyMSA5MC42OSwtNDgwLjUgNzkuOTYsLTQzNC42MyA3Mi4wMywtNDA2LjI2Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9Ijc1LjI5LC00MDQuOTMgNjkuMTYsLTM5Ni4yOSA2OC41NywtNDA2Ljg3IDc1LjI5LC00MDQuOTMiLz4KPC9nPgo8IS0tIEFLVDFfUzQ3MyAtLT4KPGcgaWQ9Im5vZGU4IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5BS1QxX1M0NzM8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIyNTIuNjkiIGN5PSItMTYyIiByeD0iNjMuODkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIyNTIuNjkiIHk9Ii0xNTguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5BS1QxX1M0NzM8L3RleHQ+CjwvZz4KPCEtLSBUQksxJiM0NTsmZ3Q7QUtUMV9TNDczIC0tPgo8ZyBpZD0iZWRnZTMwIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5UQksxJiM0NTsmZ3Q7QUtUMV9TNDczPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJwdXJwbGUiIGQ9Ik0xOTQuODEsLTc5Mi41NkMxODguMDEsLTc4Mi40NiAxNzkuODQsLTc2OC45OSAxNzQuNjksLTc1NiAxNTkuODEsLTcxOC4zOSAxNTUuNjksLTcwNy40NSAxNTUuNjksLTY2NyAxNTUuNjksLTY2NyAxNTUuNjksLTY2NyAxNTUuNjksLTQ0OSAxNTUuNjksLTM1NS42MyAyMDAuMjksLTM0MC45NSAyMjguNjksLTI1MiAyMzUuMDQsLTIzMi4xMyAyNDEuMTUsLTIwOS40MiAyNDUuNjEsLTE5MS45MSIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9IjI0NS42MywtMTkxLjg0IDI0My4yMSwtMTg1LjA0IDI0OC41NSwtMTgwLjIgMjUwLjk3LC0xODYuOTkgMjQ1LjYzLC0xOTEuODQiLz4KPC9nPgo8IS0tIE1UT1JfUzIxNTkgLS0+CjxnIGlkPSJub2RlNDgiIGNsYXNzPSJub2RlIj4KPHRpdGxlPk1UT1JfUzIxNTk8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIyNTcuNjkiIGN5PSItNzM4IiByeD0iNzQuMTkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIyNTcuNjkiIHk9Ii03MzQuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NVE9SX1MyMTU5PC90ZXh0Pgo8L2c+CjwhLS0gVEJLMSYjNDU7Jmd0O01UT1JfUzIxNTkgLS0+CjxnIGlkPSJlZGdlNTUiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlRCSzEmIzQ1OyZndDtNVE9SX1MyMTU5PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTIxOC41MiwtNzkyLjc2QzIyNC42NSwtNzg0LjM1IDIzMi4yNywtNzczLjg5IDIzOS4xNiwtNzY0LjQ0Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjI0Mi4xNiwtNzY2LjI3IDI0NS4yMiwtNzU2LjEyIDIzNi41LC03NjIuMTUgMjQyLjE2LC03NjYuMjciLz4KPC9nPgo8IS0tIEFLVDEgLS0+CjxnIGlkPSJub2RlNiIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+QUtUMTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjI1Mi42OSIgY3k9Ii05MCIgcng9IjM2IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjUyLjY5IiB5PSItODYuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5BS1QxPC90ZXh0Pgo8L2c+CjwhLS0gQUtUMV9UMzA4JiM0NTsmZ3Q7QUtUMSAtLT4KPGcgaWQ9ImVkZ2U1IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5BS1QxX1QzMDgmIzQ1OyZndDtBS1QxPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTYxLjk5LC0zNTkuOTFDNTkuNzEsLTMyOS4yNSA1OC40MSwtMjYzLjY0IDgyLjY5LC0yMTYgMTEwLjU3LC0xNjEuMzEgMTc0Ljc5LC0xMjQuNjYgMjE1LjgzLC0xMDUuODciLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMjE3LjUxLC0xMDguOTUgMjI1LjIyLC0xMDEuNjkgMjE0LjY2LC0xMDIuNTUgMjE3LjUxLC0xMDguOTUiLz4KPC9nPgo8IS0tIEFLVDEmIzQ1OyZndDtHU0szQl9TOSAtLT4KPGcgaWQ9ImVkZ2UyOSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+QUtUMSYjNDU7Jmd0O0dTSzNCX1M5PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZWQiIGQ9Ik0yODguNjcsLTkwLjg3QzQ1My4xMSwtOTAuNTYgMTEzMy45NywtOTIuNDcgMTMzOS42OSwtMTQ0IDE0MjkuMzcsLTE2Ni40NiAxNTI3LjY5LC0xNDAuNTUgMTUyNy42OSwtMjMzIDE1MjcuNjksLTEwMjcgMTUyNy42OSwtMTAyNyAxNTI3LjY5LC0xMDI3IDE1MjcuNjksLTEwNjkuMjkgMTUyNy42OSwtMTExOC42OCAxNTI3LjY5LC0xMTQ2LjY1Ii8+Cjxwb2x5Z29uIGZpbGw9InJlZCIgc3Ryb2tlPSJyZWQiIHBvaW50cz0iMTUzMi42OSwtMTE1MC45NSAxNTIyLjY5LC0xMTUwLjk1IDE1MjIuNjksLTExNDguOTUgMTUzMi42OSwtMTE0OC45NSAxNTMyLjY5LC0xMTUwLjk1Ii8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxNTI3LjY5LC0xMTUxLjk1IDE1MjcuNjksLTExNDYuOTUgIi8+CjwvZz4KPCEtLSBBS1QxUzFfVDI0NiAtLT4KPGcgaWQ9Im5vZGU3IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5BS1QxUzFfVDI0NjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjI1Mi42OSIgY3k9Ii0xOCIgcng9Ijc1LjI5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjUyLjY5IiB5PSItMTQuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5BS1QxUzFfVDI0NjwvdGV4dD4KPC9nPgo8IS0tIEFLVDEmIzQ1OyZndDtBS1QxUzFfVDI0NiAtLT4KPGcgaWQ9ImVkZ2U2IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5BS1QxJiM0NTsmZ3Q7QUtUMVMxX1QyNDY8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9InB1cnBsZSIgZD0iTTI1Mi42OSwtNzEuN0MyNTIuNjksLTY0LjU4IDI1Mi42OSwtNTYuMTMgMjUyLjY5LC00OC4xMSIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9IjI1Mi42OSwtNDguMSAyNDguNjksLTQyLjEgMjUyLjY5LC0zNi4xIDI1Ni42OSwtNDIuMSAyNTIuNjksLTQ4LjEiLz4KPC9nPgo8IS0tIEFLVDFfUzQ3MyYjNDU7Jmd0O0FLVDEgLS0+CjxnIGlkPSJlZGdlNyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+QUtUMV9TNDczJiM0NTsmZ3Q7QUtUMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0icHVycGxlIiBkPSJNMjUyLjY5LC0xNDMuN0MyNTIuNjksLTEzNi41OCAyNTIuNjksLTEyOC4xMyAyNTIuNjksLTEyMC4xMSIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9IjI1Mi42OSwtMTIwLjEgMjQ4LjY5LC0xMTQuMSAyNTIuNjksLTEwOC4xIDI1Ni42OSwtMTE0LjEgMjUyLjY5LC0xMjAuMSIvPgo8L2c+CjwhLS0gTUFQSzE0X1QxODAgLS0+CjxnIGlkPSJub2RlOSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQSzE0X1QxODA8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMzgyLjY5IiBjeT0iLTQ1MCIgcng9Ijc5LjA5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTM4Mi42OSIgeT0iLTQ0Ni4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPk1BUEsxNF9UMTgwPC90ZXh0Pgo8L2c+CjwhLS0gTUFQSzE0IC0tPgo8ZyBpZD0ibm9kZTEwIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVBLMTQ8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMTMwLjY5IiBjeT0iLTM3OCIgcng9IjUxLjE5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTEzMC42OSIgeT0iLTM3NC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPk1BUEsxNDwvdGV4dD4KPC9nPgo8IS0tIE1BUEsxNF9UMTgwJiM0NTsmZ3Q7TUFQSzE0IC0tPgo8ZyBpZD0iZWRnZTgiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEsxNF9UMTgwJiM0NTsmZ3Q7TUFQSzE0PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEzMzQuNywtNDM1LjY3QzEyOTAuMjMsLTQyMy4zMSAxMjI0LjM3LC00MDUuMDIgMTE3OS42MSwtMzkyLjU5Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjExODAuNCwtMzg5LjE3IDExNjkuODMsLTM4OS44NyAxMTc4LjUzLC0zOTUuOTIgMTE4MC40LC0zODkuMTciLz4KPC9nPgo8IS0tIE1BUEtBUEsyX1MyNzIgLS0+CjxnIGlkPSJub2RlMTEiIGNsYXNzPSJub2RlIj4KPHRpdGxlPk1BUEtBUEsyX1MyNzI8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI1NTkuNjkiIGN5PSItMzA2IiByeD0iOTIuODgiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1NTkuNjkiIHk9Ii0zMDIuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVBLQVBLMl9TMjcyPC90ZXh0Pgo8L2c+CjwhLS0gTUFQSzE0JiM0NTsmZ3Q7TUFQS0FQSzJfUzI3MiAtLT4KPGcgaWQ9ImVkZ2U5IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5NQVBLMTQmIzQ1OyZndDtNQVBLQVBLMl9TMjcyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEwODIuNjUsLTM3MS42Qzk2NS4xNSwtMzU4LjQgNjcyLjA3LC0zMjUuNDUgNjYxLjY5LC0zMjQgNjUzLjQ1LC0zMjIuODUgNjQ0Ljg1LC0zMjEuNTYgNjM2LjI5LC0zMjAuMjEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iNjM2LjcxLC0zMTYuNzMgNjI2LjI4LC0zMTguNjIgNjM1LjYsLTMyMy42NSA2MzYuNzEsLTMxNi43MyIvPgo8L2c+CjwhLS0gR1NLM0JfVDM5MCAtLT4KPGcgaWQ9Im5vZGU1OCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+R1NLM0JfVDM5MDwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExMzkuNjkiIGN5PSItMzA2IiByeD0iNzEuNDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTM5LjY5IiB5PSItMzAyLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+R1NLM0JfVDM5MDwvdGV4dD4KPC9nPgo8IS0tIE1BUEsxNCYjNDU7Jmd0O0dTSzNCX1QzOTAgLS0+CjxnIGlkPSJlZGdlNzIiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEsxNCYjNDU7Jmd0O0dTSzNCX1QzOTA8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTEzMi45MiwtMzU5LjdDMTEzMy45MSwtMzUxLjk4IDExMzUuMSwtMzQyLjcxIDExMzYuMjEsLTMzNC4xMSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMTM5LjY5LC0zMzQuNDcgMTEzNy41LC0zMjQuMSAxMTMyLjc1LC0zMzMuNTggMTEzOS42OSwtMzM0LjQ3Ii8+CjwvZz4KPCEtLSBNQVBLQVBLMiAtLT4KPGcgaWQ9Im5vZGUxMiIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQS0FQSzI8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI1NTkuNjkiIGN5PSItMjM0IiByeD0iNjQuMTkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1NTkuNjkiIHk9Ii0yMzAuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVBLQVBLMjwvdGV4dD4KPC9nPgo8IS0tIE1BUEtBUEsyX1MyNzImIzQ1OyZndDtNQVBLQVBLMiAtLT4KPGcgaWQ9ImVkZ2UxMCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQS0FQSzJfUzI3MiYjNDU7Jmd0O01BUEtBUEsyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTU1OS42OSwtMjg3LjdDNTU5LjY5LC0yNzkuOTggNTU5LjY5LC0yNzAuNzEgNTU5LjY5LC0yNjIuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iNTYzLjE5LC0yNjIuMSA1NTkuNjksLTI1Mi4xIDU1Ni4xOSwtMjYyLjEgNTYzLjE5LC0yNjIuMSIvPgo8L2c+CjwhLS0gTUFQS0FQSzImIzQ1OyZndDtBS1QxX1M0NzMgLS0+CjxnIGlkPSJlZGdlMTEiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEtBUEsyJiM0NTsmZ3Q7QUtUMV9TNDczPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJwdXJwbGUiIGQ9Ik01MTEuMzksLTIyMS45OUM0NTcuNjMsLTIwOS43MyAzNzAuNzEsLTE4OS45MSAzMTIuNjUsLTE3Ni42NyIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9IjMxMi40MiwtMTc2LjYyIDMwNS42OCwtMTc5LjE4IDMwMC43MiwtMTczLjk1IDMwNy40NiwtMTcxLjM4IDMxMi40MiwtMTc2LjYyIi8+CjwvZz4KPCEtLSBSUFM2S0ExX1MzODAgLS0+CjxnIGlkPSJub2RlMTkiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlJQUzZLQTFfUzM4MDwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjEyNDcuNjkiIGN5PSItMTYyIiByeD0iODMuMzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjQ3LjY5IiB5PSItMTU4LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+UlBTNktBMV9TMzgwPC90ZXh0Pgo8L2c+CjwhLS0gTUFQS0FQSzImIzQ1OyZndDtSUFM2S0ExX1MzODAgLS0+CjxnIGlkPSJlZGdlNzYiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEtBUEsyJiM0NTsmZ3Q7UlBTNktBMV9TMzgwPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTYxOC45NSwtMjI2Ljk3Qzc0MS40NSwtMjE0LjUxIDEwMjIuOTEsLTE4NS44NyAxMTYzLjk0LC0xNzEuNTIiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTE2NC42NywtMTc0Ljk3IDExNzQuMjYsLTE3MC40NyAxMTYzLjk2LC0xNjggMTE2NC42NywtMTc0Ljk3Ii8+CjwvZz4KPCEtLSBIU1BCMV9TNzggLS0+CjxnIGlkPSJub2RlMzYiIGNsYXNzPSJub2RlIj4KPHRpdGxlPkhTUEIxX1M3ODwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjYyMi42OSIgY3k9Ii0xNjIiIHJ4PSI2Ni4wOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjYyMi42OSIgeT0iLTE1OC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkhTUEIxX1M3ODwvdGV4dD4KPC9nPgo8IS0tIE1BUEtBUEsyJiM0NTsmZ3Q7SFNQQjFfUzc4IC0tPgo8ZyBpZD0iZWRnZTYyIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5NQVBLQVBLMiYjNDU7Jmd0O0hTUEIxX1M3ODwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik01NzQuNjIsLTIxNi40MUM1ODIuMzYsLTIwNy44MiA1OTEuOTUsLTE5Ny4xNiA2MDAuNTMsLTE4Ny42MyIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI2MDMuMzUsLTE4OS43MyA2MDcuNDMsLTE3OS45NiA1OTguMTQsLTE4NS4wNSA2MDMuMzUsLTE4OS43MyIvPgo8L2c+CjwhLS0gSFNQQjFfUzgyIC0tPgo8ZyBpZD0ibm9kZTM5IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5IU1BCMV9TODI8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI0NjguNjkiIGN5PSItMTYyIiByeD0iNjYuMDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0NjguNjkiIHk9Ii0xNTguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5IU1BCMV9TODI8L3RleHQ+CjwvZz4KPCEtLSBNQVBLQVBLMiYjNDU7Jmd0O0hTUEIxX1M4MiAtLT4KPGcgaWQ9ImVkZ2U3MSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQS0FQSzImIzQ1OyZndDtIU1BCMV9TODI8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNNTM4LjU5LC0yMTYuNzZDNTI2LjQxLC0yMDcuNCA1MTAuOTMsLTE5NS40OSA0OTcuNjMsLTE4NS4yNiIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI0OTkuNzUsLTE4Mi40NyA0ODkuNjksLTE3OS4xNSA0OTUuNDgsLTE4OC4wMiA0OTkuNzUsLTE4Mi40NyIvPgo8L2c+CjwhLS0gTUFQSzE0X1kxODIgLS0+CjxnIGlkPSJub2RlMTMiIGNsYXNzPSJub2RlIj4KPHRpdGxlPk1BUEsxNF9ZMTgyPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTMyMi42OSIgY3k9Ii01MjIiIHJ4PSI3OS4wOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzMjIuNjkiIHk9Ii01MTguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVBLMTRfWTE4MjwvdGV4dD4KPC9nPgo8IS0tIE1BUEsxNF9ZMTgyJiM0NTsmZ3Q7TUFQSzE0IC0tPgo8ZyBpZD0iZWRnZTEyIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5NQVBLMTRfWTE4MiYjNDU7Jmd0O01BUEsxNDwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMzA1LjAzLC01MDQuMjlDMTI4NC45MiwtNDg1LjY1IDEyNTAuNjksLTQ1NS4wOCAxMjE4LjY5LC00MzIgMTIwMS45OCwtNDE5Ljk0IDExODIuNDEsLTQwNy45NiAxMTY1Ljk4LC0zOTguNDYiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTE2Ny42MywtMzk1LjM3IDExNTcuMjIsLTM5My40NCAxMTY0LjE2LC00MDEuNDUgMTE2Ny42MywtMzk1LjM3Ii8+CjwvZz4KPCEtLSBNQVAySzFfUzIxOCAtLT4KPGcgaWQ9Im5vZGUxNCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQMksxX1MyMTg8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI4MTYuNjkiIGN5PSItNzM4IiByeD0iNzkuMDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI4MTYuNjkiIHk9Ii03MzQuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVAySzFfUzIxODwvdGV4dD4KPC9nPgo8IS0tIE1BUDJLMSAtLT4KPGcgaWQ9Im5vZGUxNSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQMksxPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iODA3LjY5IiBjeT0iLTY2NiIgcng9IjUxLjE5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iODA3LjY5IiB5PSItNjYyLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQMksxPC90ZXh0Pgo8L2c+CjwhLS0gTUFQMksxX1MyMTgmIzQ1OyZndDtNQVAySzEgLS0+CjxnIGlkPSJlZGdlMTMiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUDJLMV9TMjE4JiM0NTsmZ3Q7TUFQMksxPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTgxNC40NywtNzE5LjdDODEzLjQ4LC03MTEuOTggODEyLjI5LC03MDIuNzEgODExLjE4LC02OTQuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iODE0LjY0LC02OTMuNTggODA5Ljg5LC02ODQuMSA4MDcuNywtNjk0LjQ3IDgxNC42NCwtNjkzLjU4Ii8+CjwvZz4KPCEtLSBNQVBLMV9UMTg1IC0tPgo8ZyBpZD0ibm9kZTE2IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVBLMV9UMTg1PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iNjE5LjY5IiBjeT0iLTUyMiIgcng9IjczLjM5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjE5LjY5IiB5PSItNTE4LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzFfVDE4NTwvdGV4dD4KPC9nPgo8IS0tIE1BUDJLMSYjNDU7Jmd0O01BUEsxX1QxODUgLS0+CjxnIGlkPSJlZGdlMTQiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUDJLMSYjNDU7Jmd0O01BUEsxX1QxODU8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNNzg2Ljg2LC02NDkuMjZDNzUzLjQ0LC02MjQuMDIgNjg3LjczLC01NzQuMzkgNjQ5LjQsLTU0NS40NCIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI2NTEuMjksLTU0Mi40OCA2NDEuMiwtNTM5LjI1IDY0Ny4wNywtNTQ4LjA3IDY1MS4yOSwtNTQyLjQ4Ii8+CjwvZz4KPCEtLSBHU0szQl9ZMjE2IC0tPgo8ZyBpZD0ibm9kZTU5IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5HU0szQl9ZMjE2PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iODMxLjY5IiBjeT0iLTU5NCIgcng9IjcxLjQ5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iODMxLjY5IiB5PSItNTkwLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+R1NLM0JfWTIxNjwvdGV4dD4KPC9nPgo8IS0tIE1BUDJLMSYjNDU7Jmd0O0dTSzNCX1kyMTYgLS0+CjxnIGlkPSJlZGdlNzQiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUDJLMSYjNDU7Jmd0O0dTSzNCX1kyMTY8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNODEzLjUsLTY0OC4wNUM4MTYuMjEsLTY0MC4xOCA4MTkuNDgsLTYzMC42MiA4MjIuNTEsLTYyMS43OSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI4MjUuODQsLTYyMi44NyA4MjUuNzcsLTYxMi4yOCA4MTkuMjIsLTYyMC42IDgyNS44NCwtNjIyLjg3Ii8+CjwvZz4KPCEtLSBNQVBLMSAtLT4KPGcgaWQ9Im5vZGUxNyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQSzE8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI1NTkuNjkiIGN5PSItMzc4IiByeD0iNDUuNDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1NTkuNjkiIHk9Ii0zNzQuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVBLMTwvdGV4dD4KPC9nPgo8IS0tIE1BUEsxX1QxODUmIzQ1OyZndDtNQVBLMSAtLT4KPGcgaWQ9ImVkZ2UxNSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzFfVDE4NSYjNDU7Jmd0O01BUEsxPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTYxMi40NiwtNTAzLjg3QzYwMi4xNCwtNDc5LjQ2IDU4My4xMSwtNDM0LjQzIDU3MC45NSwtNDA1LjY0Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjU3NC4wNywtNDA0LjA0IDU2Ni45NiwtMzk2LjE5IDU2Ny42MywtNDA2Ljc2IDU3NC4wNywtNDA0LjA0Ii8+CjwvZz4KPCEtLSBNQVBLMSYjNDU7Jmd0O01BUEtBUEsyX1MyNzIgLS0+CjxnIGlkPSJlZGdlMTYiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEsxJiM0NTsmZ3Q7TUFQS0FQSzJfUzI3MjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik01NTkuNjksLTM1OS43QzU1OS42OSwtMzUxLjk4IDU1OS42OSwtMzQyLjcxIDU1OS42OSwtMzM0LjExIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjU2My4xOSwtMzM0LjEgNTU5LjY5LC0zMjQuMSA1NTYuMTksLTMzNC4xIDU2My4xOSwtMzM0LjEiLz4KPC9nPgo8IS0tIE1BUDJLMV9TMjIyIC0tPgo8ZyBpZD0ibm9kZTE4IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVAySzFfUzIyMjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjYzOS42OSIgY3k9Ii03MzgiIHJ4PSI3OS4wOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjYzOS42OSIgeT0iLTczNC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPk1BUDJLMV9TMjIyPC90ZXh0Pgo8L2c+CjwhLS0gTUFQMksxX1MyMjImIzQ1OyZndDtNQVAySzEgLS0+CjxnIGlkPSJlZGdlMTciIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUDJLMV9TMjIyJiM0NTsmZ3Q7TUFQMksxPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTY3Ni4xNSwtNzIxLjgxQzcwMi43NCwtNzEwLjczIDczOC44LC02OTUuNzEgNzY2LjQ0LC02ODQuMTkiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iNzY3Ljk2LC02ODcuMzUgNzc1Ljg0LC02ODAuMjcgNzY1LjI2LC02ODAuODkgNzY3Ljk2LC02ODcuMzUiLz4KPC9nPgo8IS0tIFJQUzZLQTEgLS0+CjxnIGlkPSJub2RlMjAiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlJQUzZLQTE8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxNDA2LjY5IiBjeT0iLTkwIiByeD0iNTQuNjkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxNDA2LjY5IiB5PSItODYuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5SUFM2S0ExPC90ZXh0Pgo8L2c+CjwhLS0gUlBTNktBMV9TMzgwJiM0NTsmZ3Q7UlBTNktBMSAtLT4KPGcgaWQ9ImVkZ2UxOCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UlBTNktBMV9TMzgwJiM0NTsmZ3Q7UlBTNktBMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMjgyLjU5LC0xNDUuNjRDMTMwNy4yNiwtMTM0Ljc4IDEzNDAuNCwtMTIwLjE5IDEzNjYuMjMsLTEwOC44MiIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMzY3LjY0LC0xMTIuMDIgMTM3NS4zOCwtMTA0Ljc4IDEzNjQuODIsLTEwNS42MSAxMzY3LjY0LC0xMTIuMDIiLz4KPC9nPgo8IS0tIFJQUzZLQTEmIzQ1OyZndDtHU0szQl9TOSAtLT4KPGcgaWQ9ImVkZ2UxOSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UlBTNktBMSYjNDU7Jmd0O0dTSzNCX1M5PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZWQiIGQ9Ik0xNDU0Ljc3LC05OC42N0MxNDgzLjgsLTEwNS43MiAxNTE5LjM2LC0xMTkuMDUgMTU0MS42OSwtMTQ0IDE1NjkuMDIsLTE3NC41MyAxNTY1LjY5LC0xOTIuMDMgMTU2NS42OSwtMjMzIDE1NjUuNjksLTEwMjcgMTU2NS42OSwtMTAyNyAxNTY1LjY5LC0xMDI3IDE1NjUuNjksLTEwNzAuNzMgMTU0OC42NywtMTExOS41MyAxNTM3LjQxLC0xMTQ3LjAzIi8+Cjxwb2x5Z29uIGZpbGw9InJlZCIgc3Ryb2tlPSJyZWQiIHBvaW50cz0iMTU0MC4zOCwtMTE1Mi45IDE1MzEuMTUsLTExNDkuMDYgMTUzMS45MiwtMTE0Ny4yMiAxNTQxLjE1LC0xMTUxLjA2IDE1NDAuMzgsLTExNTIuOSIvPgo8cG9seWxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZWQiIHBvaW50cz0iMTUzNS4zOCwtMTE1MS45MSAxNTM3LjMsLTExNDcuMjkgIi8+CjwvZz4KPCEtLSBNVE9SX1MyNDQ4IC0tPgo8ZyBpZD0ibm9kZTIxIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NVE9SX1MyNDQ4PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMjk1LjY5IiBjeT0iLTU5NCIgcng9Ijc0LjE5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjk1LjY5IiB5PSItNTkwLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TVRPUl9TMjQ0ODwvdGV4dD4KPC9nPgo8IS0tIE1UT1IgLS0+CjxnIGlkPSJub2RlMjIiIGNsYXNzPSJub2RlIj4KPHRpdGxlPk1UT1I8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIyOTUuNjkiIGN5PSItNjY2IiByeD0iNDAuMDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIyOTUuNjkiIHk9Ii02NjIuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NVE9SPC90ZXh0Pgo8L2c+CjwhLS0gTVRPUl9TMjQ0OCYjNDU7Jmd0O01UT1IgLS0+CjxnIGlkPSJlZGdlMjAiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1UT1JfUzI0NDgmIzQ1OyZndDtNVE9SPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTMwMS42MSwtNjEyLjI4QzMwMi40MSwtNjIwLjAzIDMwMi42MywtNjI5LjM2IDMwMi4yOCwtNjM4LjAxIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjI5OC43OSwtNjM3LjgzIDMwMS41NywtNjQ4LjA1IDMwNS43NywtNjM4LjMzIDI5OC43OSwtNjM3LjgzIi8+CjwvZz4KPCEtLSBNVE9SJiM0NTsmZ3Q7TVRPUl9TMjQ0OCAtLT4KPGcgaWQ9ImVkZ2U1NyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TVRPUiYjNDU7Jmd0O01UT1JfUzI0NDg8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMjg5LjgyLC02NDguMDVDMjg5LC02NDAuMzUgMjg4Ljc2LC02MzEuMDMgMjg5LjA5LC02MjIuMzYiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMjkyLjU5LC02MjIuNDkgMjg5Ljc4LC02MTIuMjggMjg1LjYxLC02MjIuMDEgMjkyLjU5LC02MjIuNDkiLz4KPC9nPgo8IS0tIEFLVDFfVDQ1MCAtLT4KPGcgaWQ9Im5vZGUyMyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+QUtUMV9UNDUwPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTU1LjY5IiBjeT0iLTIzNCIgcng9IjYzLjg5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTU1LjY5IiB5PSItMjMwLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+QUtUMV9UNDUwPC90ZXh0Pgo8L2c+CjwhLS0gTVRPUiYjNDU7Jmd0O0FLVDFfVDQ1MCAtLT4KPGcgaWQ9ImVkZ2UyMSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TVRPUiYjNDU7Jmd0O0FLVDFfVDQ1MDwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0icHVycGxlIiBkPSJNMjY2LjQxLC02NTMuMzhDMjQ4LjIxLC02NDQuNjcgMjI1Ljg1LC02MzAuOTcgMjEyLjY5LC02MTIgMTg5LjY0LC01NzguNzYgMTkzLjY5LC01NjMuNDUgMTkzLjY5LC01MjMgMTkzLjY5LC01MjMgMTkzLjY5LC01MjMgMTkzLjY5LC0zNzcgMTkzLjY5LC0zMzYuNTQgMTc5LjEyLC0yOTEuNzMgMTY4LjAyLC0yNjMuNDgiLz4KPHBvbHlnb24gZmlsbD0icHVycGxlIiBzdHJva2U9InB1cnBsZSIgcG9pbnRzPSIxNjcuOTEsLTI2My4yMSAxNjEuOTQsLTI1OS4xNiAxNjMuMzgsLTI1Mi4wOSAxNjkuMzUsLTI1Ni4xNCAxNjcuOTEsLTI2My4yMSIvPgo8L2c+CjwhLS0gU0dLMV9TNDIyIC0tPgo8ZyBpZD0ibm9kZTUyIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5TR0sxX1M0MjI8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI0OTEuNjkiIGN5PSItNTk0IiByeD0iNjUuNzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0OTEuNjkiIHk9Ii01OTAuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5TR0sxX1M0MjI8L3RleHQ+CjwvZz4KPCEtLSBNVE9SJiM0NTsmZ3Q7U0dLMV9TNDIyIC0tPgo8ZyBpZD0iZWRnZTYzIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5NVE9SJiM0NTsmZ3Q7U0dLMV9TNDIyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTMyNi4zMiwtNjU0LjA2QzM1Ny43NSwtNjQyLjg0IDQwNy4xLC02MjUuMjEgNDQzLjcyLC02MTIuMTQiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iNDQ0Ljk2LC02MTUuNDEgNDUzLjIsLTYwOC43NSA0NDIuNjEsLTYwOC44MSA0NDQuOTYsLTYxNS40MSIvPgo8L2c+CjwhLS0gQUtUMV9UNDUwJiM0NTsmZ3Q7QUtUMSAtLT4KPGcgaWQ9ImVkZ2UyMiIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+QUtUMV9UNDUwJiM0NTsmZ3Q7QUtUMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0icHVycGxlIiBkPSJNMTU2LjkyLC0yMTUuODVDMTU5LjAxLC0xOTYuODEgMTY0LjYzLC0xNjUuODggMTc5LjY5LC0xNDQgMTg5LjMsLTEzMC4wNiAyMDMuODEsLTExOC40NCAyMTcuMzcsLTEwOS42NyIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9IjIxNy42NywtMTA5LjQ4IDIyMC43MiwtMTAyLjk1IDIyNy45MywtMTAzLjI1IDIyNC44NywtMTA5Ljc5IDIxNy42NywtMTA5LjQ4Ii8+CjwvZz4KPCEtLSBNQVBLM19UMjAyIC0tPgo8ZyBpZD0ibm9kZTI0IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVBLM19UMjAyPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iOTg3LjY5IiBjeT0iLTczOCIgcng9IjczLjM5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iOTg3LjY5IiB5PSItNzM0LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzNfVDIwMjwvdGV4dD4KPC9nPgo8IS0tIE1BUEszIC0tPgo8ZyBpZD0ibm9kZTI1IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVBLMzwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExNjYuNjkiIGN5PSItNjY2IiByeD0iNDUuNDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTY2LjY5IiB5PSItNjYyLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzM8L3RleHQ+CjwvZz4KPCEtLSBNQVBLM19UMjAyJiM0NTsmZ3Q7TUFQSzMgLS0+CjxnIGlkPSJlZGdlMjMiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEszX1QyMDImIzQ1OyZndDtNQVBLMzwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMDI1LjIyLC03MjIuMzNDMTA1NC43MywtNzEwLjc5IDEwOTUuNzcsLTY5NC43MyAxMTI2LjA2LC02ODIuODkiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTEyNy40NCwtNjg2LjExIDExMzUuNDgsLTY3OS4yMSAxMTI0Ljg5LC02NzkuNTkgMTEyNy40NCwtNjg2LjExIi8+CjwvZz4KPCEtLSBNQVBLMyYjNDU7Jmd0O1JQUzZLQTFfUzM4MCAtLT4KPGcgaWQ9ImVkZ2U1NCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzMmIzQ1OyZndDtSUFM2S0ExX1MzODA8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTE3OC4wNywtNjQ4LjU2QzExODQuNTMsLTYzOC40NSAxMTkyLjIsLTYyNC45OSAxMTk2LjY5LC02MTIgMTI0OS40NSwtNDU5LjY1IDEyNTAuMzcsLTI2Mi41NiAxMjQ4LjY4LC0xOTAuNzMiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTI1Mi4xNywtMTkwLjIxIDEyNDguNCwtMTgwLjMxIDEyNDUuMTcsLTE5MC40IDEyNTIuMTcsLTE5MC4yMSIvPgo8L2c+CjwhLS0gQ0RLMl9UMTYwIC0tPgo8ZyBpZD0ibm9kZTI2IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5DREsyX1QxNjA8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI5OTguNjkiIGN5PSItNTk0IiByeD0iNjUuNzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI5OTguNjkiIHk9Ii01OTAuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5DREsyX1QxNjA8L3RleHQ+CjwvZz4KPCEtLSBNQVBLMyYjNDU7Jmd0O0NESzJfVDE2MCAtLT4KPGcgaWQ9ImVkZ2UyNCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzMmIzQ1OyZndDtDREsyX1QxNjA8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTEzNi4yNywtNjUyLjMyQzExMTAuMDgsLTY0MS40MSAxMDcxLjk1LC02MjUuNTIgMTA0Mi40OCwtNjEzLjI0Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjEwNDMuODEsLTYxMC4wMSAxMDMzLjI0LC02MDkuMzkgMTA0MS4xMiwtNjE2LjQ3IDEwNDMuODEsLTYxMC4wMSIvPgo8L2c+CjwhLS0gTENLX1M1OSAtLT4KPGcgaWQ9Im5vZGU1NSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TENLX1M1OTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExMzQuNjkiIGN5PSItNTk0IiByeD0iNTIuNzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTM0LjY5IiB5PSItNTkwLjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TENLX1M1OTwvdGV4dD4KPC9nPgo8IS0tIE1BUEszJiM0NTsmZ3Q7TENLX1M1OSAtLT4KPGcgaWQ9ImVkZ2U2NyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzMmIzQ1OyZndDtMQ0tfUzU5PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZWQiIGQ9Ik0xMTU4Ljk1LC02NDguMDVDMTE1NC42OSwtNjM4Ljc0IDExNDkuMzUsLTYyNy4wNyAxMTQ0Ljc3LC02MTcuMDQiLz4KPHBvbHlnb24gZmlsbD0icmVkIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxMTM4LjQ2LC02MTUuMjYgMTE0Ny41NSwtNjExLjExIDExNDguMzksLTYxMi45MiAxMTM5LjI5LC02MTcuMDggMTEzOC40NiwtNjE1LjI2Ii8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxMTQyLjU5LC02MTIuMjggMTE0NC42NywtNjE2LjgyICIvPgo8L2c+CjwhLS0gQ0RLMiAtLT4KPGcgaWQ9Im5vZGUyNyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+Q0RLMjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9Ijk5OC42OSIgY3k9Ii01MjIiIHJ4PSIzNy44OSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijk5OC42OSIgeT0iLTUxOC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkNESzI8L3RleHQ+CjwvZz4KPCEtLSBDREsyX1QxNjAmIzQ1OyZndDtDREsyIC0tPgo8ZyBpZD0iZWRnZTI1IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5DREsyX1QxNjAmIzQ1OyZndDtDREsyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTk5OC42OSwtNTc1LjdDOTk4LjY5LC01NjcuOTggOTk4LjY5LC01NTguNzEgOTk4LjY5LC01NTAuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTAwMi4xOSwtNTUwLjEgOTk4LjY5LC01NDAuMSA5OTUuMTksLTU1MC4xIDEwMDIuMTksLTU1MC4xIi8+CjwvZz4KPCEtLSBBS1QxX1M0NzcgLS0+CjxnIGlkPSJub2RlMjgiIGNsYXNzPSJub2RlIj4KPHRpdGxlPkFLVDFfUzQ3NzwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjkwNS42OSIgY3k9Ii0zNzgiIHJ4PSI2My44OSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjkwNS42OSIgeT0iLTM3NC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkFLVDFfUzQ3NzwvdGV4dD4KPC9nPgo8IS0tIENESzImIzQ1OyZndDtBS1QxX1M0NzcgLS0+CjxnIGlkPSJlZGdlMjYiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPkNESzImIzQ1OyZndDtBS1QxX1M0Nzc8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNOTg4LjAzLC01MDQuNzFDOTcxLjk0LC00ODAuMTUgOTQxLjM0LC00MzMuNDMgOTIyLjMyLC00MDQuMzgiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iOTI1LjIyLC00MDIuNDMgOTE2LjgxLC0zOTUuOTggOTE5LjM3LC00MDYuMjYgOTI1LjIyLC00MDIuNDMiLz4KPC9nPgo8IS0tIEFLVDFfUzQ3NyYjNDU7Jmd0O0FLVDEgLS0+CjxnIGlkPSJlZGdlMjciIGNsYXNzPSJlZGdlIj4KPHRpdGxlPkFLVDFfUzQ3NyYjNDU7Jmd0O0FLVDE8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNODk2LjUxLC0zNjAuMDRDODcxLjQ0LC0zMTUuNjEgNzk3LC0xOTUuNzQgNjk3LjY5LC0xNDQgNjI4Ljk3LC0xMDguMiAzOTcuNzYsLTk2LjAyIDI5OC41NCwtOTIuMzgiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMjk4LjY0LC04OC44OCAyODguNTIsLTkyLjAzIDI5OC4zOSwtOTUuODggMjk4LjY0LC04OC44OCIvPgo8L2c+CjwhLS0gTUFQSzNfWTIwNCAtLT4KPGcgaWQ9Im5vZGUyOSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQSzNfWTIwNDwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExNTIuNjkiIGN5PSItNzM4IiByeD0iNzMuMzkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTUyLjY5IiB5PSItNzM0LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzNfWTIwNDwvdGV4dD4KPC9nPgo8IS0tIE1BUEszX1kyMDQmIzQ1OyZndDtNQVBLMyAtLT4KPGcgaWQ9ImVkZ2UyOCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzNfWTIwNCYjNDU7Jmd0O01BUEszPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTExNTYuMTYsLTcxOS43QzExNTcuNywtNzExLjk4IDExNTkuNTUsLTcwMi43MSAxMTYxLjI3LC02OTQuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTE2NC43NCwtNjk0LjYgMTE2My4yNywtNjg0LjEgMTE1Ny44OCwtNjkzLjIyIDExNjQuNzQsLTY5NC42Ii8+CjwvZz4KPCEtLSBTUkMgLS0+CjxnIGlkPSJub2RlMzEiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlNSQzwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9Ijk2Mi42OSIgY3k9Ii05NTQiIHJ4PSIzMC41OSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijk2Mi42OSIgeT0iLTk1MC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlNSQzwvdGV4dD4KPC9nPgo8IS0tIFNSQ19TNTEmIzQ1OyZndDtTUkMgLS0+CjxnIGlkPSJlZGdlMzIiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlNSQ19TNTEmIzQ1OyZndDtTUkM8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9InB1cnBsZSIgZD0iTTEwMjkuOTUsLTEwMDkuMTJDMTAxNy45NywtOTk5LjQ3IDEwMDIuNTEsLTk4Ny4wNCA5ODkuNDQsLTk3Ni41MiIvPgo8cG9seWdvbiBmaWxsPSJwdXJwbGUiIHN0cm9rZT0icHVycGxlIiBwb2ludHM9Ijk4OS4zNSwtOTc2LjQ1IDk4Mi4xNywtOTc1LjggOTgwLC05NjguOTMgOTg3LjE5LC05NjkuNTcgOTg5LjM1LC05NzYuNDUiLz4KPC9nPgo8IS0tIFBEUEsxX1kzNzMgLS0+CjxnIGlkPSJub2RlMzIiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlBEUEsxX1kzNzM8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI3MDEuNjkiIGN5PSItODgyIiByeD0iNzEuNDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3MDEuNjkiIHk9Ii04NzguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5QRFBLMV9ZMzczPC90ZXh0Pgo8L2c+CjwhLS0gU1JDJiM0NTsmZ3Q7UERQSzFfWTM3MyAtLT4KPGcgaWQ9ImVkZ2UzMyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+U1JDJiM0NTsmZ3Q7UERQSzFfWTM3MzwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik05MzUuMjYsLTk0NS42NEM4OTMuNjEsLTkzNC40NyA4MTMuNTIsLTkxMi45OSA3NTguODUsLTg5OC4zMyIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI3NTkuNTIsLTg5NC44OSA3NDguOTYsLTg5NS42OCA3NTcuNzEsLTkwMS42NSA3NTkuNTIsLTg5NC44OSIvPgo8L2c+CjwhLS0gUFJLRDFfWTQ2MyAtLT4KPGcgaWQ9Im5vZGUzNyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+UFJLRDFfWTQ2MzwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjQ3OS42OSIgY3k9Ii04ODIiIHJ4PSI3MS40OSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ3OS42OSIgeT0iLTg3OC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlBSS0QxX1k0NjM8L3RleHQ+CjwvZz4KPCEtLSBTUkMmIzQ1OyZndDtQUktEMV9ZNDYzIC0tPgo8ZyBpZD0iZWRnZTM4IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5TUkMmIzQ1OyZndDtQUktEMV9ZNDYzPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTkzMy4yMSwtOTQ4LjczQzg1OC4wMSwtOTM3LjgzIDY1Ny40NSwtOTA4Ljc2IDU0OS45OSwtODkzLjE5Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjU1MC4yOSwtODg5LjY5IDUzOS44OSwtODkxLjcyIDU0OS4yOCwtODk2LjYyIDU1MC4yOSwtODg5LjY5Ii8+CjwvZz4KPCEtLSBSRVRfWTkwNSAtLT4KPGcgaWQ9Im5vZGU0NCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+UkVUX1k5MDU8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMDQwLjY5IiBjeT0iLTg4MiIgcng9IjU3LjY5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTA0MC42OSIgeT0iLTg3OC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlJFVF9ZOTA1PC90ZXh0Pgo8L2c+CjwhLS0gU1JDJiM0NTsmZ3Q7UkVUX1k5MDUgLS0+CjxnIGlkPSJlZGdlNDYiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlNSQyYjNDU7Jmd0O1JFVF9ZOTA1PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTk3OC44NiwtOTM4LjVDOTg5LjMyLC05MjkuMSAxMDAzLjE4LC05MTYuNjYgMTAxNS4xMywtOTA1Ljk0Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjEwMTcuNTQsLTkwOC40OCAxMDIyLjY0LC04OTkuMiAxMDEyLjg2LC05MDMuMjcgMTAxNy41NCwtOTA4LjQ4Ii8+CjwvZz4KPCEtLSBBUkFGX1kzMDIgLS0+CjxnIGlkPSJub2RlNDYiIGNsYXNzPSJub2RlIj4KPHRpdGxlPkFSQUZfWTMwMjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9Ijg4NS42OSIgY3k9Ii04ODIiIHJ4PSI2NC4xOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijg4NS42OSIgeT0iLTg3OC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkFSQUZfWTMwMjwvdGV4dD4KPC9nPgo8IS0tIFNSQyYjNDU7Jmd0O0FSQUZfWTMwMiAtLT4KPGcgaWQ9ImVkZ2U0OSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+U1JDJiM0NTsmZ3Q7QVJBRl9ZMzAyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTk0Ni43NCwtOTM4LjVDOTM2LjU4LC05MjkuMjYgOTIzLjE3LC05MTcuMDcgOTExLjUyLC05MDYuNDciLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iOTEzLjU0LC05MDMuNTggOTAzLjc5LC04OTkuNDUgOTA4LjgzLC05MDguNzYgOTEzLjU0LC05MDMuNTgiLz4KPC9nPgo8IS0tIFBCS19ZMjcyIC0tPgo8ZyBpZD0ibm9kZTQ5IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5QQktfWTI3MjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExODIuNjkiIGN5PSItODgyIiByeD0iNTguNDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTgyLjY5IiB5PSItODc4LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+UEJLX1kyNzI8L3RleHQ+CjwvZz4KPCEtLSBTUkMmIzQ1OyZndDtQQktfWTI3MiAtLT4KPGcgaWQ9ImVkZ2U1OCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+U1JDJiM0NTsmZ3Q7UEJLX1kyNzI8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNOTg5LjIzLC05NDQuNTZDMTAyNC45MywtOTMzLjIgMTA4OS4wOCwtOTEyLjc5IDExMzMuNjgsLTg5OC42Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjExMzQuOTcsLTkwMS44NiAxMTQzLjQ0LC04OTUuNDkgMTEzMi44NSwtODk1LjE5IDExMzQuOTcsLTkwMS44NiIvPgo8L2c+CjwhLS0gUERQSzEgLS0+CjxnIGlkPSJub2RlMzMiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlBEUEsxPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iNjM5LjY5IiBjeT0iLTgxMCIgcng9IjQzLjU5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjM5LjY5IiB5PSItODA2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+UERQSzE8L3RleHQ+CjwvZz4KPCEtLSBQRFBLMV9ZMzczJiM0NTsmZ3Q7UERQSzEgLS0+CjxnIGlkPSJlZGdlMzQiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlBEUEsxX1kzNzMmIzQ1OyZndDtQRFBLMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik02ODYuNjksLTg2NC4wNUM2NzguOTYsLTg1NS4zMyA2NjkuNDEsLTg0NC41NCA2NjAuOTMsLTgzNC45OCIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI2NjMuMzksLTgzMi40NyA2NTQuMTQsLTgyNy4zMSA2NTguMTUsLTgzNy4xMSA2NjMuMzksLTgzMi40NyIvPgo8L2c+CjwhLS0gUERQSzEmIzQ1OyZndDtNQVAySzFfUzIyMiAtLT4KPGcgaWQ9ImVkZ2U1MiIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UERQSzEmIzQ1OyZndDtNQVAySzFfUzIyMjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik02MzkuNjksLTc5MS43QzYzOS42OSwtNzgzLjk4IDYzOS42OSwtNzc0LjcxIDYzOS42OSwtNzY2LjExIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjY0My4xOSwtNzY2LjEgNjM5LjY5LC03NTYuMSA2MzYuMTksLTc2Ni4xIDY0My4xOSwtNzY2LjEiLz4KPC9nPgo8IS0tIFBSS0FDQV9UMTk4IC0tPgo8ZyBpZD0ibm9kZTM0IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5QUktBQ0FfVDE5ODwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjQ2NC42OSIgY3k9Ii03MzgiIHJ4PSI3Ny4xOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ2NC42OSIgeT0iLTczNC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlBSS0FDQV9UMTk4PC90ZXh0Pgo8L2c+CjwhLS0gUERQSzEmIzQ1OyZndDtQUktBQ0FfVDE5OCAtLT4KPGcgaWQ9ImVkZ2UzNSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UERQSzEmIzQ1OyZndDtQUktBQ0FfVDE5ODwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik02MDkuNjEsLTc5Ni45N0M1ODIuNiwtNzg2LjE2IDU0Mi41MiwtNzcwLjEzIDUxMS4zNSwtNzU3LjY2Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjUxMi41NywtNzU0LjM4IDUwMS45OSwtNzUzLjkyIDUwOS45NywtNzYwLjg4IDUxMi41NywtNzU0LjM4Ii8+CjwvZz4KPCEtLSBQUktBQ0EgLS0+CjxnIGlkPSJub2RlMzUiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlBSS0FDQTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjcyMC42OSIgY3k9Ii0zMDYiIHJ4PSI1MC4wOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjcyMC42OSIgeT0iLTMwMi4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlBSS0FDQTwvdGV4dD4KPC9nPgo8IS0tIFBSS0FDQV9UMTk4JiM0NTsmZ3Q7UFJLQUNBIC0tPgo8ZyBpZD0iZWRnZTM2IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5QUktBQ0FfVDE5OCYjNDU7Jmd0O1BSS0FDQTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik01MDcuNTQsLTcyMi45OEM1ODAuNDIsLTY5Ny44MyA3MjAuNjksLTY0My4xNiA3MjAuNjksLTU5NSA3MjAuNjksLTU5NSA3MjAuNjksLTU5NSA3MjAuNjksLTQ0OSA3MjAuNjksLTQwOSA3MjAuNjksLTM2Mi42NSA3MjAuNjksLTMzNC4wOCIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI3MjQuMTksLTMzNC4wNSA3MjAuNjksLTMyNC4wNSA3MTcuMTksLTMzNC4wNSA3MjQuMTksLTMzNC4wNSIvPgo8L2c+CjwhLS0gUFJLQUNBJiM0NTsmZ3Q7SFNQQjFfUzc4IC0tPgo8ZyBpZD0iZWRnZTM3IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5QUktBQ0EmIzQ1OyZndDtIU1BCMV9TNzg8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNNzA5LjI2LC0yODguNDNDNjkyLjI0LC0yNjMuNzcgNjYwLjEsLTIxNy4yIDY0MC4xMywtMTg4LjI3Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjY0Mi45MiwtMTg2LjE0IDYzNC4zNiwtMTc5LjkgNjM3LjE2LC0xOTAuMTIgNjQyLjkyLC0xODYuMTQiLz4KPC9nPgo8IS0tIFBSS0QxIC0tPgo8ZyBpZD0ibm9kZTM4IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5QUktEMTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjQwMi42OSIgY3k9Ii0yMzQiIHJ4PSI0NC4zOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQwMi42OSIgeT0iLTIzMC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPlBSS0QxPC90ZXh0Pgo8L2c+CjwhLS0gUFJLRDFfWTQ2MyYjNDU7Jmd0O1BSS0QxIC0tPgo8ZyBpZD0iZWRnZTM5IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5QUktEMV9ZNDYzJiM0NTsmZ3Q7UFJLRDE8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNNDU5LjgsLTg2NC40NUM0MzUuMjUsLTg0Mi41OSAzOTQuNzgsLTgwMS41MSAzNzguNjksLTc1NiAzNzMuMzYsLTc0MC45MSAzNzcuOTMsLTczNS45OCAzNzguNjksLTcyMCAzODIuOTIsLTYzMi4xNCAzOTcuNjksLTYxMC45NiAzOTcuNjksLTUyMyAzOTcuNjksLTUyMyAzOTcuNjksLTUyMyAzOTcuNjksLTM3NyAzOTcuNjksLTMzNi45NyAzOTkuNywtMjkwLjYzIDQwMS4xNywtMjYyLjA3Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjQwNC42NywtMjYyLjIxIDQwMS43MSwtMjUyLjA0IDM5Ny42OCwtMjYxLjg0IDQwNC42NywtMjYyLjIxIi8+CjwvZz4KPCEtLSBQUktEMSYjNDU7Jmd0O0hTUEIxX1M4MiAtLT4KPGcgaWQ9ImVkZ2U0MCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UFJLRDEmIzQ1OyZndDtIU1BCMV9TODI8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNNDE4LC0yMTYuNzZDNDI2LjMsLTIwNy45NyA0MzYuNywtMTk2LjkzIDQ0NS45MywtMTg3LjE0Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjQ0OC43LC0xODkuMzEgNDUzLjAxLC0xNzkuNjMgNDQzLjYsLTE4NC41MSA0NDguNywtMTg5LjMxIi8+CjwvZz4KPCEtLSBNQVAzSzExIC0tPgo8ZyBpZD0ibm9kZTQxIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVAzSzExPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTM3OC42OSIgY3k9Ii05NTQiIHJ4PSI1Ny4zOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzNzguNjkiIHk9Ii05NTAuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVAzSzExPC90ZXh0Pgo8L2c+CjwhLS0gTUFQM0sxMV9TNzg5JiM0NTsmZ3Q7TUFQM0sxMSAtLT4KPGcgaWQ9ImVkZ2U0MiIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQM0sxMV9TNzg5JiM0NTsmZ3Q7TUFQM0sxMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMzc3LjE5LC0xMDA3LjdDMTM3Ny40MSwtOTk5Ljk4IDEzNzcuNjcsLTk5MC43MSAxMzc3LjkyLC05ODIuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTM4MS40MiwtOTgyLjIgMTM3OC4yMSwtOTcyLjEgMTM3NC40MiwtOTgyIDEzODEuNDIsLTk4Mi4yIi8+CjwvZz4KPCEtLSBNQVAySzNfUzIxOCAtLT4KPGcgaWQ9Im5vZGU0MiIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQMkszX1MyMTg8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMzgxLjY5IiBjeT0iLTg4MiIgcng9Ijc5LjA5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTM4MS42OSIgeT0iLTg3OC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPk1BUDJLM19TMjE4PC90ZXh0Pgo8L2c+CjwhLS0gTUFQM0sxMSYjNDU7Jmd0O01BUDJLM19TMjE4IC0tPgo8ZyBpZD0iZWRnZTQzIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5NQVAzSzExJiM0NTsmZ3Q7TUFQMkszX1MyMTg8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTM3OS40NCwtOTM1LjdDMTM3OS43NywtOTI3Ljk4IDEzODAuMTYsLTkxOC43MSAxMzgwLjUzLC05MTAuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTM4NC4wMywtOTEwLjI1IDEzODAuOTYsLTkwMC4xIDEzNzcuMDQsLTkwOS45NSAxMzg0LjAzLC05MTAuMjUiLz4KPC9nPgo8IS0tIE1BUDJLMyAtLT4KPGcgaWQ9Im5vZGU0MyIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQMkszPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTM5Ni42OSIgY3k9Ii04MTAiIHJ4PSI1MS4xOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzOTYuNjkiIHk9Ii04MDYuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5NQVAySzM8L3RleHQ+CjwvZz4KPCEtLSBNQVAySzNfUzIxOCYjNDU7Jmd0O01BUDJLMyAtLT4KPGcgaWQ9ImVkZ2U0NCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQMkszX1MyMTgmIzQ1OyZndDtNQVAySzM8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTM4NS40LC04NjMuN0MxMzg3LjA2LC04NTUuOTggMTM4OS4wNCwtODQ2LjcxIDEzOTAuODgsLTgzOC4xMSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMzk0LjM2LC04MzguNjIgMTM5My4wMywtODI4LjEgMTM4Ny41MSwtODM3LjE1IDEzOTQuMzYsLTgzOC42MiIvPgo8L2c+CjwhLS0gTUFQMkszJiM0NTsmZ3Q7TUFQSzE0X1QxODAgLS0+CjxnIGlkPSJlZGdlNDUiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUDJLMyYjNDU7Jmd0O01BUEsxNF9UMTgwPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTE0MDcuODIsLTc5Mi4zM0MxNDIzLjksLTc2Ni41OSAxNDUxLjY5LC03MTUuMTIgMTQ1MS42OSwtNjY3IDE0NTEuNjksLTY2NyAxNDUxLjY5LC02NjcgMTQ1MS42OSwtNTkzIDE0NTEuNjksLTU0OC40OCAxNDIzLjkyLC01MDMuMjkgMTQwMy42MSwtNDc2LjIiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTQwNi4yMSwtNDczLjg0IDEzOTcuMzMsLTQ2OC4wNyAxNDAwLjY3LC00NzguMTIgMTQwNi4yMSwtNDczLjg0Ii8+CjwvZz4KPCEtLSBSRVQgLS0+CjxnIGlkPSJub2RlNDUiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlJFVDwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjEwNzEuNjkiIGN5PSItODEwIiByeD0iMzAuNTkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMDcxLjY5IiB5PSItODA2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+UkVUPC90ZXh0Pgo8L2c+CjwhLS0gUkVUX1k5MDUmIzQ1OyZndDtSRVQgLS0+CjxnIGlkPSJlZGdlNDciIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlJFVF9ZOTA1JiM0NTsmZ3Q7UkVUPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEwNDguMiwtODY0LjA1QzEwNTEuNzgsLTg1NS45NyAxMDU2LjE0LC04NDYuMTIgMTA2MC4xMywtODM3LjExIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjEwNjMuNDEsLTgzOC4zNSAxMDY0LjI2LC04MjcuNzkgMTA1Ny4wMSwtODM1LjUyIDEwNjMuNDEsLTgzOC4zNSIvPgo8L2c+CjwhLS0gUkVUJiM0NTsmZ3Q7TUFQSzE0X1kxODIgLS0+CjxnIGlkPSJlZGdlNDgiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlJFVCYjNDU7Jmd0O01BUEsxNF9ZMTgyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTExMDAuMTEsLTgwMi44OEMxMTQxLjM5LC03OTMuNDkgMTIxNS4xNiwtNzc0LjY0IDEyMzQuNjksLTc1NiAxMjk0LjE3LC02OTkuMjQgMTMxMy44NCwtNTk4LjI4IDEzMjAuMDMsLTU1MC4wNyIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMzIzLjUxLC01NTAuNDMgMTMyMS4yMSwtNTQwLjA4IDEzMTYuNTYsLTU0OS42IDEzMjMuNTEsLTU1MC40MyIvPgo8L2c+CjwhLS0gUkVUJiM0NTsmZ3Q7TUFQSzNfVDIwMiAtLT4KPGcgaWQ9ImVkZ2U2MSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UkVUJiM0NTsmZ3Q7TUFQSzNfVDIwMjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik0xMDU0LjcsLTc5NC44M0MxMDQzLjM0LC03ODUuMzcgMTAyOC4xNSwtNzcyLjcyIDEwMTUuMTEsLTc2MS44NSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMDE3LjI0LC03NTkuMDcgMTAwNy4zMiwtNzU1LjM1IDEwMTIuNzYsLTc2NC40NCAxMDE3LjI0LC03NTkuMDciLz4KPC9nPgo8IS0tIFJFVCYjNDU7Jmd0O01BUEszX1kyMDQgLS0+CjxnIGlkPSJlZGdlNTMiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPlJFVCYjNDU7Jmd0O01BUEszX1kyMDQ8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTA4OC40OCwtNzk0LjVDMTA5OS4yNywtNzg1LjE3IDExMTMuNTQsLTc3Mi44NCAxMTI1Ljg4LC03NjIuMTciLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTEyOC4zOCwtNzY0LjYzIDExMzMuNjYsLTc1NS40NSAxMTIzLjgxLC03NTkuMzQgMTEyOC4zOCwtNzY0LjYzIi8+CjwvZz4KPCEtLSBBUkFGIC0tPgo8ZyBpZD0ibm9kZTQ3IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5BUkFGPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iODUxLjY5IiBjeT0iLTgxMCIgcng9IjM2LjI5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iODUxLjY5IiB5PSItODA2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+QVJBRjwvdGV4dD4KPC9nPgo8IS0tIEFSQUZfWTMwMiYjNDU7Jmd0O0FSQUYgLS0+CjxnIGlkPSJlZGdlNTAiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPkFSQUZfWTMwMiYjNDU7Jmd0O0FSQUY8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNODc3LjQ2LC04NjQuMDVDODczLjUsLTg1NS44OSA4NjguNjUsLTg0NS45MSA4NjQuMjQsLTgzNi44MiIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSI4NjcuMzcsLTgzNS4yNSA4NTkuODUsLTgyNy43OSA4NjEuMDcsLTgzOC4zMSA4NjcuMzcsLTgzNS4yNSIvPgo8L2c+CjwhLS0gQVJBRiYjNDU7Jmd0O01BUDJLMV9TMjE4IC0tPgo8ZyBpZD0iZWRnZTUxIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5BUkFGJiM0NTsmZ3Q7TUFQMksxX1MyMTg8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNODQzLjQsLTc5Mi40MUM4MzkuMzIsLTc4NC4yNSA4MzQuMywtNzc0LjIyIDgyOS43MywtNzY1LjA3Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjgzMi43OCwtNzYzLjM0IDgyNS4xNywtNzU1Ljk2IDgyNi41MSwtNzY2LjQ3IDgzMi43OCwtNzYzLjM0Ii8+CjwvZz4KPCEtLSBNVE9SX1MyMTU5JiM0NTsmZ3Q7TVRPUiAtLT4KPGcgaWQ9ImVkZ2U1NiIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TVRPUl9TMjE1OSYjNDU7Jmd0O01UT1I8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMjY2Ljg5LC03MjAuMDVDMjcxLjMzLC03MTEuODkgMjc2Ljc0LC03MDEuOTEgMjgxLjY4LC02OTIuODIiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMjg0Ljg5LC02OTQuMjUgMjg2LjU4LC02ODMuNzkgMjc4LjczLC02OTAuOTEgMjg0Ljg5LC02OTQuMjUiLz4KPC9nPgo8IS0tIFBCSyAtLT4KPGcgaWQ9Im5vZGU1MCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+UEJLPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iMTIwOC42OSIgY3k9Ii04MTAiIHJ4PSIzMC41OSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEyMDguNjkiIHk9Ii04MDYuMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5QQks8L3RleHQ+CjwvZz4KPCEtLSBQQktfWTI3MiYjNDU7Jmd0O1BCSyAtLT4KPGcgaWQ9ImVkZ2U1OSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+UEJLX1kyNzImIzQ1OyZndDtQQks8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTE4OC45OSwtODY0LjA1QzExOTEuOTYsLTg1Ni4wNiAxMTk1LjU3LC04NDYuMzMgMTE5OC44OSwtODM3LjQiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTIwMi4yNiwtODM4LjM4IDEyMDIuNDYsLTgyNy43OSAxMTk1LjcsLTgzNS45NCAxMjAyLjI2LC04MzguMzgiLz4KPC9nPgo8IS0tIEpVTl9TNjMgLS0+CjxnIGlkPSJub2RlNTEiIGNsYXNzPSJub2RlIj4KPHRpdGxlPkpVTl9TNjM8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMzMzLjY5IiBjeT0iLTczOCIgcng9IjUxLjk5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTMzMy42OSIgeT0iLTczNC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkpVTl9TNjM8L3RleHQ+CjwvZz4KPCEtLSBQQksmIzQ1OyZndDtKVU5fUzYzIC0tPgo8ZyBpZD0iZWRnZTYwIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5QQksmIzQ1OyZndDtKVU5fUzYzPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEyMzAuMTgsLTc5Ni45N0MxMjQ4Ljk2LC03ODYuNDUgMTI3Ni41NywtNzcwLjk5IDEyOTguNTUsLTc1OC42OCIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMzAwLjI3LC03NjEuNzMgMTMwNy4yOCwtNzUzLjc5IDEyOTYuODUsLTc1NS42MiAxMzAwLjI3LC03NjEuNzMiLz4KPC9nPgo8IS0tIFNHSzEgLS0+CjxnIGlkPSJub2RlNTMiIGNsYXNzPSJub2RlIj4KPHRpdGxlPlNHSzE8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSI0OTEuNjkiIGN5PSItNTIyIiByeD0iMzcuMDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0OTEuNjkiIHk9Ii01MTguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5TR0sxPC90ZXh0Pgo8L2c+CjwhLS0gU0dLMV9TNDIyJiM0NTsmZ3Q7U0dLMSAtLT4KPGcgaWQ9ImVkZ2U2NCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+U0dLMV9TNDIyJiM0NTsmZ3Q7U0dLMTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik00OTEuNjksLTU3NS43QzQ5MS42OSwtNTY3Ljk4IDQ5MS42OSwtNTU4LjcxIDQ5MS42OSwtNTUwLjExIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjQ5NS4xOSwtNTUwLjEgNDkxLjY5LC01NDAuMSA0ODguMTksLTU1MC4xIDQ5NS4xOSwtNTUwLjEiLz4KPC9nPgo8IS0tIE1BUEsxX1MyOSAtLT4KPGcgaWQ9Im5vZGU1NCIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+TUFQSzFfUzI5PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibGlnaHRncmF5IiBzdHJva2U9ImJsYWNrIiBjeD0iNTAxLjY5IiBjeT0iLTQ1MCIgcng9IjY3LjY5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNTAxLjY5IiB5PSItNDQ2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzFfUzI5PC90ZXh0Pgo8L2c+CjwhLS0gU0dLMSYjNDU7Jmd0O01BUEsxX1MyOSAtLT4KPGcgaWQ9ImVkZ2U2NSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+U0dLMSYjNDU7Jmd0O01BUEsxX1MyOTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JlZW4iIGQ9Ik00OTQuMTcsLTUwMy43QzQ5NS4yNywtNDk1Ljk4IDQ5Ni41OSwtNDg2LjcxIDQ5Ny44MiwtNDc4LjExIi8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjUwMS4zLC00NzguNSA0OTkuMjUsLTQ2OC4xIDQ5NC4zNywtNDc3LjUxIDUwMS4zLC00NzguNSIvPgo8L2c+CjwhLS0gTUFQSzFfUzI5JiM0NTsmZ3Q7TUFQSzEgLS0+CjxnIGlkPSJlZGdlNjYiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPk1BUEsxX1MyOSYjNDU7Jmd0O01BUEsxPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTUxNS43MywtNDMyLjA1QzUyMi44OSwtNDIzLjQyIDUzMS43MiwtNDEyLjc2IDUzOS41OSwtNDAzLjI3Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjU0Mi41LC00MDUuMjQgNTQ2LjE4LC0zOTUuMzEgNTM3LjExLC00MDAuNzcgNTQyLjUsLTQwNS4yNCIvPgo8L2c+CjwhLS0gTENLIC0tPgo8ZyBpZD0ibm9kZTU2IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5MQ0s8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJsaWdodGdyYXkiIHN0cm9rZT0iYmxhY2siIGN4PSIxMTMyLjY5IiBjeT0iLTUyMiIgcng9IjMwLjU5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTEzMi42OSIgeT0iLTUxOC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPkxDSzwvdGV4dD4KPC9nPgo8IS0tIExDS19TNTkmIzQ1OyZndDtMQ0sgLS0+CjxnIGlkPSJlZGdlNjgiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPkxDS19TNTkmIzQ1OyZndDtMQ0s8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9InJlZCIgZD0iTTExMzQuMiwtNTc1LjdDMTEzMy45NCwtNTY2LjQ2IDExMzMuNjEsLTU1NC45OCAxMTMzLjMzLC01NDUuMTEiLz4KPHBvbHlnb24gZmlsbD0icmVkIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxMTI4LjIxLC01NDEuMjUgMTEzOC4yMSwtNTQwLjk2IDExMzguMjcsLTU0Mi45NiAxMTI4LjI3LC01NDMuMjUgMTEyOC4yMSwtNTQxLjI1Ii8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9InJlZCIgcG9pbnRzPSIxMTMzLjE4LC01NDAuMSAxMTMzLjMzLC01NDUuMSAiLz4KPC9nPgo8IS0tIE1BUEsxNF9ZMzIzIC0tPgo8ZyBpZD0ibm9kZTU3IiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT5NQVBLMTRfWTMyMzwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9ImxpZ2h0Z3JheSIgc3Ryb2tlPSJibGFjayIgY3g9IjExMzAuNjkiIGN5PSItNDUwIiByeD0iNzkuMDkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTMwLjY5IiB5PSItNDQ2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+TUFQSzE0X1kzMjM8L3RleHQ+CjwvZz4KPCEtLSBMQ0smIzQ1OyZndDtNQVBLMTRfWTMyMyAtLT4KPGcgaWQ9ImVkZ2U2OSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TENLJiM0NTsmZ3Q7TUFQSzE0X1kzMjM8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTEzMi4yLC01MDMuN0MxMTMxLjk4LC00OTUuOTggMTEzMS43MSwtNDg2LjcxIDExMzEuNDcsLTQ3OC4xMSIvPgo8cG9seWdvbiBmaWxsPSJncmVlbiIgc3Ryb2tlPSJncmVlbiIgcG9pbnRzPSIxMTM0Ljk3LC00NzggMTEzMS4xOCwtNDY4LjEgMTEyNy45NywtNDc4LjIgMTEzNC45NywtNDc4Ii8+CjwvZz4KPCEtLSBNQVBLMTRfWTMyMyYjNDU7Jmd0O01BUEsxNCAtLT4KPGcgaWQ9ImVkZ2U3MCIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+TUFQSzE0X1kzMjMmIzQ1OyZndDtNQVBLMTQ8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNMTEzMC42OSwtNDMxLjdDMTEzMC42OSwtNDIzLjk4IDExMzAuNjksLTQxNC43MSAxMTMwLjY5LC00MDYuMTEiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTEzNC4xOSwtNDA2LjEgMTEzMC42OSwtMzk2LjEgMTEyNy4xOSwtNDA2LjEgMTEzNC4xOSwtNDA2LjEiLz4KPC9nPgo8IS0tIEdTSzNCX1QzOTAmIzQ1OyZndDtHU0szQiAtLT4KPGcgaWQ9ImVkZ2U3MyIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+R1NLM0JfVDM5MCYjNDU7Jmd0O0dTSzNCPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJncmVlbiIgZD0iTTEyMDUuMjksLTMxMy4yN0MxMjgwLjgxLC0zMjQuMSAxNDAzLjEzLC0zNTMuMzkgMTQ3MC42OSwtNDMyIDE0OTcuMDYsLTQ2Mi42NyAxNDg5LjY5LC00ODAuNTUgMTQ4OS42OSwtNTIxIDE0ODkuNjksLTk1NSAxNDg5LjY5LC05NTUgMTQ4OS42OSwtOTU1IDE0ODkuNjksLTk5NS40NSAxNDk3LjM5LC0xMDEzLjYxIDE0NzAuNjksLTEwNDQgMTQ0Ni4xNiwtMTA3MS45MyAxNDA1Ljk3LC0xMDg1LjE0IDEzNzMuMzYsLTEwOTEuMzkiLz4KPHBvbHlnb24gZmlsbD0iZ3JlZW4iIHN0cm9rZT0iZ3JlZW4iIHBvaW50cz0iMTM3Mi43NiwtMTA4Ny45NCAxMzYzLjUxLC0xMDkzLjExIDEzNzMuOTcsLTEwOTQuODQgMTM3Mi43NiwtMTA4Ny45NCIvPgo8L2c+CjwhLS0gR1NLM0JfWTIxNiYjNDU7Jmd0O0dTSzNCIC0tPgo8ZyBpZD0iZWRnZTc1IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5HU0szQl9ZMjE2JiM0NTsmZ3Q7R1NLM0I8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImdyZWVuIiBkPSJNODY5LjczLC02MDkuNDZDOTIzLjIsLTYyOS4yMyAxMDIzLjk5LC02NjQuNDYgMTExMi42OSwtNjg0IDExNzQuMzksLTY5Ny41OSAxMzUyLjk1LC02NzIuNTggMTM5NC42OSwtNzIwIDE0MDUuMjcsLTczMi4wMSAxNDAyLjQ3LC03NDIuMDIgMTM5NC42OSwtNzU2IDEzNzkuOTUsLTc4Mi41MSAxMzU3Ljk2LC03NzAuMzYgMTMzNi42OSwtNzkyIDEzMTAuNTcsLTgxOC41OCAxMzA0Ljk3LC04MjguNDcgMTI5My42OSwtODY0IDEyNjIuOTIsLTk2MC45NiAxMjcxLjA2LC0xMDA3LjgyIDEyODIuNjksLTEwNDQgMTI4Ni4wMiwtMTA1NC4zNSAxMjkyLjIsLTEwNjQuMzkgMTI5OC42MiwtMTA3Mi45Ii8+Cjxwb2x5Z29uIGZpbGw9ImdyZWVuIiBzdHJva2U9ImdyZWVuIiBwb2ludHM9IjEyOTYuMDIsLTEwNzUuMjYgMTMwNS4wMiwtMTA4MC44NSAxMzAxLjQ3LC0xMDcwLjg2IDEyOTYuMDIsLTEwNzUuMjYiLz4KPC9nPgo8L2c+Cjwvc3ZnPgo="/>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[6]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>Genesymbol</th>
+<th>Uniprot</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>SRC</td>
+<td>P12931</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1</th>
+<td>CDH1</td>
+<td>P12830</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>2</th>
+<td>TP53</td>
+<td>P04637</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>3</th>
+<td>TP63</td>
+<td>Q9H3D4</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=50124496">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-7">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">redo</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-7">net.redo()
+net.nodes</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>Genesymbol</th>
+<th>Uniprot</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>SRC</td>
+<td>P12931</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1</th>
+<td>CDH1</td>
+<td>P12830</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>2</th>
+<td>TP53</td>
+<td>P04637</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>3</th>
+<td>TP63</td>
+<td>Q9H3D4</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>4</th>
+<td>PTK2</td>
+<td>Q05397</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=95567ffb">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="3-visualising-the-history-graph">3. Visualising the history graph<a class="anchor-link" href="#3-visualising-the-history-graph">¶</a></h2><p><code>history_graph()</code> returns a <code>networkx</code> object, while <code>history_html()</code> embeds a Graphviz SVG.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3328f66b">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-8">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">history_nx</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">history_graph</span><span class="p">()</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">history_nx</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-8">history_nx = net.history_graph()
+list(history_nx.edges())</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[(0, 1), (1, 2)]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=78a7b1fe">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-9">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-9">HTML(net.history_html())</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg height="241pt" viewbox="0.00 0.00 196.09 241.22" width="196pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" id="graph0" transform="scale(1 1) rotate(0) translate(4 237.22)">
+<title>%3</title>
+<polygon fill="white" points="-4,4 -4,-237.22 192.09,-237.22 192.09,4 -4,4" stroke="transparent"></polygon>
+<!-- 0 -->
+<g class="node" id="node1">
+<title>0</title>
+<ellipse cx="94.05" cy="-206.35" fill="none" rx="48.17" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-210.15">State 0</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-195.15">initial</text>
+</g>
+<!-- 1 -->
+<g class="node" id="node2">
+<title>1</title>
+<ellipse cx="94.05" cy="-116.61" fill="none" rx="92.76" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-120.41">State 1</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-105.41">add_node(TP63)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g class="edge" id="edge1">
+<title>0-&gt;1</title>
+<path d="M94.05,-179.03C94.05,-171.06 94.05,-162.17 94.05,-153.68" fill="none" stroke="black"></path>
+<polygon fill="black" points="97.55,-153.61 94.05,-143.61 90.55,-153.61 97.55,-153.61" stroke="black"></polygon>
+</g>
+<!-- 2 -->
+<g class="node" id="node3">
+<title>2</title>
+<ellipse cx="94.05" cy="-26.87" fill="none" rx="94.09" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-30.67">State 2</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="94.05" y="-15.67">add_node(PTK2)</text>
+</g>
+<!-- 1&#45;&gt;2 -->
+<g class="edge" id="edge2">
+<title>1-&gt;2</title>
+<path d="M94.05,-89.29C94.05,-81.32 94.05,-72.43 94.05,-63.94" fill="none" stroke="black"></path>
+<polygon fill="black" points="97.55,-63.87 94.05,-53.87 90.55,-63.87 97.55,-63.87" stroke="black"></polygon>
+</g>
+</g>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ccce38e0">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="4-working-with-branches">4. Working with branches<a class="anchor-link" href="#4-working-with-branches">¶</a></h2><p>We can revert to an earlier state, explore an alternative enrichment strategy, and compare the resulting states.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4b1221ac">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-10">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">root_state</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">root_state_id</span>
+<span class="n">net</span><span class="o">.</span><span class="n">checkout</span><span class="p">(</span><span class="n">root_state</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"P01112"</span><span class="p">)</span>
+<span class="n">branch_state</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">current_state_id</span>
+<span class="n">diff</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">compare_states</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">branch_state</span><span class="p">)</span>
+<span class="n">diff</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-10">root_state = net.root_state_id
+net.checkout(root_state)
+net.add_node("P01112")
+branch_state = net.current_state_id
+diff = net.compare_states(current, branch_state)
+diff</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[25]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>{'added_nodes': ['P01112'],
+ 'removed_nodes': ['Q05397', 'Q9H3D4'],
+ 'added_edges': [],
+ 'removed_edges': [],
+ 'added_provenance': [],
+ 'removed_provenance': []}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=511f65a7">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="5-suspension-and-toggles">5. Suspension and toggles<a class="anchor-link" href="#5-suspension-and-toggles">¶</a></h2><p>Use <code>suspend_history()</code> or <code>set_history_tracking(False)</code> to batch changes without recording intermediate states.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=f6a5913c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [26]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-11">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="k">with</span> <span class="n">net</span><span class="o">.</span><span class="n">suspend_history</span><span class="p">():</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"Q9Y243"</span><span class="p">)</span>  <span class="c1"># already present, but no state recorded</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-11">with net.suspend_history():
+    net.add_node("Q9Y243")  # already present, but no state recorded
+    net.list_states()[-1]
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e59b9e8b">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-12">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">set_history_tracking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"Q15796"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">set_history_tracking</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-12">net.set_history_tracking(False)
+net.add_node("Q15796")
+net.set_history_tracking(True)
+net.list_states()
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[27]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[{'id': 0, 'metadata': {'label': 'initial'}},
+ {'id': 1,
+  'metadata': {'method': 'add_node', 'args': ["'TP63'"], 'kwargs': {}}},
+ {'id': 2,
+  'metadata': {'method': 'add_node', 'args': ["'FAK'"], 'kwargs': {}}},
+ {'id': 3,
+  'metadata': {'method': 'add_node', 'args': ["'P01112'"], 'kwargs': {}}}]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=254694d7">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="6-pruning-history">6. Pruning history<a class="anchor-link" href="#6-pruning-history">¶</a></h2><p><code>set_max_history()</code> limits the number of stored states while preserving the root and the latest state.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=168fe54e">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [28]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-13">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">set_max_history</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Q9Y6K9"</span><span class="p">,</span> <span class="s2">"P17302"</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">"Genesymbol"</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-13">net.set_max_history(4)
+for node in ["Q9Y6K9", "P17302"]:
+    if node not in net.nodes["Genesymbol"].tolist():
+        net.add_node(node)
+net.list_states()
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[28]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[{'id': 0, 'metadata': {'label': 'initial'}},
+ {'id': 3,
+  'metadata': {'method': 'add_node', 'args': ["'P01112'"], 'kwargs': {}}},
+ {'id': 4,
+  'metadata': {'method': 'add_node', 'args': ["'Q9Y6K9'"], 'kwargs': {}}},
+ {'id': 5,
+  'metadata': {'method': 'add_node', 'args': ["'P17302'"], 'kwargs': {}}}]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=68b77717">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>When the number of stored states exceeds the limit, older leaf states are pruned automatically. The root and current state remain intact.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6247e582">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>This concludes the walkthrough of the history API. Experiment by combining these features with your favourite enrichment strategies to analyse multiple hypotheses side by side.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=9de4e419">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-14">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">initial_nodes</span><span class="o">=</span><span class="p">[</span><span class="s2">"SRC"</span><span class="p">,</span> <span class="s2">"CDH1"</span><span class="p">,</span> <span class="s2">"TP53"</span><span class="p">],</span> <span class="n">resources</span><span class="o">=</span><span class="s2">"omnipath"</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-14">net = Network(initial_nodes=["SRC", "CDH1", "TP53"], resources="omnipath")</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=82aabf12">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-15">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">"bfs"</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-15">net.complete_connection(maxlen=2, algorithm="bfs", only_signed=True, consensus=True)</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=168ec6d3">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-16">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-16">net.edges</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source</th>
+<th>target</th>
+<th>Type</th>
+<th>Effect</th>
+<th>References</th>
+<th>Provenance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>P12830</td>
+<td>P12931</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>1</th>
+<td>P12931</td>
+<td>P07949</td>
+<td>None</td>
+<td>stimulation</td>
+<td>BioGRID:10070972;HPRD:10070972;KEA:11713247;KE...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>2</th>
+<td>P07949</td>
+<td>P12830</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>3</th>
+<td>P04637</td>
+<td>P14210</td>
+<td>None</td>
+<td>stimulation</td>
+<td>SPIKE:18431400;SPIKE_LC:18431400; SPIKE:184314...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>4</th>
+<td>P14210</td>
+<td>P12931</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ProtMapper:23524339; ProtMapper:23524339</td>
+<td>None</td>
+</tr>
+<tr>
+<th>5</th>
+<td>P12931</td>
+<td>Q14289</td>
+<td>None</td>
+<td>stimulation</td>
+<td>Adhesome:10329689;Adhesome:10521452;Adhesome:1...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>6</th>
+<td>Q14289</td>
+<td>P04637</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>7</th>
+<td>P04637</td>
+<td>Q15910</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>8</th>
+<td>Q15910</td>
+<td>P12830</td>
+<td>None</td>
+<td>inhibition</td>
+<td>ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>9</th>
+<td>P12830</td>
+<td>P63000</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>10</th>
+<td>P63000</td>
+<td>P04637</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>11</th>
+<td>P12931</td>
+<td>P63000</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ProtMapper:21798346;ProtMapper:22163037;ProtMa...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>12</th>
+<td>P12830</td>
+<td>P14210</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>13</th>
+<td>P63000</td>
+<td>P12830</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>14</th>
+<td>P04637</td>
+<td>P63000</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>15</th>
+<td>P14210</td>
+<td>P63000</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>16</th>
+<td>Q14289</td>
+<td>P63000</td>
+<td>None</td>
+<td>stimulation</td>
+<td>Adhesome:10592173</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=16e6782c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-17">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">undo</span><span class="p">()</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-17">net.undo()</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=38873798">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-18">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-18">net.edges</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[14]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source</th>
+<th>target</th>
+<th>Type</th>
+<th>Effect</th>
+<th>References</th>
+<th>Provenance</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=437b101f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-19">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">connect_network_radially</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-19">net.connect_network_radially(max_len=1, only_signed=True, consensus=True)</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4499eaf6">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-20">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-20">net.edges</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source</th>
+<th>target</th>
+<th>Type</th>
+<th>Effect</th>
+<th>References</th>
+<th>Provenance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>13</th>
+<td>P12830</td>
+<td>P12931</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>14</th>
+<td>P12830</td>
+<td>P01133</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>15</th>
+<td>P12830</td>
+<td>P62834</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>20</th>
+<td>P12830</td>
+<td>P14210</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>23</th>
+<td>P12830</td>
+<td>P63000</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>915</th>
+<td>P08151</td>
+<td>P04637</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>932</th>
+<td>P61978</td>
+<td>P04637</td>
+<td>None</td>
+<td>stimulation</td>
+<td>InnateDB:23092970;SPIKE:16360036;SPIKE:1847200...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>957</th>
+<td>P98170</td>
+<td>P04637</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>962</th>
+<td>P09038</td>
+<td>P04637</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>963</th>
+<td>Q07817</td>
+<td>P04637</td>
+<td>None</td>
+<td>inhibition</td>
+<td>BioGRID:24474649;DIP:24814347;HPRD:12667443;HP...</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>120 rows × 6 columns</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b054c473">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-21">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-21">net.list_states()</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[17]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[{'id': 0, 'metadata': {'label': 'initial'}},
+ {'id': 1,
+  'metadata': {'method': 'complete_connection',
+   'args': [],
+   'kwargs': {'maxlen': '2',
+    'algorithm': 'bfs',
+    'only_signed': 'True',
+    'consensus': 'True'}}},
+ {'id': 2,
+  'metadata': {'method': 'connect_network_radially',
+   'args': [],
+   'kwargs': {'max_len': '1', 'only_signed': 'True', 'consensus': 'True'}}}]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d03ddaac">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-22">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">history_nx</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">history_graph</span><span class="p">()</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">history_nx</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-22">history_nx = net.history_graph()
+list(history_nx.edges())</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[(0, 1), (0, 2)]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=56fc0c92">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [33]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-23">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-23">HTML(net.history_html())</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[33]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg height="421pt" viewbox="0.00 0.00 2062.37 420.70" width="2062pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" id="graph0" transform="scale(1 1) rotate(0) translate(4 416.7)">
+<title>%3</title>
+<polygon fill="white" points="-4,4 -4,-416.7 2058.37,-416.7 2058.37,4 -4,4" stroke="transparent"></polygon>
+<!-- 0 -->
+<g class="node" id="node1">
+<title>0</title>
+<ellipse cx="1235.64" cy="-385.83" fill="none" rx="48.17" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1235.64" y="-389.63">State 0</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1235.64" y="-374.63">initial</text>
+</g>
+<!-- 1 -->
+<g class="node" id="node2">
+<title>1</title>
+<ellipse cx="809.64" cy="-296.09" fill="none" rx="443.21" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-299.89">State 1</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-284.89">complete_connection(maxlen=2, algorithm=bfs, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g class="edge" id="edge1">
+<title>0-&gt;1</title>
+<path d="M1190.85,-375.61C1131.98,-363.48 1026.04,-341.66 940.76,-324.1" fill="none" stroke="black"></path>
+<polygon fill="black" points="941.23,-320.62 930.73,-322.03 939.82,-327.48 941.23,-320.62" stroke="black"></polygon>
+</g>
+<!-- 2 -->
+<g class="node" id="node3">
+<title>2</title>
+<ellipse cx="1662.64" cy="-296.09" fill="none" rx="391.97" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1662.64" y="-299.89">State 2</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1662.64" y="-284.89">connect_network_radially(max_len=1, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;2 -->
+<g class="edge" id="edge2">
+<title>0-&gt;2</title>
+<path d="M1280.53,-375.61C1339.91,-363.41 1447.06,-341.39 1532.81,-323.77" fill="none" stroke="black"></path>
+<polygon fill="black" points="1533.54,-327.19 1542.63,-321.75 1532.13,-320.33 1533.54,-327.19" stroke="black"></polygon>
+</g>
+<!-- 3 -->
+<g class="node" id="node4">
+<title>3</title>
+<ellipse cx="809.64" cy="-206.35" fill="none" rx="101.23" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-210.15">State 3</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-195.15">add_node(CASP3)</text>
+</g>
+<!-- 1&#45;&gt;3 -->
+<g class="edge" id="edge3">
+<title>1-&gt;3</title>
+<path d="M809.64,-268.77C809.64,-260.8 809.64,-251.91 809.64,-243.42" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-243.35 809.64,-233.35 806.14,-243.35 813.14,-243.35" stroke="black"></polygon>
+</g>
+<!-- 4 -->
+<g class="node" id="node5">
+<title>4</title>
+<ellipse cx="809.64" cy="-116.61" fill="none" rx="106.55" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-120.41">State 4</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-105.41">add_node(MMP14)</text>
+</g>
+<!-- 3&#45;&gt;4 -->
+<g class="edge" id="edge4">
+<title>3-&gt;4</title>
+<path d="M809.64,-179.03C809.64,-171.06 809.64,-162.17 809.64,-153.68" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-153.61 809.64,-143.61 806.14,-153.61 813.14,-153.61" stroke="black"></polygon>
+</g>
+<!-- 5 -->
+<g class="node" id="node6">
+<title>5</title>
+<ellipse cx="809.64" cy="-26.87" fill="none" rx="809.77" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-30.67">State 5</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-15.67">connect_component([SRC, CDH1, TP53, RET, HGF, PTK2B, EZH2, RAC1, CASP3, MMP14], [MMP14, CASP3], maxlen=2, only_signed=True, consensus=True)</text>
+</g>
+<!-- 4&#45;&gt;5 -->
+<g class="edge" id="edge5">
+<title>4-&gt;5</title>
+<path d="M809.64,-89.29C809.64,-81.32 809.64,-72.43 809.64,-63.94" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-63.87 809.64,-53.87 806.14,-63.87 813.14,-63.87" stroke="black"></polygon>
+</g>
+</g>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6f5f3733">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-24">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">compare_states</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-24">net.compare_states(1, 2)</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[20]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>{'added_nodes': ['GJA1',
+  'HIPK2',
+  'SNAI2',
+  'ITGB6',
+  'ITGB8',
+  'PTP4A1',
+  'PRKD1',
+  'ZYX',
+  'MAPK11',
+  'EPHB1',
+  'PIK3R3',
+  'HMGB1',
+  'EGF',
+  'RAP1A',
+  'FGF2',
+  'PPP2CA',
+  'DEK',
+  'HSPA1B',
+  'NFKB1',
+  'AR',
+  'MAPK1',
+  'CDC42',
+  'GDNF',
+  'FOS',
+  'HNRNPK',
+  'TLN1',
+  'PDGFD',
+  'NUMB',
+  'GRK2',
+  'BCL2L1',
+  'WRN',
+  'PDGFRB',
+  'CTNND1',
+  'MAPK14',
+  'GFRA1',
+  'PAK4',
+  'GLI1',
+  'BCL6',
+  'CTNNA1',
+  'ITGB5',
+  'DAPK1',
+  'ITGB4',
+  'MET',
+  'NR3C1',
+  'VAV1',
+  'XIAP',
+  'MAPK3',
+  'PRKCD',
+  'HSPA1A',
+  'S100A4'],
+ 'removed_nodes': [],
+ 'added_edges': [('MAPK11',
+   'TP53',
+   None,
+   'stimulation',
+   'ACSN:11274345;ACSN:15140942;ACSN:15187187;ACSN:16393692;ACSN:19436832;ACSN:20506250;ACSN:21614932;ProtMapper:10212189;SIGNOR:17254968;SPIKE_LC:17145710',
+   None),
+  ('TP53', 'DEK', None, 'inhibition', nan, None),
+  ('MAPK1',
+   'TP53',
+   None,
+   'stimulation',
+   'BioGRID:15867353;HPRD-phos:11409876;HPRD-phos:15116093;HPRD:11409876;HPRD:12091386;HPRD:15116093;InnateDB:10958792;KEA:10446957;KEA:10673501;KEA:11409876;KEA:11551930;KEA:11709713;KEA:11875057;KEA:12091386;KEA:14965474;KEA:15116093;KEA:9765199;Lit-BM-17:10958792;Lit-BM-17:21147777;Lit-BM-17:21675959;Lit-BM-17:23443559;Lit-BM-17:25241761;ProtMapper:11409876;ProtMapper:15116093;iPTMnet:10781582;iPTMnet:11409876;iPTMnet:12091386;iPTMnet:14965474;iPTMnet:15116093',
+   None),
+  ('CDH1',
+   'CTNNA1',
+   None,
+   'stimulation',
+   'HPRD:11226248;HPRD:7542250;InnateDB:11801604;InnateDB:16219695;InnateDB:9700170;IntAct:22750944;Lit-BM-17:10381631;Lit-BM-17:11960376;Lit-BM-17:16212417;Lit-BM-17:19016843;Lit-BM-17:25468996;Lit-BM-17:7542250;Lit-BM-17:8227214;Lit-BM-17:9233779;MPPI:9326449;SIGNOR:24336504;SPIKE:11226248;SPIKE:17145710;SPIKE_LC:11226248;SPIKE_LC:17145710',
+   None),
+  ('PAK4',
+   'TP53',
+   None,
+   'stimulation',
+   'ProtMapper:27496712;iPTMnet:27496712',
+   None),
+  ('CTNND1',
+   'CDH1',
+   None,
+   'stimulation',
+   'BioGRID:12427869;BioGRID:29207493;HPRD:10225956;HPRD:10409703;HPRD:10629228;HPRD:10931041;HPRD:11226248;HPRD:7542250;HPRD:7651399;InnateDB:17261850;InnateDB:8660921;Lit-BM-17:10409703;Lit-BM-17:12427869;Lit-BM-17:12640114;Lit-BM-17:12707304;Lit-BM-17:19711372;Lit-BM-17:20371349;Lit-BM-17:21670201;Lit-BM-17:22715382;Lit-BM-17:22752307;Lit-BM-17:22850631;Lit-BM-17:23180380;Lit-BM-17:24424122;Lit-BM-17:25468996;Lit-BM-17:7542250;Lit-BM-17:7651399;Lit-BM-17:7876318;Lit-BM-17:9535896;SIGNOR:14610055;SPIKE:20940130;SPIKE_LC:20940130',
+   None),
+  ('WRN',
+   'TP53',
+   None,
+   'stimulation',
+   'BioGRID:11427532;HPRD:11399766;HPRD:11427532;HPRD:12080066;HPRD:15735006;IntAct:11427532;IntAct:15735006;Lit-BM-17:11427532;Lit-BM-17:12080066;Lit-BM-17:15735006;SPIKE:12080066;SPIKE:16713569;SPIKE_LC:12080066;SPIKE_LC:16713569',
+   None),
+  ('SRC', 'MAPK11', None, 'stimulation', nan, None),
+  ('SRC', 'PTP4A1', None, 'stimulation', nan, None),
+  ('SRC',
+   'DAPK1',
+   None,
+   'inhibition',
+   'PhosphoSite:17803936;ProtMapper:21785723;ProtMapper:28976934;SPIKE:17803936;SPIKE_LC:17803936;iPTMnet:17803936',
+   None),
+  ('TP53', 'SNAI2', None, 'stimulation', nan, None),
+  ('SRC',
+   'PPP2CA',
+   None,
+   'inhibition',
+   'PhosphoSite:10978272;PhosphoSite:12921784;PhosphoSite:1325671;PhosphoSite:16286244;PhosphoSite:17303700;PhosphoSite:17394530;PhosphoSite:17635907;PhosphoSite:18208556;PhosphoSite:20558158;PhosphoSite:21292165;PhosphoSite:21554241;PhosphoSite:21791414;PhosphoSite:22299660;PhosphoSite:22771321;PhosphoSite:23222956;PhosphoSite:23251465;PhosphoSite:23436320;PhosphoSite:23926298;PhosphoSite:24395787;PhosphoSite:24676687;PhosphoSite:24997451;PhosphoSite:25003662;PhosphoSite:25726524;PhosphoSite:25931585;PhosphoSite:26378614;PhosphoSite:27013170;PhosphoSite:31992581;PhosphoSite:32130916;ProtMapper:23796501;SIGNOR:23796501;iPTMnet:23796501',
+   None),
+  ('PRKCD',
+   'CDH1',
+   None,
+   'inhibition',
+   'ProtMapper:27203386;SIGNOR:27203386;iPTMnet:27203386',
+   None),
+  ('HGF', 'SRC', None, 'stimulation', 'ProtMapper:23524339', None),
+  ('SRC', 'GFRA1', None, 'stimulation', nan, None),
+  ('GDNF', 'CDH1', None, 'stimulation', nan, None),
+  ('S100A4',
+   'TP53',
+   None,
+   'stimulation',
+   'BioGRID:11527429;HPRD:11278647;HPRD:11527429;HPRD:12942774;HPRD:15116098;IntAct:19740107;IntAct:20591429;IntAct:23752197;IntAct:31837246;Lit-BM-17:11527429;Lit-BM-17:19740107;Lit-BM-17:20070253;Lit-BM-17:20591429;Lit-BM-17:23752197;SPIKE_LC:19740107',
+   None),
+  ('NFKB1', 'TP53', None, 'stimulation', 'ACSN:8051093', None),
+  ('PTP4A1', 'TP53', None, 'inhibition', nan, None),
+  ('EZH2',
+   'CDH1',
+   None,
+   'inhibition',
+   'ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448',
+   None),
+  ('TP53',
+   'WRN',
+   None,
+   'inhibition',
+   'BioGRID:11427532;HPRD:11399766;HPRD:11427532;HPRD:12080066;HPRD:15735006;IntAct:11427532;IntAct:15735006;Lit-BM-17:11427532;Lit-BM-17:12080066;Lit-BM-17:15735006;SPIKE:12080066;SPIKE:16713569;SPIKE_LC:12080066;SPIKE_LC:16713569',
+   None),
+  ('VAV1',
+   'SRC',
+   None,
+   'stimulation',
+   'Adhesome:1311423;Adhesome:1531699',
+   None),
+  ('CDH1',
+   'SRC',
+   None,
+   'stimulation',
+   'ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074',
+   None),
+  ('DAPK1',
+   'TP53',
+   None,
+   'stimulation',
+   'KEA:10801407;KEA:12111733;KEA:15254178;KEA:15489221;KEA:17339337;PhosphoSite:10606744;PhosphoSite:10673501;PhosphoSite:10733583;PhosphoSite:10734067;PhosphoSite:11244509;PhosphoSite:11258706;PhosphoSite:11707453;PhosphoSite:11883897;PhosphoSite:12091386;PhosphoSite:15355354;PhosphoSite:15542844;PhosphoSite:17339337;PhosphoSite:17977830;PhosphoSite:18246126;PhosphoSite:20851891;PhosphoSite:20959462;PhosphoSite:21386980;PhosphoSite:22112863;PhosphoSite:22815859;PhosphoSite:25584963;PhosphoSite:26742101;PhosphoSite:27753536;PhosphoSite:32266931;PhosphoSite:34168813;ProtMapper:17339337;ProtMapper:25229255;ProtMapper:26626260;ProtMapper:27681874;SIGNOR:17339337;iPTMnet:17297916;iPTMnet:17339337;phosphoELM:17339337',
+   None),
+  ('EGF',
+   'SRC',
+   None,
+   'stimulation',
+   'ProtMapper:15845350;ProtMapper:19481075;ProtMapper:22927910;ProtMapper:23349873;ProtMapper:27462789',
+   None),
+  ('SRC', 'ITGB4', None, 'stimulation', 'Adhesome:10592173', None),
+  ('SRC', 'ITGB6', None, 'stimulation', 'Adhesome:10592173', None),
+  ('GJA1', 'CDH1', None, 'stimulation', nan, None),
+  ('TP53', 'AR', None, 'inhibition', 'SPIKE_LC:19481544', None),
+  ('SRC',
+   'GRK2',
+   None,
+   'bimodal',
+   'CA1:11278940;HPRD:12624098;KEA:16725308;PhosphoSite:11566877;PhosphoSite:16725308;SIGNOR:16725308;SPIKE_LC:16189514;iPTMnet:16725308',
+   None),
+  ('SRC', 'EPHB1', None, 'stimulation', nan, None),
+  ('TP53',
+   'HSPA1A',
+   None,
+   'inhibition',
+   'HPRD:7811761;MPPI:8729618;SPIKE_LC:16713569',
+   None),
+  ('SRC', 'NFKB1', None, 'stimulation', nan, None),
+  ('SRC',
+   'PRKCD',
+   None,
+   'stimulation',
+   'HPRD:15337529;KEA:11927579;KEA:14715667;KEA:14970215;KEA:15541367;KEA:15961393;KEA:17570831;PhosphoSite:16982614;PhosphoSite:17658731;PhosphoSite:19366211;PhosphoSite:24211614;PhosphoSite:26876198;PhosphoSite:27203386;ProtMapper:10319993;ProtMapper:17658731;ProtMapper:18550549;ProtMapper:19138410;ProtMapper:19366211;ProtMapper:19632318;ProtMapper:22689788;ProtMapper:23329791;ProtMapper:23329794;ProtMapper:26876198;ProtMapper:27203386;ProtMapper:28637715;ProtMapper:29422059;ProtMapper:29452094;SPIKE_LC:15851033;iPTMnet:17569658',
+   None),
+  ('ITGB8', 'SRC', None, 'stimulation', 'Adhesome:10592173', None),
+  ('NUMB',
+   'TP53',
+   None,
+   'stimulation',
+   'BioGRID:23881403;DIP:18172499;IntAct:18172499;SIGNOR:18492217',
+   None),
+  ('MAPK14',
+   'TP53',
+   None,
+   'stimulation',
+   'ACSN:11274345;ACSN:15140942;ACSN:15187187;ACSN:16393692;ACSN:19436832;ACSN:20506250;ACSN:21614932;BioGRID:21050851;HPRD-phos:10348343;HPRD-phos:10747897;HPRD-phos:10884347;HPRD-phos:19413330;InnateDB:10581258;KEA:10348343;KEA:10747897;KEA:1088347;KEA:10884347;KEA:16083285;KEA:16552184;KEA:9315650;Lit-BM-17:15642743;Lit-BM-17:17172861;Lit-BM-17:20213747;Lit-BM-17:21050851;Lit-BM-17:21675959;ProtMapper:10212189;ProtMapper:10581258;ProtMapper:10747897;ProtMapper:10781582;ProtMapper:11078726;ProtMapper:11258706;ProtMapper:11283254;ProtMapper:15642743;ProtMapper:15657900;ProtMapper:17535811;ProtMapper:17906639;ProtMapper:22975381;ProtMapper:24818748;ProtMapper:25789565;ProtMapper:26247731;SIGNOR:10581258;SIGNOR:10747897;SIGNOR:10781582;SIGNOR:11258706;SIGNOR:15642743;SIGNOR:17535811;SIGNOR:22975381;iPTMnet:10348343;iPTMnet:10581258;iPTMnet:10747897;iPTMnet:10781582;iPTMnet:10884347;iPTMnet:11258706;iPTMnet:15642743;iPTMnet:17535811;iPTMnet:19413330;iPTMnet:22975381',
+   None),
+  ('SRC',
+   'CTNND1',
+   None,
+   'stimulation',
+   'HPRD-phos:11382764;HPRD-phos:14996911;HPRD-phos:17016520;HPRD-phos:17389395;HPRD-phos:18669648;HPRD-phos:18707149;HPRD-phos:20068231;HPRD:11382764;KEA:11382764;ProtMapper:11382764;ProtMapper:17194753;ProtMapper:19138410;ProtMapper:23457577;ProtMapper:26477567;SIGNOR:11382764;iPTMnet:11382764;iPTMnet:14996911;iPTMnet:17016520;iPTMnet:17194753;iPTMnet:17389395;iPTMnet:18669648;iPTMnet:18707149;iPTMnet:20068231',
+   None),
+  ('PRKD1',
+   'CDH1',
+   None,
+   'stimulation',
+   'SIGNOR:15695390;SPIKE_LC:15695390',
+   None),
+  ('CTNNA1', 'SRC', None, 'stimulation', nan, None),
+  ('XIAP', 'TP53', None, 'stimulation', nan, None),
+  ('RAP1A', 'CDH1', None, 'stimulation', nan, None),
+  ('HMGB1',
+   'TP53',
+   None,
+   'stimulation',
+   'DIP:23063560;DIP:9472015;HPRD:11106654;HPRD:11748221;HPRD:9472015;IntAct:23063560;IntAct:9472015;Lit-BM-17:11106654;Lit-BM-17:11748221;Lit-BM-17:9472015;SPIKE_LC:16713569',
+   None),
+  ('CDH1', 'RAP1A', None, 'stimulation', nan, None),
+  ('SRC', 'HIPK2', None, 'stimulation', nan, None),
+  ('SRC', 'TLN1', None, 'stimulation', nan, None),
+  ('CDC42', 'CDH1', None, 'inhibition', nan, None),
+  ('CDH1', 'ZYX', None, 'stimulation', nan, None),
+  ('TP53', 'HSPA1B', None, 'inhibition', 'MPPI:8729618', None),
+  ('SRC', 'PDGFD', None, 'stimulation', nan, None),
+  ('GRK2',
+   'TP53',
+   None,
+   'stimulation',
+   'PhosphoSite:10933801;PhosphoSite:11409876;PhosphoSite:14729628;PhosphoSite:15053879;PhosphoSite:15116093;PhosphoSite:18952844;PhosphoSite:20124405;PhosphoSite:20473327;PhosphoSite:23723076;PhosphoSite:29988038;PhosphoSite:33256128;ProtMapper:20124405',
+   None),
+  ('HSPA1B', 'TP53', None, 'inhibition', 'MPPI:8729618', None),
+  ('SRC',
+   'FOS',
+   None,
+   'stimulation',
+   'PhosphoSite:17160021;PhosphoSite:22105363',
+   None),
+  ('SRC',
+   'ITGB5',
+   None,
+   'stimulation',
+   'Adhesome:10592173;NetPath:19910644',
+   None),
+  ('FGF2', 'TP53', None, 'inhibition', nan, None),
+  ('SRC',
+   'AR',
+   None,
+   'stimulation',
+   'BioGRID:15027889;HPRD:15027889;HPRD:15062576;InnateDB:12933816;Lit-BM-17:15027889;Lit-BM-17:15062576;Lit-BM-17:15466214;Lit-BM-17:24728074;NetPath:11032808;NetPath:12933816;NetPath:15466214;ProtMapper:17525795;ProtMapper:19117998;ProtMapper:20383201;ProtMapper:20570899;ProtMapper:21318111;ProtMapper:21512132;ProtMapper:21886458;ProtMapper:21956655;ProtMapper:24859991;ProtMapper:24868554;ProtMapper:24948875;ProtMapper:25133482;ProtMapper:25547388;ProtMapper:25950519;ProtMapper:26829214;ProtMapper:28144231;SPIKE:17045208;SPIKE_LC:17045208',
+   None),
+  ('PPP2CA',
+   'TP53',
+   None,
+   'bimodal',
+   'DEPOD:14712210;DEPOD:17245430;DEPOD:1848668;HPRD:12556559;ProtMapper:14712210;ProtMapper:17245430;SIGNOR:14712210;SIGNOR:17245430;SPIKE_LC:16713569',
+   None),
+  ('TLN1', 'SRC', None, 'stimulation', nan, None),
+  ('SRC', 'GDNF', None, 'stimulation', nan, None),
+  ('SRC', 'MAPK3', None, 'stimulation', nan, None),
+  ('PIK3R3',
+   'TP53',
+   None,
+   'stimulation',
+   'IntAct:32606738;SIGNOR:32606738',
+   None),
+  ('TP53',
+   'S100A4',
+   None,
+   'stimulation',
+   'BioGRID:11527429;HPRD:11278647;HPRD:11527429;HPRD:12942774;HPRD:15116098;IntAct:19740107;IntAct:20591429;IntAct:23752197;IntAct:31837246;Lit-BM-17:11527429;Lit-BM-17:19740107;Lit-BM-17:20070253;Lit-BM-17:20591429;Lit-BM-17:23752197;SPIKE_LC:19740107',
+   None),
+  ('SRC', 'MAPK14', None, 'stimulation', nan, None),
+  ('NR3C1',
+   'TP53',
+   None,
+   'inhibition',
+   'BioGRID:11080152;HPRD:11080152;SPIKE_LC:16713569',
+   None),
+  ('SRC', 'NUMB', None, 'stimulation', nan, None),
+  ('ZYX', 'SRC', None, 'stimulation', nan, None),
+  ('ITGB4', 'SRC', None, 'stimulation', 'Adhesome:10592173', None),
+  ('TP53', 'GLI1', None, 'inhibition', nan, None),
+  ('CDH1', 'EGF', None, 'inhibition', nan, None),
+  ('SRC', 'FGF2', None, 'inhibition', nan, None),
+  ('TP53',
+   'BCL2L1',
+   None,
+   'inhibition',
+   'BioGRID:24474649;DIP:24814347;HPRD:12667443;HPRD:16151013;IntAct:12667443;IntAct:14963330;IntAct:16151013;IntAct:24814347;Lit-BM-17:12667443;Lit-BM-17:14963330;Lit-BM-17:16151013;Lit-BM-17:20837658;Lit-BM-17:21900206;Lit-BM-17:24474649;Lit-BM-17:26556313;SPIKE_LC:16713569',
+   None),
+  ('AR', 'CDH1', None, 'inhibition', nan, None),
+  ('TP53',
+   'BCL6',
+   None,
+   'stimulation',
+   'SPIKE:16249378;SPIKE_LC:16249378',
+   None),
+  ('HNRNPK',
+   'TP53',
+   None,
+   'stimulation',
+   'InnateDB:23092970;SPIKE:16360036;SPIKE:18472002;SPIKE_LC:16360036;SPIKE_LC:18472002',
+   None),
+  ('ITGB5',
+   'SRC',
+   None,
+   'stimulation',
+   'Adhesome:10592173;NetPath:19910644',
+   None),
+  ('SRC',
+   'PIK3R3',
+   None,
+   'stimulation',
+   'IntAct:25814554;Lit-BM-17:22402981;Lit-BM-17:25814554',
+   None),
+  ('SRC',
+   'MET',
+   None,
+   'inhibition',
+   'BioGRID:9837958;HPRD:9837958;IntAct:24034250;IntAct:24728074;KEA:17570479;Lit-BM-17:24034250;Lit-BM-17:24728074;Lit-BM-17:9837958',
+   None),
+  ('TP53', 'PDGFRB', None, 'inhibition', nan, None),
+  ('SRC',
+   'PTK2B',
+   None,
+   'stimulation',
+   'Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924',
+   None),
+  ('SRC',
+   'PRKD1',
+   None,
+   'stimulation',
+   'HPRD:12637538;KEA:12637538;KEA:17804414;PhosphoSite:17804414;PhosphoSite:28842658;ProtMapper:12505989;ProtMapper:12637538;ProtMapper:17804414;ProtMapper:28174535;SIGNOR:12637538;SIGNOR:17804414;iPTMnet:12637538;iPTMnet:17804414;phosphoELM:17804414',
+   None),
+  ('SRC', 'PAK4', None, 'stimulation', nan, None),
+  ('FOS', 'TP53', None, 'inhibition', nan, None),
+  ('TP53',
+   'HGF',
+   None,
+   'stimulation',
+   'SPIKE:18431400;SPIKE_LC:18431400',
+   None),
+  ('EPHB1', 'SRC', None, 'stimulation', nan, None),
+  ('GFRA1', 'CDH1', None, 'stimulation', nan, None),
+  ('TP53', 'XIAP', None, 'stimulation', nan, None),
+  ('MET',
+   'CDH1',
+   None,
+   'stimulation',
+   'ACSN:12040186;ACSN:14585353;ACSN:17496910;ACSN:19568798;ACSN:22558232;Cellinker:17336101;InnateDB:16909210',
+   None),
+  ('SRC', 'ITGB8', None, 'stimulation', 'Adhesome:10592173', None),
+  ('TP53',
+   'HMGB1',
+   None,
+   'stimulation',
+   'DIP:23063560;DIP:9472015;HPRD:11106654;HPRD:11748221;HPRD:9472015;IntAct:23063560;IntAct:9472015;Lit-BM-17:11106654;Lit-BM-17:11748221;Lit-BM-17:9472015;SPIKE_LC:16713569',
+   None),
+  ('TP53',
+   'MET',
+   None,
+   'stimulation',
+   'SPIKE:18431400;SPIKE_LC:18431400',
+   None),
+  ('HIPK2',
+   'TP53',
+   None,
+   'stimulation',
+   'BioGRID:11925430;BioGRID:22110707;HPRD-phos:11780126;HPRD-phos:11875057;HPRD-phos:16212962;HPRD:11780126;HPRD:11875057;HPRD:11925430;HPRD:15896780;IntAct:15896780;IntAct:16212962;KEA:11780126;KEA:11875057;KEA:16212962;KEA:16729035;Lit-BM-17:11740489;Lit-BM-17:11925430;Lit-BM-17:15896780;Lit-BM-17:16212962;Lit-BM-17:21057547;Lit-BM-17:25313037;ProtMapper:11740489;ProtMapper:11780126;ProtMapper:15865933;ProtMapper:16212962;ProtMapper:16601678;ProtMapper:17203463;ProtMapper:17210684;ProtMapper:17332358;ProtMapper:17349959;ProtMapper:17906639;ProtMapper:19128456;ProtMapper:19714248;ProtMapper:19731416;ProtMapper:19828042;ProtMapper:19946469;ProtMapper:20171273;ProtMapper:20418953;ProtMapper:20508833;ProtMapper:20849851;ProtMapper:21192925;ProtMapper:21258400;ProtMapper:21855806;ProtMapper:22110707;ProtMapper:22545114;ProtMapper:22889244;ProtMapper:22935610;ProtMapper:23091802;ProtMapper:23293771;ProtMapper:23316480;ProtMapper:23536002;ProtMapper:23700162;ProtMapper:23717325;ProtMapper:23814485;ProtMapper:23945296;ProtMapper:24101931;ProtMapper:24145406;ProtMapper:24211575;ProtMapper:24829283;ProtMapper:25210797;ProtMapper:25313037;ProtMapper:25364713;ProtMapper:26942128;ProtMapper:27019364;ProtMapper:27308326;ProtMapper:27308327;ProtMapper:27689990;ProtMapper:27787517;ProtMapper:27901482;ProtMapper:28107201;ProtMapper:28122345;ProtMapper:28893313;SIGNOR:17210684;SPIKE:17332358;SPIKE_LC:15896780;SPIKE_LC:16713569;SPIKE_LC:17332358;iPTMnet:11740489;iPTMnet:11780126;iPTMnet:11875057;iPTMnet:16212962;iPTMnet:16729035;iPTMnet:17203463;iPTMnet:17210684;iPTMnet:19828042;iPTMnet:22011578;phosphoELM:11780126;phosphoELM:16729035',
+   None),
+  ('GLI1', 'TP53', None, 'inhibition', nan, None),
+  ('SRC',
+   'CDC42',
+   None,
+   'stimulation',
+   'KEA:14506284;PhosphoSite:14506284;ProtMapper:14506284;ProtMapper:26816343;SIGNOR:14506284;SPIKE:9626657;SPIKE_LC:9626657;iPTMnet:14506284;phosphoELM:14506284',
+   None),
+  ('HSPA1A',
+   'TP53',
+   None,
+   'inhibition',
+   'HPRD:7811761;MPPI:8729618;SPIKE_LC:16713569',
+   None),
+  ('BCL2L1',
+   'TP53',
+   None,
+   'inhibition',
+   'BioGRID:24474649;DIP:24814347;HPRD:12667443;HPRD:16151013;IntAct:12667443;IntAct:14963330;IntAct:16151013;IntAct:24814347;Lit-BM-17:12667443;Lit-BM-17:14963330;Lit-BM-17:16151013;Lit-BM-17:20837658;Lit-BM-17:21900206;Lit-BM-17:24474649;Lit-BM-17:26556313;SPIKE_LC:16713569',
+   None),
+  ('SRC',
+   'GJA1',
+   None,
+   'inhibition',
+   'ACSN:10679481;ACSN:10871288;ACSN:15534005;ACSN:15782139;ACSN:16492141;ACSN:9278444;ACSN:9592087;HPRD-phos:11514593;HPRD-phos:19901323;HPRD:11514593;HPRD:9278444;KEA:11514593;PhosphoSite:30448479;ProtMapper:11514593;ProtMapper:15350848;ProtMapper:16916748;ProtMapper:19284610;ProtMapper:21856279;ProtMapper:22342665;ProtMapper:23596415;ProtMapper:23718910;ProtMapper:24508467;ProtMapper:24670366;ProtMapper:26706150;ProtMapper:27280719;ProtMapper:29587860;ProtMapper:30095367;ProtMapper:30323740;SIGNOR:16916748;SPIKE_LC:16189514;iPTMnet:11514593;iPTMnet:16916748;iPTMnet:19901323',
+   None),
+  ('SRC', 'MAPK1', None, 'stimulation', 'ProtMapper:17088251', None),
+  ('BCL6',
+   'TP53',
+   None,
+   'inhibition',
+   'SPIKE:15577913;SPIKE_LC:15577913',
+   None),
+  ('PDGFRB',
+   'SRC',
+   None,
+   'stimulation',
+   'BioGRID:18315570;HPRD:2173144;KEA:9010229;ProtMapper:15489898;SIGNOR:15489898;SPIKE_LC:16189514;iPTMnet:15489898;iPTMnet:9010229',
+   None),
+  ('MAPK3',
+   'TP53',
+   None,
+   'stimulation',
+   'HPRD:10958792;InnateDB:10958792;PhosphoSite:10348343;PhosphoSite:10747897;PhosphoSite:11239457;PhosphoSite:12393879;PhosphoSite:17237827;PhosphoSite:18523266;PhosphoSite:24194938;PhosphoSite:25767119;PhosphoSite:28937686;PhosphoSite:9467949;PhosphoSite:9739174;ProtMapper:12955074;SIGNOR:12955074;SPIKE_LC:16713569;iPTMnet:10781582;iPTMnet:12955074',
+   None),
+  ('SNAI2',
+   'CDH1',
+   None,
+   'inhibition',
+   'ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17508028;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22370643;ACSN:22796940',
+   None),
+  ('SRC',
+   'VAV1',
+   None,
+   'stimulation',
+   'Adhesome:1311423;Adhesome:1531699',
+   None),
+  ('PDGFD', 'SRC', None, 'stimulation', nan, None),
+  ('PRKCD',
+   'TP53',
+   None,
+   'stimulation',
+   'IntAct:16377624;ProtMapper:16314418;ProtMapper:16377624;ProtMapper:17906639;SIGNOR:16377624;iPTMnet:16314418;iPTMnet:16377624',
+   None),
+  ('SRC',
+   'HNRNPK',
+   None,
+   'bimodal',
+   'HPRD-phos:12052863;HPRD:12052863;HPRD:7516469;KEA:12052863;Lit-BM-17:16854432;Lit-BM-17:17178840;PhosphoSite:12052863;PhosphoSite:16854432;PhosphoSite:24642125;ProtMapper:12052863;ProtMapper:21184736;SIGNOR:12052863;SPIKE:12052863;SPIKE_LC:12052863;SPIKE_LC:16713569;SPIKE_LC:7592945;iPTMnet:12052863;phosphoELM:12052863',
+   None),
+  ('SRC',
+   'RET',
+   None,
+   'stimulation',
+   'BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514',
+   None),
+  ('DEK', 'TP53', None, 'stimulation', nan, None),
+  ('TP53',
+   'NR3C1',
+   None,
+   'inhibition',
+   'BioGRID:11080152;HPRD:11080152;SPIKE_LC:16713569',
+   None),
+  ('ITGB6', 'SRC', None, 'stimulation', 'Adhesome:10592173', None),
+  ('EGF', 'CDH1', None, 'stimulation', nan, None),
+  ('SRC', 'CTNNA1', None, 'stimulation', nan, None)],
+ 'removed_edges': [('HGF',
+   'SRC',
+   None,
+   'stimulation',
+   'ProtMapper:23524339; ProtMapper:23524339',
+   None),
+  ('PTK2B', 'RAC1', None, 'stimulation', 'Adhesome:10592173', None),
+  ('EZH2',
+   'CDH1',
+   None,
+   'inhibition',
+   'ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448; ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448',
+   None),
+  ('CDH1',
+   'SRC',
+   None,
+   'stimulation',
+   'ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074; ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074',
+   None),
+  ('HGF', 'RAC1', None, 'stimulation', nan, None),
+  ('TP53',
+   'HGF',
+   None,
+   'stimulation',
+   'SPIKE:18431400;SPIKE_LC:18431400; SPIKE:18431400;SPIKE_LC:18431400',
+   None),
+  ('SRC',
+   'PTK2B',
+   None,
+   'stimulation',
+   'Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924; Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924',
+   None),
+  ('SRC',
+   'RET',
+   None,
+   'stimulation',
+   'BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514; BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514',
+   None)],
+ 'added_provenance': [],
+ 'removed_provenance': []}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=2a880907">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-25">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">checkout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-25">net.checkout(1)</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ffef5ca9">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-26">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">convert_edgelist_into_genesymbol</span><span class="p">()</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-26">net.convert_edgelist_into_genesymbol()</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[27]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source</th>
+<th>target</th>
+<th>Type</th>
+<th>Effect</th>
+<th>References</th>
+<th>Provenance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>CDH1</td>
+<td>SRC</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>1</th>
+<td>SRC</td>
+<td>RET</td>
+<td>None</td>
+<td>stimulation</td>
+<td>BioGRID:10070972;HPRD:10070972;KEA:11713247;KE...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>2</th>
+<td>RET</td>
+<td>CDH1</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>3</th>
+<td>TP53</td>
+<td>HGF</td>
+<td>None</td>
+<td>stimulation</td>
+<td>SPIKE:18431400;SPIKE_LC:18431400; SPIKE:184314...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>4</th>
+<td>HGF</td>
+<td>SRC</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ProtMapper:23524339; ProtMapper:23524339</td>
+<td>None</td>
+</tr>
+<tr>
+<th>5</th>
+<td>SRC</td>
+<td>PTK2B</td>
+<td>None</td>
+<td>stimulation</td>
+<td>Adhesome:10329689;Adhesome:10521452;Adhesome:1...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>6</th>
+<td>PTK2B</td>
+<td>TP53</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>7</th>
+<td>TP53</td>
+<td>EZH2</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>8</th>
+<td>EZH2</td>
+<td>CDH1</td>
+<td>None</td>
+<td>inhibition</td>
+<td>ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>9</th>
+<td>CDH1</td>
+<td>RAC1</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>10</th>
+<td>RAC1</td>
+<td>TP53</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>11</th>
+<td>SRC</td>
+<td>RAC1</td>
+<td>None</td>
+<td>stimulation</td>
+<td>ProtMapper:21798346;ProtMapper:22163037;ProtMa...</td>
+<td>None</td>
+</tr>
+<tr>
+<th>12</th>
+<td>CDH1</td>
+<td>HGF</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>13</th>
+<td>RAC1</td>
+<td>CDH1</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>14</th>
+<td>TP53</td>
+<td>RAC1</td>
+<td>None</td>
+<td>inhibition</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>15</th>
+<td>HGF</td>
+<td>RAC1</td>
+<td>None</td>
+<td>stimulation</td>
+<td>NaN</td>
+<td>None</td>
+</tr>
+<tr>
+<th>16</th>
+<td>PTK2B</td>
+<td>RAC1</td>
+<td>None</td>
+<td>stimulation</td>
+<td>Adhesome:10592173</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2b5d1cd9">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-27">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"MMP14"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"CASP3"</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-27">net.add_node("MMP14")
+net.add_node("CASP3")</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[29]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>True</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=7c6d2400">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [31]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-28">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">connect_component</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">"Genesymbol"</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="p">[</span><span class="s2">"MMP14"</span><span class="p">,</span> <span class="s2">"CASP3"</span><span class="p">],</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-28">net.connect_component(net.nodes["Genesymbol"].tolist(), ["MMP14", "CASP3"], maxlen=2, only_signed=True, consensus=True)</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a880dce2">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [32]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-29">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-29">HTML(net.history_html())</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[32]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg height="421pt" viewbox="0.00 0.00 2062.37 420.70" width="2062pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" id="graph0" transform="scale(1 1) rotate(0) translate(4 416.7)">
+<title>%3</title>
+<polygon fill="white" points="-4,4 -4,-416.7 2058.37,-416.7 2058.37,4 -4,4" stroke="transparent"></polygon>
+<!-- 0 -->
+<g class="node" id="node1">
+<title>0</title>
+<ellipse cx="1235.64" cy="-385.83" fill="none" rx="48.17" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1235.64" y="-389.63">State 0</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1235.64" y="-374.63">initial</text>
+</g>
+<!-- 1 -->
+<g class="node" id="node2">
+<title>1</title>
+<ellipse cx="809.64" cy="-296.09" fill="none" rx="443.21" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-299.89">State 1</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-284.89">complete_connection(maxlen=2, algorithm=bfs, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g class="edge" id="edge1">
+<title>0-&gt;1</title>
+<path d="M1190.85,-375.61C1131.98,-363.48 1026.04,-341.66 940.76,-324.1" fill="none" stroke="black"></path>
+<polygon fill="black" points="941.23,-320.62 930.73,-322.03 939.82,-327.48 941.23,-320.62" stroke="black"></polygon>
+</g>
+<!-- 2 -->
+<g class="node" id="node3">
+<title>2</title>
+<ellipse cx="1662.64" cy="-296.09" fill="none" rx="391.97" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1662.64" y="-299.89">State 2</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="1662.64" y="-284.89">connect_network_radially(max_len=1, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;2 -->
+<g class="edge" id="edge2">
+<title>0-&gt;2</title>
+<path d="M1280.53,-375.61C1339.91,-363.41 1447.06,-341.39 1532.81,-323.77" fill="none" stroke="black"></path>
+<polygon fill="black" points="1533.54,-327.19 1542.63,-321.75 1532.13,-320.33 1533.54,-327.19" stroke="black"></polygon>
+</g>
+<!-- 3 -->
+<g class="node" id="node4">
+<title>3</title>
+<ellipse cx="809.64" cy="-206.35" fill="none" rx="101.23" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-210.15">State 3</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-195.15">add_node(CASP3)</text>
+</g>
+<!-- 1&#45;&gt;3 -->
+<g class="edge" id="edge3">
+<title>1-&gt;3</title>
+<path d="M809.64,-268.77C809.64,-260.8 809.64,-251.91 809.64,-243.42" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-243.35 809.64,-233.35 806.14,-243.35 813.14,-243.35" stroke="black"></polygon>
+</g>
+<!-- 4 -->
+<g class="node" id="node5">
+<title>4</title>
+<ellipse cx="809.64" cy="-116.61" fill="none" rx="106.55" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-120.41">State 4</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-105.41">add_node(MMP14)</text>
+</g>
+<!-- 3&#45;&gt;4 -->
+<g class="edge" id="edge4">
+<title>3-&gt;4</title>
+<path d="M809.64,-179.03C809.64,-171.06 809.64,-162.17 809.64,-153.68" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-153.61 809.64,-143.61 806.14,-153.61 813.14,-153.61" stroke="black"></polygon>
+</g>
+<!-- 5 -->
+<g class="node" id="node6">
+<title>5</title>
+<ellipse cx="809.64" cy="-26.87" fill="none" rx="809.77" ry="26.74" stroke="black"></ellipse>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-30.67">State 5</text>
+<text font-family="Times,serif" font-size="14.00" text-anchor="middle" x="809.64" y="-15.67">connect_component([SRC, CDH1, TP53, RET, HGF, PTK2B, EZH2, RAC1, CASP3, MMP14], [MMP14, CASP3], maxlen=2, only_signed=True, consensus=True)</text>
+</g>
+<!-- 4&#45;&gt;5 -->
+<g class="edge" id="edge5">
+<title>4-&gt;5</title>
+<path d="M809.64,-89.29C809.64,-81.32 809.64,-72.43 809.64,-63.94" fill="none" stroke="black"></path>
+<polygon fill="black" points="813.14,-63.87 809.64,-53.87 806.14,-63.87 813.14,-63.87" stroke="black"></polygon>
+</g>
+</g>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=6c4575b7">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="CodeMirror cm-s-jupyter">
+<div class="zeroclipboard-container">
+<clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-30">
+<div>
+<span class="notice" hidden="">Copied!</span>
+<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
+<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+</clipboard-copy>
+</div>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">()</span><span class="o">.</span>
+</pre></div>
+<div class="clipboard-copy-txt" id="cell-30">net.history_html().</div>
 </div>
 </div>
 </div>
@@ -2293,7 +4613,7 @@ visualizer1.render()</div>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../4_Connect_upstream/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Connect to upstream components">
+          <a href="../10_Import_and_complete_a_network/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Build, manipulate, export and import networks">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2303,20 +4623,20 @@ visualizer1.render()</div>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Connect to upstream components
+                Build, manipulate, export and import networks
               </div>
             </div>
           </a>
         
         
           
-          <a href="../6_ontology/" class="md-footer__link md-footer__link--next" aria-label="Next: Connect to downstream Gene Ontology terms.">
+          <a href="../../api/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Connect to downstream Gene Ontology terms.
+                Overview
               </div>
             </div>
             <div class="md-footer__button md-icon">

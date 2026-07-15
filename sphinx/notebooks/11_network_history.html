@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exploring Network History in NeKo &mdash; neko  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+    <link rel="shortcut icon" href="../_static/neko_logo.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html">
+            
+              <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.1.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="1_network_building.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_add_resources.html">Build network using user-defined resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_stepwise_connection.html">Stepwise connection: a focus on the INE algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Connect_upstream.html">Connect to upstream components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_build_phosphosite_network.html">Build network based on kinase-phosphosite interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ontology.html">Connect to downstream Gene Ontology terms.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_tissue_mapping.html">Map tissue expression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_Compare_networks.html">Network comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9-Recreating_famous_pathways.html">Re-creating famous pathways from SIGNOR and WIKIPATHWAYS using NeKo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_Import_and_complete_a_network.html">Build, manipulate, export and import networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">neko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Exploring Network History in NeKo</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/sysbio-curie/neko/blob/main/docs/notebooks/11_network_history.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Exploring-Network-History-in-NeKo">
+<h1>Exploring Network History in NeKo<a class="headerlink" href="#Exploring-Network-History-in-NeKo" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates the new history facilities in NeKo. You will learn how to:</p>
+<ul class="simple">
+<li><p>capture network states automatically while you enrich a network</p></li>
+<li><p>inspect branches and metadata associated with each state</p></li>
+<li><p>visualise the history graph as both a <code class="docutils literal notranslate"><span class="pre">networkx</span></code> object and an embedded SVG</p></li>
+<li><p>control the history recorder with context managers and global toggles</p></li>
+<li><p>prune older history entries using <code class="docutils literal notranslate"><span class="pre">set_max_history</span></code></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="1.-Create-a-network-using-the-Omnipath-database">
+<h2>1. Create a network using the Omnipath database<a class="headerlink" href="#1.-Create-a-network-using-the-Omnipath-database" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">initial_nodes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">],</span> <span class="n">resources</span><span class="o">=</span><span class="s2">&quot;omnipath&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;id&#39;: 0, &#39;metadata&#39;: {&#39;label&#39;: &#39;initial&#39;}}]
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Automatic-history-capture">
+<h2>2. Automatic history capture<a class="headerlink" href="#2.-Automatic-history-capture" title="Link to this heading"></a></h2>
+<p>Every mutating API call creates a new state with metadata describing the operation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP63&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;FAK&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;id&#39;: 0, &#39;metadata&#39;: {&#39;label&#39;: &#39;initial&#39;}},
+ {&#39;id&#39;: 1, &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#39;TP63&#39;], &#39;kwargs&#39;: {}}},
+ {&#39;id&#39;: 2, &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#39;PTK2&#39;], &#39;kwargs&#39;: {}}}]
+</pre></div></div>
+</div>
+<p>We can compare branches or move around the history using <code class="docutils literal notranslate"><span class="pre">checkout</span></code>, <code class="docutils literal notranslate"><span class="pre">undo</span></code>, and <code class="docutils literal notranslate"><span class="pre">redo</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">current_state_id</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current state ID:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Current state ID: 2
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">undo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>TP53</td>
+      <td>P04637</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>TP63</td>
+      <td>Q9H3D4</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">redo</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Genesymbol</th>
+      <th>Uniprot</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SRC</td>
+      <td>P12931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CDH1</td>
+      <td>P12830</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>TP53</td>
+      <td>P04637</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>TP63</td>
+      <td>Q9H3D4</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>PTK2</td>
+      <td>Q05397</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="3.-Visualising-the-history-graph">
+<h2>3. Visualising the history graph<a class="headerlink" href="#3.-Visualising-the-history-graph" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">history_graph()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">networkx</span></code> object, while <code class="docutils literal notranslate"><span class="pre">history_html()</span></code> embeds a Graphviz SVG.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">history_nx</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">history_graph</span><span class="p">()</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">history_nx</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(0, 1), (1, 2)]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="196pt" height="241pt"
+ viewBox="0.00 0.00 196.09 241.22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 237.22)">
+<title>%3</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-237.22 192.09,-237.22 192.09,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node">
+<title>0</title>
+<ellipse fill="none" stroke="black" cx="94.05" cy="-206.35" rx="48.17" ry="26.74"/>
+<text text-anchor="middle" x="94.05" y="-210.15" font-family="Times,serif" font-size="14.00">State 0</text>
+<text text-anchor="middle" x="94.05" y="-195.15" font-family="Times,serif" font-size="14.00">initial</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node">
+<title>1</title>
+<ellipse fill="none" stroke="black" cx="94.05" cy="-116.61" rx="92.76" ry="26.74"/>
+<text text-anchor="middle" x="94.05" y="-120.41" font-family="Times,serif" font-size="14.00">State 1</text>
+<text text-anchor="middle" x="94.05" y="-105.41" font-family="Times,serif" font-size="14.00">add_node(TP63)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g id="edge1" class="edge">
+<title>0&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M94.05,-179.03C94.05,-171.06 94.05,-162.17 94.05,-153.68"/>
+<polygon fill="black" stroke="black" points="97.55,-153.61 94.05,-143.61 90.55,-153.61 97.55,-153.61"/>
+</g>
+<!-- 2 -->
+<g id="node3" class="node">
+<title>2</title>
+<ellipse fill="none" stroke="black" cx="94.05" cy="-26.87" rx="94.09" ry="26.74"/>
+<text text-anchor="middle" x="94.05" y="-30.67" font-family="Times,serif" font-size="14.00">State 2</text>
+<text text-anchor="middle" x="94.05" y="-15.67" font-family="Times,serif" font-size="14.00">add_node(PTK2)</text>
+</g>
+<!-- 1&#45;&gt;2 -->
+<g id="edge2" class="edge">
+<title>1&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M94.05,-89.29C94.05,-81.32 94.05,-72.43 94.05,-63.94"/>
+<polygon fill="black" stroke="black" points="97.55,-63.87 94.05,-53.87 90.55,-63.87 97.55,-63.87"/>
+</g>
+</g>
+</svg>
+</div></div>
+</div>
+</section>
+<section id="4.-Working-with-branches">
+<h2>4. Working with branches<a class="headerlink" href="#4.-Working-with-branches" title="Link to this heading"></a></h2>
+<p>We can revert to an earlier state, explore an alternative enrichment strategy, and compare the resulting states.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">root_state</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">root_state_id</span>
+<span class="n">net</span><span class="o">.</span><span class="n">checkout</span><span class="p">(</span><span class="n">root_state</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;P01112&quot;</span><span class="p">)</span>
+<span class="n">branch_state</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">current_state_id</span>
+<span class="n">diff</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">compare_states</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">branch_state</span><span class="p">)</span>
+<span class="n">diff</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;added_nodes&#39;: [&#39;P01112&#39;],
+ &#39;removed_nodes&#39;: [&#39;Q05397&#39;, &#39;Q9H3D4&#39;],
+ &#39;added_edges&#39;: [],
+ &#39;removed_edges&#39;: [],
+ &#39;added_provenance&#39;: [],
+ &#39;removed_provenance&#39;: []}
+</pre></div></div>
+</div>
+</section>
+<section id="5.-Suspension-and-toggles">
+<h2>5. Suspension and toggles<a class="headerlink" href="#5.-Suspension-and-toggles" title="Link to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">suspend_history()</span></code> or <code class="docutils literal notranslate"><span class="pre">set_history_tracking(False)</span></code> to batch changes without recording intermediate states.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">net</span><span class="o">.</span><span class="n">suspend_history</span><span class="p">():</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;Q9Y243&quot;</span><span class="p">)</span>  <span class="c1"># already present, but no state recorded</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">set_history_tracking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;Q15796&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">set_history_tracking</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;id&#39;: 0, &#39;metadata&#39;: {&#39;label&#39;: &#39;initial&#39;}},
+ {&#39;id&#39;: 1,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;TP63&#39;&#34;], &#39;kwargs&#39;: {}}},
+ {&#39;id&#39;: 2,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;FAK&#39;&#34;], &#39;kwargs&#39;: {}}},
+ {&#39;id&#39;: 3,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;P01112&#39;&#34;], &#39;kwargs&#39;: {}}}]
+</pre></div></div>
+</div>
+</section>
+<section id="6.-Pruning-history">
+<h2>6. Pruning history<a class="headerlink" href="#6.-Pruning-history" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">set_max_history()</span></code> limits the number of stored states while preserving the root and the latest state.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">set_max_history</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Q9Y6K9&quot;</span><span class="p">,</span> <span class="s2">&quot;P17302&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;id&#39;: 0, &#39;metadata&#39;: {&#39;label&#39;: &#39;initial&#39;}},
+ {&#39;id&#39;: 3,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;P01112&#39;&#34;], &#39;kwargs&#39;: {}}},
+ {&#39;id&#39;: 4,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;Q9Y6K9&#39;&#34;], &#39;kwargs&#39;: {}}},
+ {&#39;id&#39;: 5,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;add_node&#39;, &#39;args&#39;: [&#34;&#39;P17302&#39;&#34;], &#39;kwargs&#39;: {}}}]
+</pre></div></div>
+</div>
+<p>When the number of stored states exceeds the limit, older leaf states are pruned automatically. The root and current state remain intact.</p>
+<p>This concludes the walkthrough of the history API. Experiment by combining these features with your favourite enrichment strategies to analyse multiple hypotheses side by side.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">initial_nodes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SRC&quot;</span><span class="p">,</span> <span class="s2">&quot;CDH1&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">],</span> <span class="n">resources</span><span class="o">=</span><span class="s2">&quot;omnipath&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>P12830</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>P12931</td>
+      <td>P07949</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>BioGRID:10070972;HPRD:10070972;KEA:11713247;KE...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>P07949</td>
+      <td>P12830</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P04637</td>
+      <td>P14210</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SPIKE:18431400;SPIKE_LC:18431400; SPIKE:184314...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>P14210</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ProtMapper:23524339; ProtMapper:23524339</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>P12931</td>
+      <td>Q14289</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10329689;Adhesome:10521452;Adhesome:1...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Q14289</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>P04637</td>
+      <td>Q15910</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Q15910</td>
+      <td>P12830</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>P12830</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>P63000</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>P12931</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ProtMapper:21798346;ProtMapper:22163037;ProtMa...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>P12830</td>
+      <td>P14210</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>P63000</td>
+      <td>P12830</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>P04637</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>P14210</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Q14289</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10592173</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">undo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">connect_network_radially</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>P12830</td>
+      <td>P12931</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>P12830</td>
+      <td>P01133</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>P12830</td>
+      <td>P62834</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>P12830</td>
+      <td>P14210</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>P12830</td>
+      <td>P63000</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>915</th>
+      <td>P08151</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>932</th>
+      <td>P61978</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>InnateDB:23092970;SPIKE:16360036;SPIKE:1847200...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>957</th>
+      <td>P98170</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>962</th>
+      <td>P09038</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>963</th>
+      <td>Q07817</td>
+      <td>P04637</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>BioGRID:24474649;DIP:24814347;HPRD:12667443;HP...</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+<p>120 rows × 6 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">list_states</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;id&#39;: 0, &#39;metadata&#39;: {&#39;label&#39;: &#39;initial&#39;}},
+ {&#39;id&#39;: 1,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;complete_connection&#39;,
+   &#39;args&#39;: [],
+   &#39;kwargs&#39;: {&#39;maxlen&#39;: &#39;2&#39;,
+    &#39;algorithm&#39;: &#39;bfs&#39;,
+    &#39;only_signed&#39;: &#39;True&#39;,
+    &#39;consensus&#39;: &#39;True&#39;}}},
+ {&#39;id&#39;: 2,
+  &#39;metadata&#39;: {&#39;method&#39;: &#39;connect_network_radially&#39;,
+   &#39;args&#39;: [],
+   &#39;kwargs&#39;: {&#39;max_len&#39;: &#39;1&#39;, &#39;only_signed&#39;: &#39;True&#39;, &#39;consensus&#39;: &#39;True&#39;}}}]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">history_nx</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">history_graph</span><span class="p">()</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">history_nx</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(0, 1), (0, 2)]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="2062pt" height="421pt"
+ viewBox="0.00 0.00 2062.37 420.70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 416.7)">
+<title>%3</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-416.7 2058.37,-416.7 2058.37,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node">
+<title>0</title>
+<ellipse fill="none" stroke="black" cx="1235.64" cy="-385.83" rx="48.17" ry="26.74"/>
+<text text-anchor="middle" x="1235.64" y="-389.63" font-family="Times,serif" font-size="14.00">State 0</text>
+<text text-anchor="middle" x="1235.64" y="-374.63" font-family="Times,serif" font-size="14.00">initial</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node">
+<title>1</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-296.09" rx="443.21" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-299.89" font-family="Times,serif" font-size="14.00">State 1</text>
+<text text-anchor="middle" x="809.64" y="-284.89" font-family="Times,serif" font-size="14.00">complete_connection(maxlen=2, algorithm=bfs, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g id="edge1" class="edge">
+<title>0&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M1190.85,-375.61C1131.98,-363.48 1026.04,-341.66 940.76,-324.1"/>
+<polygon fill="black" stroke="black" points="941.23,-320.62 930.73,-322.03 939.82,-327.48 941.23,-320.62"/>
+</g>
+<!-- 2 -->
+<g id="node3" class="node">
+<title>2</title>
+<ellipse fill="none" stroke="black" cx="1662.64" cy="-296.09" rx="391.97" ry="26.74"/>
+<text text-anchor="middle" x="1662.64" y="-299.89" font-family="Times,serif" font-size="14.00">State 2</text>
+<text text-anchor="middle" x="1662.64" y="-284.89" font-family="Times,serif" font-size="14.00">connect_network_radially(max_len=1, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;2 -->
+<g id="edge2" class="edge">
+<title>0&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M1280.53,-375.61C1339.91,-363.41 1447.06,-341.39 1532.81,-323.77"/>
+<polygon fill="black" stroke="black" points="1533.54,-327.19 1542.63,-321.75 1532.13,-320.33 1533.54,-327.19"/>
+</g>
+<!-- 3 -->
+<g id="node4" class="node">
+<title>3</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-206.35" rx="101.23" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-210.15" font-family="Times,serif" font-size="14.00">State 3</text>
+<text text-anchor="middle" x="809.64" y="-195.15" font-family="Times,serif" font-size="14.00">add_node(CASP3)</text>
+</g>
+<!-- 1&#45;&gt;3 -->
+<g id="edge3" class="edge">
+<title>1&#45;&gt;3</title>
+<path fill="none" stroke="black" d="M809.64,-268.77C809.64,-260.8 809.64,-251.91 809.64,-243.42"/>
+<polygon fill="black" stroke="black" points="813.14,-243.35 809.64,-233.35 806.14,-243.35 813.14,-243.35"/>
+</g>
+<!-- 4 -->
+<g id="node5" class="node">
+<title>4</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-116.61" rx="106.55" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-120.41" font-family="Times,serif" font-size="14.00">State 4</text>
+<text text-anchor="middle" x="809.64" y="-105.41" font-family="Times,serif" font-size="14.00">add_node(MMP14)</text>
+</g>
+<!-- 3&#45;&gt;4 -->
+<g id="edge4" class="edge">
+<title>3&#45;&gt;4</title>
+<path fill="none" stroke="black" d="M809.64,-179.03C809.64,-171.06 809.64,-162.17 809.64,-153.68"/>
+<polygon fill="black" stroke="black" points="813.14,-153.61 809.64,-143.61 806.14,-153.61 813.14,-153.61"/>
+</g>
+<!-- 5 -->
+<g id="node6" class="node">
+<title>5</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-26.87" rx="809.77" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-30.67" font-family="Times,serif" font-size="14.00">State 5</text>
+<text text-anchor="middle" x="809.64" y="-15.67" font-family="Times,serif" font-size="14.00">connect_component([SRC, CDH1, TP53, RET, HGF, PTK2B, EZH2, RAC1, CASP3, MMP14], [MMP14, CASP3], maxlen=2, only_signed=True, consensus=True)</text>
+</g>
+<!-- 4&#45;&gt;5 -->
+<g id="edge5" class="edge">
+<title>4&#45;&gt;5</title>
+<path fill="none" stroke="black" d="M809.64,-89.29C809.64,-81.32 809.64,-72.43 809.64,-63.94"/>
+<polygon fill="black" stroke="black" points="813.14,-63.87 809.64,-53.87 806.14,-63.87 813.14,-63.87"/>
+</g>
+</g>
+</svg>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">compare_states</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;added_nodes&#39;: [&#39;GJA1&#39;,
+  &#39;HIPK2&#39;,
+  &#39;SNAI2&#39;,
+  &#39;ITGB6&#39;,
+  &#39;ITGB8&#39;,
+  &#39;PTP4A1&#39;,
+  &#39;PRKD1&#39;,
+  &#39;ZYX&#39;,
+  &#39;MAPK11&#39;,
+  &#39;EPHB1&#39;,
+  &#39;PIK3R3&#39;,
+  &#39;HMGB1&#39;,
+  &#39;EGF&#39;,
+  &#39;RAP1A&#39;,
+  &#39;FGF2&#39;,
+  &#39;PPP2CA&#39;,
+  &#39;DEK&#39;,
+  &#39;HSPA1B&#39;,
+  &#39;NFKB1&#39;,
+  &#39;AR&#39;,
+  &#39;MAPK1&#39;,
+  &#39;CDC42&#39;,
+  &#39;GDNF&#39;,
+  &#39;FOS&#39;,
+  &#39;HNRNPK&#39;,
+  &#39;TLN1&#39;,
+  &#39;PDGFD&#39;,
+  &#39;NUMB&#39;,
+  &#39;GRK2&#39;,
+  &#39;BCL2L1&#39;,
+  &#39;WRN&#39;,
+  &#39;PDGFRB&#39;,
+  &#39;CTNND1&#39;,
+  &#39;MAPK14&#39;,
+  &#39;GFRA1&#39;,
+  &#39;PAK4&#39;,
+  &#39;GLI1&#39;,
+  &#39;BCL6&#39;,
+  &#39;CTNNA1&#39;,
+  &#39;ITGB5&#39;,
+  &#39;DAPK1&#39;,
+  &#39;ITGB4&#39;,
+  &#39;MET&#39;,
+  &#39;NR3C1&#39;,
+  &#39;VAV1&#39;,
+  &#39;XIAP&#39;,
+  &#39;MAPK3&#39;,
+  &#39;PRKCD&#39;,
+  &#39;HSPA1A&#39;,
+  &#39;S100A4&#39;],
+ &#39;removed_nodes&#39;: [],
+ &#39;added_edges&#39;: [(&#39;MAPK11&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ACSN:11274345;ACSN:15140942;ACSN:15187187;ACSN:16393692;ACSN:19436832;ACSN:20506250;ACSN:21614932;ProtMapper:10212189;SIGNOR:17254968;SPIKE_LC:17145710&#39;,
+   None),
+  (&#39;TP53&#39;, &#39;DEK&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;MAPK1&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:15867353;HPRD-phos:11409876;HPRD-phos:15116093;HPRD:11409876;HPRD:12091386;HPRD:15116093;InnateDB:10958792;KEA:10446957;KEA:10673501;KEA:11409876;KEA:11551930;KEA:11709713;KEA:11875057;KEA:12091386;KEA:14965474;KEA:15116093;KEA:9765199;Lit-BM-17:10958792;Lit-BM-17:21147777;Lit-BM-17:21675959;Lit-BM-17:23443559;Lit-BM-17:25241761;ProtMapper:11409876;ProtMapper:15116093;iPTMnet:10781582;iPTMnet:11409876;iPTMnet:12091386;iPTMnet:14965474;iPTMnet:15116093&#39;,
+   None),
+  (&#39;CDH1&#39;,
+   &#39;CTNNA1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;HPRD:11226248;HPRD:7542250;InnateDB:11801604;InnateDB:16219695;InnateDB:9700170;IntAct:22750944;Lit-BM-17:10381631;Lit-BM-17:11960376;Lit-BM-17:16212417;Lit-BM-17:19016843;Lit-BM-17:25468996;Lit-BM-17:7542250;Lit-BM-17:8227214;Lit-BM-17:9233779;MPPI:9326449;SIGNOR:24336504;SPIKE:11226248;SPIKE:17145710;SPIKE_LC:11226248;SPIKE_LC:17145710&#39;,
+   None),
+  (&#39;PAK4&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ProtMapper:27496712;iPTMnet:27496712&#39;,
+   None),
+  (&#39;CTNND1&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:12427869;BioGRID:29207493;HPRD:10225956;HPRD:10409703;HPRD:10629228;HPRD:10931041;HPRD:11226248;HPRD:7542250;HPRD:7651399;InnateDB:17261850;InnateDB:8660921;Lit-BM-17:10409703;Lit-BM-17:12427869;Lit-BM-17:12640114;Lit-BM-17:12707304;Lit-BM-17:19711372;Lit-BM-17:20371349;Lit-BM-17:21670201;Lit-BM-17:22715382;Lit-BM-17:22752307;Lit-BM-17:22850631;Lit-BM-17:23180380;Lit-BM-17:24424122;Lit-BM-17:25468996;Lit-BM-17:7542250;Lit-BM-17:7651399;Lit-BM-17:7876318;Lit-BM-17:9535896;SIGNOR:14610055;SPIKE:20940130;SPIKE_LC:20940130&#39;,
+   None),
+  (&#39;WRN&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:11427532;HPRD:11399766;HPRD:11427532;HPRD:12080066;HPRD:15735006;IntAct:11427532;IntAct:15735006;Lit-BM-17:11427532;Lit-BM-17:12080066;Lit-BM-17:15735006;SPIKE:12080066;SPIKE:16713569;SPIKE_LC:12080066;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;MAPK11&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;PTP4A1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;DAPK1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;PhosphoSite:17803936;ProtMapper:21785723;ProtMapper:28976934;SPIKE:17803936;SPIKE_LC:17803936;iPTMnet:17803936&#39;,
+   None),
+  (&#39;TP53&#39;, &#39;SNAI2&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;PPP2CA&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;PhosphoSite:10978272;PhosphoSite:12921784;PhosphoSite:1325671;PhosphoSite:16286244;PhosphoSite:17303700;PhosphoSite:17394530;PhosphoSite:17635907;PhosphoSite:18208556;PhosphoSite:20558158;PhosphoSite:21292165;PhosphoSite:21554241;PhosphoSite:21791414;PhosphoSite:22299660;PhosphoSite:22771321;PhosphoSite:23222956;PhosphoSite:23251465;PhosphoSite:23436320;PhosphoSite:23926298;PhosphoSite:24395787;PhosphoSite:24676687;PhosphoSite:24997451;PhosphoSite:25003662;PhosphoSite:25726524;PhosphoSite:25931585;PhosphoSite:26378614;PhosphoSite:27013170;PhosphoSite:31992581;PhosphoSite:32130916;ProtMapper:23796501;SIGNOR:23796501;iPTMnet:23796501&#39;,
+   None),
+  (&#39;PRKCD&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;ProtMapper:27203386;SIGNOR:27203386;iPTMnet:27203386&#39;,
+   None),
+  (&#39;HGF&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, &#39;ProtMapper:23524339&#39;, None),
+  (&#39;SRC&#39;, &#39;GFRA1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;GDNF&#39;, &#39;CDH1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;S100A4&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:11527429;HPRD:11278647;HPRD:11527429;HPRD:12942774;HPRD:15116098;IntAct:19740107;IntAct:20591429;IntAct:23752197;IntAct:31837246;Lit-BM-17:11527429;Lit-BM-17:19740107;Lit-BM-17:20070253;Lit-BM-17:20591429;Lit-BM-17:23752197;SPIKE_LC:19740107&#39;,
+   None),
+  (&#39;NFKB1&#39;, &#39;TP53&#39;, None, &#39;stimulation&#39;, &#39;ACSN:8051093&#39;, None),
+  (&#39;PTP4A1&#39;, &#39;TP53&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;EZH2&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448&#39;,
+   None),
+  (&#39;TP53&#39;,
+   &#39;WRN&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:11427532;HPRD:11399766;HPRD:11427532;HPRD:12080066;HPRD:15735006;IntAct:11427532;IntAct:15735006;Lit-BM-17:11427532;Lit-BM-17:12080066;Lit-BM-17:15735006;SPIKE:12080066;SPIKE:16713569;SPIKE_LC:12080066;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;VAV1&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:1311423;Adhesome:1531699&#39;,
+   None),
+  (&#39;CDH1&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074&#39;,
+   None),
+  (&#39;DAPK1&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;KEA:10801407;KEA:12111733;KEA:15254178;KEA:15489221;KEA:17339337;PhosphoSite:10606744;PhosphoSite:10673501;PhosphoSite:10733583;PhosphoSite:10734067;PhosphoSite:11244509;PhosphoSite:11258706;PhosphoSite:11707453;PhosphoSite:11883897;PhosphoSite:12091386;PhosphoSite:15355354;PhosphoSite:15542844;PhosphoSite:17339337;PhosphoSite:17977830;PhosphoSite:18246126;PhosphoSite:20851891;PhosphoSite:20959462;PhosphoSite:21386980;PhosphoSite:22112863;PhosphoSite:22815859;PhosphoSite:25584963;PhosphoSite:26742101;PhosphoSite:27753536;PhosphoSite:32266931;PhosphoSite:34168813;ProtMapper:17339337;ProtMapper:25229255;ProtMapper:26626260;ProtMapper:27681874;SIGNOR:17339337;iPTMnet:17297916;iPTMnet:17339337;phosphoELM:17339337&#39;,
+   None),
+  (&#39;EGF&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ProtMapper:15845350;ProtMapper:19481075;ProtMapper:22927910;ProtMapper:23349873;ProtMapper:27462789&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;ITGB4&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;SRC&#39;, &#39;ITGB6&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;GJA1&#39;, &#39;CDH1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;, &#39;AR&#39;, None, &#39;inhibition&#39;, &#39;SPIKE_LC:19481544&#39;, None),
+  (&#39;SRC&#39;,
+   &#39;GRK2&#39;,
+   None,
+   &#39;bimodal&#39;,
+   &#39;CA1:11278940;HPRD:12624098;KEA:16725308;PhosphoSite:11566877;PhosphoSite:16725308;SIGNOR:16725308;SPIKE_LC:16189514;iPTMnet:16725308&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;EPHB1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;HSPA1A&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;HPRD:7811761;MPPI:8729618;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;NFKB1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;PRKCD&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;HPRD:15337529;KEA:11927579;KEA:14715667;KEA:14970215;KEA:15541367;KEA:15961393;KEA:17570831;PhosphoSite:16982614;PhosphoSite:17658731;PhosphoSite:19366211;PhosphoSite:24211614;PhosphoSite:26876198;PhosphoSite:27203386;ProtMapper:10319993;ProtMapper:17658731;ProtMapper:18550549;ProtMapper:19138410;ProtMapper:19366211;ProtMapper:19632318;ProtMapper:22689788;ProtMapper:23329791;ProtMapper:23329794;ProtMapper:26876198;ProtMapper:27203386;ProtMapper:28637715;ProtMapper:29422059;ProtMapper:29452094;SPIKE_LC:15851033;iPTMnet:17569658&#39;,
+   None),
+  (&#39;ITGB8&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;NUMB&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:23881403;DIP:18172499;IntAct:18172499;SIGNOR:18492217&#39;,
+   None),
+  (&#39;MAPK14&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ACSN:11274345;ACSN:15140942;ACSN:15187187;ACSN:16393692;ACSN:19436832;ACSN:20506250;ACSN:21614932;BioGRID:21050851;HPRD-phos:10348343;HPRD-phos:10747897;HPRD-phos:10884347;HPRD-phos:19413330;InnateDB:10581258;KEA:10348343;KEA:10747897;KEA:1088347;KEA:10884347;KEA:16083285;KEA:16552184;KEA:9315650;Lit-BM-17:15642743;Lit-BM-17:17172861;Lit-BM-17:20213747;Lit-BM-17:21050851;Lit-BM-17:21675959;ProtMapper:10212189;ProtMapper:10581258;ProtMapper:10747897;ProtMapper:10781582;ProtMapper:11078726;ProtMapper:11258706;ProtMapper:11283254;ProtMapper:15642743;ProtMapper:15657900;ProtMapper:17535811;ProtMapper:17906639;ProtMapper:22975381;ProtMapper:24818748;ProtMapper:25789565;ProtMapper:26247731;SIGNOR:10581258;SIGNOR:10747897;SIGNOR:10781582;SIGNOR:11258706;SIGNOR:15642743;SIGNOR:17535811;SIGNOR:22975381;iPTMnet:10348343;iPTMnet:10581258;iPTMnet:10747897;iPTMnet:10781582;iPTMnet:10884347;iPTMnet:11258706;iPTMnet:15642743;iPTMnet:17535811;iPTMnet:19413330;iPTMnet:22975381&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;CTNND1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;HPRD-phos:11382764;HPRD-phos:14996911;HPRD-phos:17016520;HPRD-phos:17389395;HPRD-phos:18669648;HPRD-phos:18707149;HPRD-phos:20068231;HPRD:11382764;KEA:11382764;ProtMapper:11382764;ProtMapper:17194753;ProtMapper:19138410;ProtMapper:23457577;ProtMapper:26477567;SIGNOR:11382764;iPTMnet:11382764;iPTMnet:14996911;iPTMnet:17016520;iPTMnet:17194753;iPTMnet:17389395;iPTMnet:18669648;iPTMnet:18707149;iPTMnet:20068231&#39;,
+   None),
+  (&#39;PRKD1&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;SIGNOR:15695390;SPIKE_LC:15695390&#39;,
+   None),
+  (&#39;CTNNA1&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;XIAP&#39;, &#39;TP53&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;RAP1A&#39;, &#39;CDH1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;HMGB1&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;DIP:23063560;DIP:9472015;HPRD:11106654;HPRD:11748221;HPRD:9472015;IntAct:23063560;IntAct:9472015;Lit-BM-17:11106654;Lit-BM-17:11748221;Lit-BM-17:9472015;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;CDH1&#39;, &#39;RAP1A&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;HIPK2&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;TLN1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;CDC42&#39;, &#39;CDH1&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;CDH1&#39;, &#39;ZYX&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;, &#39;HSPA1B&#39;, None, &#39;inhibition&#39;, &#39;MPPI:8729618&#39;, None),
+  (&#39;SRC&#39;, &#39;PDGFD&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;GRK2&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;PhosphoSite:10933801;PhosphoSite:11409876;PhosphoSite:14729628;PhosphoSite:15053879;PhosphoSite:15116093;PhosphoSite:18952844;PhosphoSite:20124405;PhosphoSite:20473327;PhosphoSite:23723076;PhosphoSite:29988038;PhosphoSite:33256128;ProtMapper:20124405&#39;,
+   None),
+  (&#39;HSPA1B&#39;, &#39;TP53&#39;, None, &#39;inhibition&#39;, &#39;MPPI:8729618&#39;, None),
+  (&#39;SRC&#39;,
+   &#39;FOS&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;PhosphoSite:17160021;PhosphoSite:22105363&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;ITGB5&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:10592173;NetPath:19910644&#39;,
+   None),
+  (&#39;FGF2&#39;, &#39;TP53&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;AR&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:15027889;HPRD:15027889;HPRD:15062576;InnateDB:12933816;Lit-BM-17:15027889;Lit-BM-17:15062576;Lit-BM-17:15466214;Lit-BM-17:24728074;NetPath:11032808;NetPath:12933816;NetPath:15466214;ProtMapper:17525795;ProtMapper:19117998;ProtMapper:20383201;ProtMapper:20570899;ProtMapper:21318111;ProtMapper:21512132;ProtMapper:21886458;ProtMapper:21956655;ProtMapper:24859991;ProtMapper:24868554;ProtMapper:24948875;ProtMapper:25133482;ProtMapper:25547388;ProtMapper:25950519;ProtMapper:26829214;ProtMapper:28144231;SPIKE:17045208;SPIKE_LC:17045208&#39;,
+   None),
+  (&#39;PPP2CA&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;bimodal&#39;,
+   &#39;DEPOD:14712210;DEPOD:17245430;DEPOD:1848668;HPRD:12556559;ProtMapper:14712210;ProtMapper:17245430;SIGNOR:14712210;SIGNOR:17245430;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;TLN1&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;GDNF&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;MAPK3&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;PIK3R3&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;IntAct:32606738;SIGNOR:32606738&#39;,
+   None),
+  (&#39;TP53&#39;,
+   &#39;S100A4&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:11527429;HPRD:11278647;HPRD:11527429;HPRD:12942774;HPRD:15116098;IntAct:19740107;IntAct:20591429;IntAct:23752197;IntAct:31837246;Lit-BM-17:11527429;Lit-BM-17:19740107;Lit-BM-17:20070253;Lit-BM-17:20591429;Lit-BM-17:23752197;SPIKE_LC:19740107&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;MAPK14&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;NR3C1&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:11080152;HPRD:11080152;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;NUMB&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;ZYX&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;ITGB4&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;TP53&#39;, &#39;GLI1&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;CDH1&#39;, &#39;EGF&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;FGF2&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;BCL2L1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:24474649;DIP:24814347;HPRD:12667443;HPRD:16151013;IntAct:12667443;IntAct:14963330;IntAct:16151013;IntAct:24814347;Lit-BM-17:12667443;Lit-BM-17:14963330;Lit-BM-17:16151013;Lit-BM-17:20837658;Lit-BM-17:21900206;Lit-BM-17:24474649;Lit-BM-17:26556313;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;AR&#39;, &#39;CDH1&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;BCL6&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;SPIKE:16249378;SPIKE_LC:16249378&#39;,
+   None),
+  (&#39;HNRNPK&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;InnateDB:23092970;SPIKE:16360036;SPIKE:18472002;SPIKE_LC:16360036;SPIKE_LC:18472002&#39;,
+   None),
+  (&#39;ITGB5&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:10592173;NetPath:19910644&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;PIK3R3&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;IntAct:25814554;Lit-BM-17:22402981;Lit-BM-17:25814554&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;MET&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:9837958;HPRD:9837958;IntAct:24034250;IntAct:24728074;KEA:17570479;Lit-BM-17:24034250;Lit-BM-17:24728074;Lit-BM-17:9837958&#39;,
+   None),
+  (&#39;TP53&#39;, &#39;PDGFRB&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;PTK2B&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;PRKD1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;HPRD:12637538;KEA:12637538;KEA:17804414;PhosphoSite:17804414;PhosphoSite:28842658;ProtMapper:12505989;ProtMapper:12637538;ProtMapper:17804414;ProtMapper:28174535;SIGNOR:12637538;SIGNOR:17804414;iPTMnet:12637538;iPTMnet:17804414;phosphoELM:17804414&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;PAK4&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;FOS&#39;, &#39;TP53&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;HGF&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;SPIKE:18431400;SPIKE_LC:18431400&#39;,
+   None),
+  (&#39;EPHB1&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;GFRA1&#39;, &#39;CDH1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;, &#39;XIAP&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;MET&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ACSN:12040186;ACSN:14585353;ACSN:17496910;ACSN:19568798;ACSN:22558232;Cellinker:17336101;InnateDB:16909210&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;ITGB8&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;TP53&#39;,
+   &#39;HMGB1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;DIP:23063560;DIP:9472015;HPRD:11106654;HPRD:11748221;HPRD:9472015;IntAct:23063560;IntAct:9472015;Lit-BM-17:11106654;Lit-BM-17:11748221;Lit-BM-17:9472015;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;TP53&#39;,
+   &#39;MET&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;SPIKE:18431400;SPIKE_LC:18431400&#39;,
+   None),
+  (&#39;HIPK2&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:11925430;BioGRID:22110707;HPRD-phos:11780126;HPRD-phos:11875057;HPRD-phos:16212962;HPRD:11780126;HPRD:11875057;HPRD:11925430;HPRD:15896780;IntAct:15896780;IntAct:16212962;KEA:11780126;KEA:11875057;KEA:16212962;KEA:16729035;Lit-BM-17:11740489;Lit-BM-17:11925430;Lit-BM-17:15896780;Lit-BM-17:16212962;Lit-BM-17:21057547;Lit-BM-17:25313037;ProtMapper:11740489;ProtMapper:11780126;ProtMapper:15865933;ProtMapper:16212962;ProtMapper:16601678;ProtMapper:17203463;ProtMapper:17210684;ProtMapper:17332358;ProtMapper:17349959;ProtMapper:17906639;ProtMapper:19128456;ProtMapper:19714248;ProtMapper:19731416;ProtMapper:19828042;ProtMapper:19946469;ProtMapper:20171273;ProtMapper:20418953;ProtMapper:20508833;ProtMapper:20849851;ProtMapper:21192925;ProtMapper:21258400;ProtMapper:21855806;ProtMapper:22110707;ProtMapper:22545114;ProtMapper:22889244;ProtMapper:22935610;ProtMapper:23091802;ProtMapper:23293771;ProtMapper:23316480;ProtMapper:23536002;ProtMapper:23700162;ProtMapper:23717325;ProtMapper:23814485;ProtMapper:23945296;ProtMapper:24101931;ProtMapper:24145406;ProtMapper:24211575;ProtMapper:24829283;ProtMapper:25210797;ProtMapper:25313037;ProtMapper:25364713;ProtMapper:26942128;ProtMapper:27019364;ProtMapper:27308326;ProtMapper:27308327;ProtMapper:27689990;ProtMapper:27787517;ProtMapper:27901482;ProtMapper:28107201;ProtMapper:28122345;ProtMapper:28893313;SIGNOR:17210684;SPIKE:17332358;SPIKE_LC:15896780;SPIKE_LC:16713569;SPIKE_LC:17332358;iPTMnet:11740489;iPTMnet:11780126;iPTMnet:11875057;iPTMnet:16212962;iPTMnet:16729035;iPTMnet:17203463;iPTMnet:17210684;iPTMnet:19828042;iPTMnet:22011578;phosphoELM:11780126;phosphoELM:16729035&#39;,
+   None),
+  (&#39;GLI1&#39;, &#39;TP53&#39;, None, &#39;inhibition&#39;, nan, None),
+  (&#39;SRC&#39;,
+   &#39;CDC42&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;KEA:14506284;PhosphoSite:14506284;ProtMapper:14506284;ProtMapper:26816343;SIGNOR:14506284;SPIKE:9626657;SPIKE_LC:9626657;iPTMnet:14506284;phosphoELM:14506284&#39;,
+   None),
+  (&#39;HSPA1A&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;HPRD:7811761;MPPI:8729618;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;BCL2L1&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:24474649;DIP:24814347;HPRD:12667443;HPRD:16151013;IntAct:12667443;IntAct:14963330;IntAct:16151013;IntAct:24814347;Lit-BM-17:12667443;Lit-BM-17:14963330;Lit-BM-17:16151013;Lit-BM-17:20837658;Lit-BM-17:21900206;Lit-BM-17:24474649;Lit-BM-17:26556313;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;GJA1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;ACSN:10679481;ACSN:10871288;ACSN:15534005;ACSN:15782139;ACSN:16492141;ACSN:9278444;ACSN:9592087;HPRD-phos:11514593;HPRD-phos:19901323;HPRD:11514593;HPRD:9278444;KEA:11514593;PhosphoSite:30448479;ProtMapper:11514593;ProtMapper:15350848;ProtMapper:16916748;ProtMapper:19284610;ProtMapper:21856279;ProtMapper:22342665;ProtMapper:23596415;ProtMapper:23718910;ProtMapper:24508467;ProtMapper:24670366;ProtMapper:26706150;ProtMapper:27280719;ProtMapper:29587860;ProtMapper:30095367;ProtMapper:30323740;SIGNOR:16916748;SPIKE_LC:16189514;iPTMnet:11514593;iPTMnet:16916748;iPTMnet:19901323&#39;,
+   None),
+  (&#39;SRC&#39;, &#39;MAPK1&#39;, None, &#39;stimulation&#39;, &#39;ProtMapper:17088251&#39;, None),
+  (&#39;BCL6&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;SPIKE:15577913;SPIKE_LC:15577913&#39;,
+   None),
+  (&#39;PDGFRB&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:18315570;HPRD:2173144;KEA:9010229;ProtMapper:15489898;SIGNOR:15489898;SPIKE_LC:16189514;iPTMnet:15489898;iPTMnet:9010229&#39;,
+   None),
+  (&#39;MAPK3&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;HPRD:10958792;InnateDB:10958792;PhosphoSite:10348343;PhosphoSite:10747897;PhosphoSite:11239457;PhosphoSite:12393879;PhosphoSite:17237827;PhosphoSite:18523266;PhosphoSite:24194938;PhosphoSite:25767119;PhosphoSite:28937686;PhosphoSite:9467949;PhosphoSite:9739174;ProtMapper:12955074;SIGNOR:12955074;SPIKE_LC:16713569;iPTMnet:10781582;iPTMnet:12955074&#39;,
+   None),
+  (&#39;SNAI2&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17508028;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22370643;ACSN:22796940&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;VAV1&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:1311423;Adhesome:1531699&#39;,
+   None),
+  (&#39;PDGFD&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;PRKCD&#39;,
+   &#39;TP53&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;IntAct:16377624;ProtMapper:16314418;ProtMapper:16377624;ProtMapper:17906639;SIGNOR:16377624;iPTMnet:16314418;iPTMnet:16377624&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;HNRNPK&#39;,
+   None,
+   &#39;bimodal&#39;,
+   &#39;HPRD-phos:12052863;HPRD:12052863;HPRD:7516469;KEA:12052863;Lit-BM-17:16854432;Lit-BM-17:17178840;PhosphoSite:12052863;PhosphoSite:16854432;PhosphoSite:24642125;ProtMapper:12052863;ProtMapper:21184736;SIGNOR:12052863;SPIKE:12052863;SPIKE_LC:12052863;SPIKE_LC:16713569;SPIKE_LC:7592945;iPTMnet:12052863;phosphoELM:12052863&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;RET&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514&#39;,
+   None),
+  (&#39;DEK&#39;, &#39;TP53&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;NR3C1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;BioGRID:11080152;HPRD:11080152;SPIKE_LC:16713569&#39;,
+   None),
+  (&#39;ITGB6&#39;, &#39;SRC&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;EGF&#39;, &#39;CDH1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;SRC&#39;, &#39;CTNNA1&#39;, None, &#39;stimulation&#39;, nan, None)],
+ &#39;removed_edges&#39;: [(&#39;HGF&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ProtMapper:23524339; ProtMapper:23524339&#39;,
+   None),
+  (&#39;PTK2B&#39;, &#39;RAC1&#39;, None, &#39;stimulation&#39;, &#39;Adhesome:10592173&#39;, None),
+  (&#39;EZH2&#39;,
+   &#39;CDH1&#39;,
+   None,
+   &#39;inhibition&#39;,
+   &#39;ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448; ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN:15169839;ACSN:17018611;ACSN:17615296;ACSN:19597490;ACSN:20519943;ACSN:20818389;ACSN:21685935;ACSN:22514743;ACSN:22796940;SPIKE:20574448;SPIKE_LC:20574448&#39;,
+   None),
+  (&#39;CDH1&#39;,
+   &#39;SRC&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074; ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN:17496910;ACSN:19029934;ACSN:19171760;ACSN:19619488;ACSN:19734908;ACSN:22007144;ACSN:22203675;ACSN:22370635;ACSN:23343194;BioGRID:10744074&#39;,
+   None),
+  (&#39;HGF&#39;, &#39;RAC1&#39;, None, &#39;stimulation&#39;, nan, None),
+  (&#39;TP53&#39;,
+   &#39;HGF&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;SPIKE:18431400;SPIKE_LC:18431400; SPIKE:18431400;SPIKE_LC:18431400&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;PTK2B&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924; Adhesome:10329689;Adhesome:10521452;Adhesome:10777553;Adhesome:11149930;Adhesome:11274221;Adhesome:12345678;Adhesome:14739300;Adhesome:14963038;Adhesome:19380485;Adhesome:8849729;Adhesome:9556630;Adhesome:9560226;CancerCellMap:14963038;HPRD:10777553;HPRD:8849729;InnateDB:14963038;IntAct:10521452;IntAct:11149930;IntAct:8849729;KEA:15070849;KEA:15585656;NetPath:14963038;PhosphoSite:12231407;PhosphoSite:12486027;PhosphoSite:12526812;PhosphoSite:15070849;PhosphoSite:15105428;PhosphoSite:15166227;PhosphoSite:15585656;PhosphoSite:15778498;PhosphoSite:19919693;PhosphoSite:22581436;PhosphoSite:25349423;PhosphoSite:31979355;ProtMapper:15695828;ProtMapper:18935208;ProtMapper:20001213;ProtMapper:20521079;ProtMapper:26866924;SIGNOR:15695828;SPIKE:14963038;SPIKE:16713569;SPIKE_LC:14963038;SPIKE_LC:16713569;SignaLink3:10593973;SignaLink3:12495636;SignaLink3:23109003;SignaLink3:7529876;dbPTM:12522270;dbPTM:17192257;dbPTM:17389395;dbPTM:18083107;dbPTM:19369195;dbPTM:19534553;dbPTM:20028775;dbPTM:20381867;dbPTM:20521079;iPTMnet:15695828;iPTMnet:20521079;iPTMnet:26866924&#39;,
+   None),
+  (&#39;SRC&#39;,
+   &#39;RET&#39;,
+   None,
+   &#39;stimulation&#39;,
+   &#39;BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514; BioGRID:10070972;HPRD:10070972;KEA:11713247;KEA:17570479;SPIKE_LC:16189514&#39;,
+   None)],
+ &#39;added_provenance&#39;: [],
+ &#39;removed_provenance&#39;: []}
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">checkout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">convert_edgelist_into_genesymbol</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>Type</th>
+      <th>Effect</th>
+      <th>References</th>
+      <th>Provenance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CDH1</td>
+      <td>SRC</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ACSN:16039586;ACSN:16099633;ACSN:17143292;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>SRC</td>
+      <td>RET</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>BioGRID:10070972;HPRD:10070972;KEA:11713247;KE...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>RET</td>
+      <td>CDH1</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>TP53</td>
+      <td>HGF</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>SPIKE:18431400;SPIKE_LC:18431400; SPIKE:184314...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>HGF</td>
+      <td>SRC</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ProtMapper:23524339; ProtMapper:23524339</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>SRC</td>
+      <td>PTK2B</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10329689;Adhesome:10521452;Adhesome:1...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>PTK2B</td>
+      <td>TP53</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>TP53</td>
+      <td>EZH2</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>EZH2</td>
+      <td>CDH1</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>ACSN:11309385;ACSN:12508111;ACSN:14673164;ACSN...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>CDH1</td>
+      <td>RAC1</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>RAC1</td>
+      <td>TP53</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>SRC</td>
+      <td>RAC1</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>ProtMapper:21798346;ProtMapper:22163037;ProtMa...</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>CDH1</td>
+      <td>HGF</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>RAC1</td>
+      <td>CDH1</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>TP53</td>
+      <td>RAC1</td>
+      <td>None</td>
+      <td>inhibition</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>HGF</td>
+      <td>RAC1</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>NaN</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>PTK2B</td>
+      <td>RAC1</td>
+      <td>None</td>
+      <td>stimulation</td>
+      <td>Adhesome:10592173</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;MMP14&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;CASP3&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">connect_component</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;Genesymbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;MMP14&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP3&quot;</span><span class="p">],</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div class="neko-history-graph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="2062pt" height="421pt"
+ viewBox="0.00 0.00 2062.37 420.70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 416.7)">
+<title>%3</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-416.7 2058.37,-416.7 2058.37,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node">
+<title>0</title>
+<ellipse fill="none" stroke="black" cx="1235.64" cy="-385.83" rx="48.17" ry="26.74"/>
+<text text-anchor="middle" x="1235.64" y="-389.63" font-family="Times,serif" font-size="14.00">State 0</text>
+<text text-anchor="middle" x="1235.64" y="-374.63" font-family="Times,serif" font-size="14.00">initial</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node">
+<title>1</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-296.09" rx="443.21" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-299.89" font-family="Times,serif" font-size="14.00">State 1</text>
+<text text-anchor="middle" x="809.64" y="-284.89" font-family="Times,serif" font-size="14.00">complete_connection(maxlen=2, algorithm=bfs, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g id="edge1" class="edge">
+<title>0&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M1190.85,-375.61C1131.98,-363.48 1026.04,-341.66 940.76,-324.1"/>
+<polygon fill="black" stroke="black" points="941.23,-320.62 930.73,-322.03 939.82,-327.48 941.23,-320.62"/>
+</g>
+<!-- 2 -->
+<g id="node3" class="node">
+<title>2</title>
+<ellipse fill="none" stroke="black" cx="1662.64" cy="-296.09" rx="391.97" ry="26.74"/>
+<text text-anchor="middle" x="1662.64" y="-299.89" font-family="Times,serif" font-size="14.00">State 2</text>
+<text text-anchor="middle" x="1662.64" y="-284.89" font-family="Times,serif" font-size="14.00">connect_network_radially(max_len=1, only_signed=True, consensus=True)</text>
+</g>
+<!-- 0&#45;&gt;2 -->
+<g id="edge2" class="edge">
+<title>0&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M1280.53,-375.61C1339.91,-363.41 1447.06,-341.39 1532.81,-323.77"/>
+<polygon fill="black" stroke="black" points="1533.54,-327.19 1542.63,-321.75 1532.13,-320.33 1533.54,-327.19"/>
+</g>
+<!-- 3 -->
+<g id="node4" class="node">
+<title>3</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-206.35" rx="101.23" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-210.15" font-family="Times,serif" font-size="14.00">State 3</text>
+<text text-anchor="middle" x="809.64" y="-195.15" font-family="Times,serif" font-size="14.00">add_node(CASP3)</text>
+</g>
+<!-- 1&#45;&gt;3 -->
+<g id="edge3" class="edge">
+<title>1&#45;&gt;3</title>
+<path fill="none" stroke="black" d="M809.64,-268.77C809.64,-260.8 809.64,-251.91 809.64,-243.42"/>
+<polygon fill="black" stroke="black" points="813.14,-243.35 809.64,-233.35 806.14,-243.35 813.14,-243.35"/>
+</g>
+<!-- 4 -->
+<g id="node5" class="node">
+<title>4</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-116.61" rx="106.55" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-120.41" font-family="Times,serif" font-size="14.00">State 4</text>
+<text text-anchor="middle" x="809.64" y="-105.41" font-family="Times,serif" font-size="14.00">add_node(MMP14)</text>
+</g>
+<!-- 3&#45;&gt;4 -->
+<g id="edge4" class="edge">
+<title>3&#45;&gt;4</title>
+<path fill="none" stroke="black" d="M809.64,-179.03C809.64,-171.06 809.64,-162.17 809.64,-153.68"/>
+<polygon fill="black" stroke="black" points="813.14,-153.61 809.64,-143.61 806.14,-153.61 813.14,-153.61"/>
+</g>
+<!-- 5 -->
+<g id="node6" class="node">
+<title>5</title>
+<ellipse fill="none" stroke="black" cx="809.64" cy="-26.87" rx="809.77" ry="26.74"/>
+<text text-anchor="middle" x="809.64" y="-30.67" font-family="Times,serif" font-size="14.00">State 5</text>
+<text text-anchor="middle" x="809.64" y="-15.67" font-family="Times,serif" font-size="14.00">connect_component([SRC, CDH1, TP53, RET, HGF, PTK2B, EZH2, RAC1, CASP3, MMP14], [MMP14, CASP3], maxlen=2, only_signed=True, consensus=True)</text>
+</g>
+<!-- 4&#45;&gt;5 -->
+<g id="edge5" class="edge">
+<title>4&#45;&gt;5</title>
+<path fill="none" stroke="black" d="M809.64,-89.29C809.64,-81.32 809.64,-72.43 809.64,-63.94"/>
+<polygon fill="black" stroke="black" points="813.14,-63.87 809.64,-53.87 806.14,-63.87 813.14,-63.87"/>
+</g>
+</g>
+</svg>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">history_html</span><span class="p">()</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Sysbio-Curie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

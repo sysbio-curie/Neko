@@ -4,6 +4,8 @@ import itertools
 
 import pandas as pd
 
+from neko.core.tools import consolidate_edges
+
 
 def _sanitize_bnet_identifier(value: str) -> str:
     """Convert a network label into a BoolNet-compatible identifier."""
@@ -23,7 +25,7 @@ class Exports:
         net = network.copy()
         df_edges = net.convert_edgelist_into_genesymbol()
         self.nodes = net.nodes
-        self.interactions = df_edges
+        self.interactions = consolidate_edges(df_edges)
         return
 
     def export_bnet(self, file_name="logic_model.bnet", n=None):
@@ -38,8 +40,52 @@ class Exports:
             print("Error: Interactions data is missing or empty.")
             return
 
+        required_node_columns = {'Genesymbol'}
+        required_edge_columns = {'source', 'target', 'Effect'}
+        missing_node_columns = required_node_columns.difference(
+            self.nodes.columns,
+        )
+        missing_edge_columns = required_edge_columns.difference(
+            self.interactions.columns,
+        )
+        if missing_node_columns or missing_edge_columns:
+            missing = sorted(missing_node_columns | missing_edge_columns)
+            raise ValueError(
+                'BNet export is missing required column(s): '
+                f'{", ".join(missing)}.',
+            )
+
+        interactions = consolidate_edges(self.interactions)
+
+        invalid_nodes = self.nodes['Genesymbol'].isna() | self.nodes[
+            'Genesymbol'
+        ].map(lambda value: isinstance(value, str) and not value.strip())
+        invalid_sources = interactions['source'].isna() | interactions[
+            'source'
+        ].map(lambda value: isinstance(value, str) and not value.strip())
+        invalid_targets = interactions['target'].isna() | interactions[
+            'target'
+        ].map(lambda value: isinstance(value, str) and not value.strip())
+
+        if invalid_nodes.any() or invalid_sources.any() or invalid_targets.any():
+            raise ValueError(
+                'BNet export requires non-empty node labels and interaction '
+                'endpoints; found a null or empty identifier.',
+            )
+
+        node_labels = list(dict.fromkeys(self.nodes['Genesymbol'].tolist()))
+        node_set = set(node_labels)
+        edge_nodes = set(interactions['source']).union(interactions['target'])
+        missing_nodes = edge_nodes.difference(node_set)
+        if missing_nodes:
+            detail = ', '.join(sorted(map(str, missing_nodes)))
+            raise ValueError(
+                'BNet interaction endpoints are absent from the node table: '
+                f'{detail}.',
+            )
+
         # Identify undefined interactions
-        undefined_interactions = self.interactions.query("Effect == 'undefined'")
+        undefined_interactions = interactions.query("Effect == 'undefined'")
         if not undefined_interactions.empty:
             print(f"Warning: The network has {len(undefined_interactions)} UNDEFINED interaction(s).")
             print("Undefined interactions:")
@@ -48,7 +94,7 @@ class Exports:
                 print(f"Reference: {row['References']}")
 
         # Identify bimodal interactions
-        bimodal_interactions = self.interactions.query("Effect == 'bimodal'")
+        bimodal_interactions = interactions.query("Effect == 'bimodal'")
         if not bimodal_interactions.empty:
             print(f"Warning: The network has {len(bimodal_interactions)} BIMODAL interaction(s).")
             print("Bimodal interactions:")
@@ -71,7 +117,6 @@ class Exports:
 
         bimodal_indices = bimodal_interactions.index.tolist()
 
-        node_labels = self.nodes['Genesymbol'].astype(str).tolist()
         sanitized_nodes = {
             node: _sanitize_bnet_identifier(node)
             for node in node_labels
@@ -89,7 +134,7 @@ class Exports:
 
         if collisions:
             detail = '; '.join(
-                f'{sanitized}: {", ".join(originals)}'
+                f'{sanitized}: {", ".join(map(str, originals))}'
                 for sanitized, originals in collisions.items()
             )
             raise ValueError(
@@ -107,7 +152,7 @@ class Exports:
 
         for i, perm in enumerate(permutations):
             # Create a copy of the interactions DataFrame
-            interactions_copy = self.interactions.copy()
+            interactions_copy = interactions.copy()
 
             # Update bimodal interactions based on the current permutation
             for interaction_index, effect in zip(bimodal_indices, perm):

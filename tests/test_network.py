@@ -98,6 +98,135 @@ def test_add_and_remove_edge(sample_genes, sample_resources):
     net.remove_edge("P12931", "P19022")
     assert not ((net.edges["source"] == "P12931") & (net.edges["target"] == "P19022")).any()
 
+
+def test_add_edge_merges_opposite_signs_and_evidence(
+        sample_genes, sample_resources):
+    net = Network(initial_nodes=sample_genes, resources=sample_resources)
+    stimulation = pd.DataFrame({
+        "source": ["P12931"],
+        "target": ["P19022"],
+        "type": ["activation"],
+        "references": ["PMID:stim"],
+        "is_stimulation": [True],
+        "is_inhibition": [False],
+    })
+    inhibition = pd.DataFrame({
+        "source": ["P12931"],
+        "target": ["P19022"],
+        "type": ["inhibition"],
+        "references": ["PMID:inhib"],
+        "is_stimulation": [False],
+        "is_inhibition": [True],
+    })
+
+    net.add_edge(stimulation)
+    net.add_edge(inhibition)
+
+    matching = net.edges[
+        (net.edges["source"] == "P12931")
+        & (net.edges["target"] == "P19022")
+    ]
+    assert len(matching) == 1
+    assert matching.iloc[0]["Effect"] == "bimodal"
+    assert matching.iloc[0]["Type"] == "activation; inhibition"
+    assert matching.iloc[0]["References"] == "PMID:stim; PMID:inhib"
+    assert len(net.edges_as_objects()) == len(net.edges)
+
+
+def test_gene_symbol_conversion_prefers_custom_network_nodes(monkeypatch):
+    import neko.core.network as network_module
+
+    phenotype = "cell_cycle_arrest"
+    net = Network.__new__(Network)
+    net.nodes = pd.DataFrame([
+        {"Genesymbol": "A", "Uniprot": "UP_A", "Type": "NaN"},
+        {
+            "Genesymbol": phenotype,
+            "Uniprot": phenotype,
+            "Type": "phenotype",
+        },
+    ])
+    net.edges = pd.DataFrame([{
+        "source": "UP_A",
+        "target": phenotype,
+        "Type": "interaction",
+        "Effect": "stimulation",
+        "References": "PMID:1",
+    }])
+
+    monkeypatch.setattr(
+        network_module,
+        "mapping_node_identifier",
+        lambda identifier: pytest.fail(
+            f"unexpected external translation for {identifier}",
+        ),
+    )
+
+    converted = net.convert_edgelist_into_genesymbol()
+
+    assert converted.loc[0, "source"] == "A"
+    assert converted.loc[0, "target"] == phenotype
+    assert converted[["source", "target"]].notna().all().all()
+
+
+def test_gene_symbol_conversion_preserves_unknown_identifier(monkeypatch):
+    import neko.core.network as network_module
+
+    net = Network.__new__(Network)
+    net.nodes = pd.DataFrame([{
+        "Genesymbol": "A",
+        "Uniprot": "UP_A",
+        "Type": "NaN",
+    }])
+    net.edges = pd.DataFrame([{
+        "source": "UP_A",
+        "target": "custom_target",
+        "Type": "interaction",
+        "Effect": "stimulation",
+        "References": "PMID:1",
+    }])
+    monkeypatch.setattr(
+        network_module,
+        "mapping_node_identifier",
+        lambda identifier: [None, None, None],
+    )
+
+    converted = net.convert_edgelist_into_genesymbol()
+
+    assert converted.loc[0, "source"] == "A"
+    assert converted.loc[0, "target"] == "custom_target"
+
+
+def test_sif_import_merges_opposite_signs(tmp_path, monkeypatch):
+    import neko.core.network as network_module
+
+    monkeypatch.setattr(
+        network_module,
+        "mapping_node_identifier",
+        lambda identifier: [None, identifier, identifier],
+    )
+    monkeypatch.setattr(
+        network_module,
+        "check_gene_list_format",
+        lambda identifiers: True,
+    )
+    sif_file = tmp_path / "opposite.sif"
+    sif_file.write_text("A stimulation B\nA inhibition B\n")
+    resources = pd.DataFrame(columns=[
+        "source",
+        "target",
+        "is_directed",
+        "is_stimulation",
+        "is_inhibition",
+        "form_complex",
+    ])
+
+    net = Network(sif_file=str(sif_file), resources=resources)
+
+    assert len(net.edges) == 1
+    assert net.edges.loc[0, "Effect"] == "bimodal"
+    assert net.edges.loc[0, "References"] == "SIF file"
+
 def test_connect_nodes_and_complete_connection(sample_genes, sample_resources):
     net = Network(initial_nodes=sample_genes, resources=sample_resources)
     net.connect_nodes(only_signed=True, consensus_only=False)

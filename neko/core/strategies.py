@@ -12,7 +12,7 @@ import pandas as pd
 from typing_extensions import Literal
 
 from .._methods.enrichment_methods import Connections
-from .tools import is_connected
+from .tools import consolidate_edges, is_connected
 
 logger = logging.getLogger(__name__)
 
@@ -158,10 +158,6 @@ def connect_genes_to_phenotype(
         include_descendants=include_descendants,
         exclude_automatic_assertions=exclude_automatic_assertions,
     )
-    phenotype_genes = sorted({
-        gene.symbol for gene in go_genes if gene.symbol
-    })
-
     if not go_genes:
         logger.warning(
             "No genes associated with %s for taxon %s.",
@@ -193,25 +189,17 @@ def connect_genes_to_phenotype(
         return
 
     uniprot_gene_list = []
-    genesymbols_genes = []
     if sub_genes:
         for gene in sub_genes:
-            _, genesymbol, uniprot = network.mapping_node_identifier(gene)
+            _, _, uniprot = network.mapping_node_identifier(gene)
             uniprot_gene_list.append(uniprot or gene)
-            genesymbols_genes.append(genesymbol or gene)
 
     source_uniprot = (
         uniprot_gene_list
         if uniprot_gene_list
         else network.nodes["Uniprot"].dropna().tolist()
     )
-    source_symbols = (
-        genesymbols_genes
-        if genesymbols_genes
-        else network.nodes["Genesymbol"].dropna().tolist()
-    )
     unique_uniprot = set(uniprot_genes) - set(source_uniprot)
-    unique_genesymbol = set(phenotype_genes) - set(source_symbols)
     connect_component(
         network,
         source_uniprot,
@@ -222,19 +210,49 @@ def connect_genes_to_phenotype(
     )
     if compress:
         phenotype_modified = term.label.replace(" ", "_")
-        network.nodes['Uniprot'] = network.nodes['Uniprot'].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
-        network.nodes['Genesymbol'] = network.nodes['Genesymbol'].apply(lambda x: phenotype_modified if x in unique_genesymbol else x)
+        compressed_node_mask = network.nodes['Uniprot'].isin(unique_uniprot)
+        has_compressed_nodes = compressed_node_mask.any()
+
+        network.nodes = network.nodes.loc[~compressed_node_mask].copy()
         for column in ['source', 'target']:
-            network.edges[column] = network.edges[column].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
-        network.edges = network.edges.groupby(['source', 'target']).agg({
-            'Type': 'first',
-            'Effect': 'first',
-            'References': 'first'
-        }).reset_index()
+            network.edges[column] = network.edges[column].replace(
+                dict.fromkeys(unique_uniprot, phenotype_modified),
+            )
+
         common_genes = set(uniprot_genes).intersection(source_uniprot)
-        for gene in sorted(common_genes):
-            new_edge = pd.DataFrame({"source": [gene], "target": [phenotype_modified], "Effect": ["stimulation"], "References": ["Gene Ontology"]})
-            network.edges = pd.concat([network.edges, new_edge], ignore_index=True)
+        if has_compressed_nodes or common_genes:
+            phenotype_node = pd.DataFrame([{
+                'Genesymbol': phenotype_modified,
+                'Uniprot': phenotype_modified,
+                'Type': 'phenotype',
+            }])
+            network.nodes = pd.concat(
+                [network.nodes, phenotype_node],
+                ignore_index=True,
+            )
+            network.nodes = network.nodes.drop_duplicates(
+                subset=['Genesymbol', 'Uniprot'],
+            ).reset_index(drop=True)
+
+        if common_genes:
+            go_edges = pd.DataFrame({
+                'source': sorted(common_genes),
+                'target': phenotype_modified,
+                'Type': 'gene ontology association',
+                'Effect': 'stimulation',
+                'References': f'Gene Ontology: {term.go_id}',
+            })
+            network.edges = pd.concat(
+                [network.edges, go_edges],
+                ignore_index=True,
+            )
+
+        network.edges = consolidate_edges(network.edges)
+
+        if hasattr(network, 'sync_nodes_from_df'):
+            network.sync_nodes_from_df()
+        if hasattr(network, 'sync_edges_from_df'):
+            network.sync_edges_from_df()
     return
 
 def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None, loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:

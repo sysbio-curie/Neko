@@ -125,12 +125,26 @@ class Network:
 
     def _add_node_obj(self, genesymbol, uniprot, node_type="NaN", metadata=None):
         node_id = uniprot if pd.notna(uniprot) else genesymbol
-        node = Node(node_id=node_id, node_type=node_type, metadata=metadata or {})
+        node_metadata = dict(metadata or {})
+        node_metadata.setdefault("Genesymbol", genesymbol)
+        node = Node(
+            node_id=node_id,
+            node_type=node_type,
+            metadata=node_metadata,
+        )
         self._node_objs.add(node)
         return node
 
     def _add_edge_obj(self, source, target, interaction_type="undefined", effect=None, references=None, metadata=None):
-        edge = Edge(source=source, target=target, interaction_type=interaction_type, evidence=references, metadata=metadata or {})
+        edge_metadata = dict(metadata or {})
+        edge_metadata.setdefault("Effect", effect)
+        edge = Edge(
+            source=source,
+            target=target,
+            interaction_type=interaction_type,
+            evidence=references,
+            metadata=edge_metadata,
+        )
         self._edge_objs.add(edge)
         return edge
 
@@ -425,44 +439,9 @@ class Network:
         if edge["target"].values[0] not in uniprot_nodes:
             self.add_node(edge["target"].values[0])
 
-        # if in the edge dataframe there is an edge with the same source, target and effect, merge the references
-        existing_edge = self.edges[(self.edges["source"] == edge["source"].values[0]) &
-                                   (self.edges["target"] == edge["target"].values[0]) &
-                                   (self.edges["Effect"] == effect)]
-        reference_is_missing = (
-            references is None
-            or references is False
-            or (
-                pd.api.types.is_scalar(references)
-                and pd.isna(references)
-            )
-        )
-
-        if not existing_edge.empty and not reference_is_missing:
-            new_reference = str(references)
-
-            for index in existing_edge.index:
-                current = self.edges.at[index, "References"]
-                current_is_missing = (
-                    current is None
-                    or current is False
-                    or (
-                        pd.api.types.is_scalar(current)
-                        and pd.isna(current)
-                    )
-                )
-
-                if current_is_missing:
-                    self.edges.at[index, "References"] = new_reference
-                elif new_reference not in str(current).split('; '):
-                    self.edges.at[index, "References"] = (
-                        f'{current}; {new_reference}'
-                    )
-        elif existing_edge.empty:
-            # Concatenate the new edge DataFrame with the existing edges in the graph
-            self.edges = pd.concat([self.edges, df_edge])
-
-        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+        self.edges = consolidate_edges(self.edges)
+        self.sync_edges_from_df()
         return
 
     @_record_state_operation
@@ -698,6 +677,9 @@ class Network:
         for node in nodes:
             self.add_node(node, from_sif=True)
 
+        self.edges = consolidate_edges(self.edges)
+        self.sync_edges_from_df()
+
         return
 
     def _add_paths_to_edge_list(self, paths) -> None:
@@ -902,6 +884,11 @@ class Network:
         This function generates a new edges dataframe with the source and target identifiers translated (if possible)
         in Genesymbol format.
 
+        The network's node table is the primary mapping source so custom nodes
+        such as phenotypes are retained. Identifiers unknown to both the node
+        table and the biological mapper are preserved rather than replaced by
+        null values.
+
         Args:
              - None
 
@@ -910,9 +897,52 @@ class Network:
                 format.
         """
 
-        def convert_identifier(x):
-            identifiers = mapping_node_identifier(x)
-            return identifiers[0] or identifiers[1]
+        uniprot_to_genesymbol = {}
+        genesymbols = set()
+
+        for _, node in self.nodes.iterrows():
+            genesymbol = node.get("Genesymbol")
+            uniprot = node.get("Uniprot")
+
+            if pd.notna(genesymbol):
+                genesymbols.add(genesymbol)
+
+            if pd.isna(uniprot) or pd.isna(genesymbol):
+                continue
+
+            existing = uniprot_to_genesymbol.get(uniprot)
+            if existing is not None and existing != genesymbol:
+                raise ValueError(
+                    f"Network identifier {uniprot!r} has multiple gene-symbol "
+                    f"labels: {existing!r} and {genesymbol!r}."
+                )
+            uniprot_to_genesymbol[uniprot] = genesymbol
+
+        ambiguous = {
+            identifier: label
+            for identifier, label in uniprot_to_genesymbol.items()
+            if identifier in genesymbols and identifier != label
+        }
+        if ambiguous:
+            detail = ", ".join(
+                f"{identifier!r} -> {label!r}"
+                for identifier, label in ambiguous.items()
+            )
+            raise ValueError(
+                "Network identifiers are ambiguous between the Uniprot and "
+                f"Genesymbol columns ({detail})."
+            )
+
+        def convert_identifier(identifier):
+            if pd.isna(identifier):
+                return identifier
+            if identifier in uniprot_to_genesymbol:
+                return uniprot_to_genesymbol[identifier]
+            if identifier in genesymbols:
+                return identifier
+
+            identifiers = mapping_node_identifier(identifier)
+            return identifiers[0] or identifiers[1] or identifier
 
         gs_edges = self.edges.copy()
 

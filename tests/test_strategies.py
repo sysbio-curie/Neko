@@ -115,6 +115,67 @@ def test_connect_genes_to_phenotype_uses_canonical_label(monkeypatch):
     assert canonical in network.nodes['Uniprot'].values
     assert canonical in network.edges['target'].values
 
+
+def test_phenotype_compression_merges_opposite_effects(monkeypatch):
+    network = _PhenotypeNetwork()
+
+    def fetch_go_genes(go_id, **kwargs):
+        return [
+            GOGene(
+                gene_id='UniProtKB:P12931',
+                symbol='SRC',
+                taxon_id='NCBITaxon:9606',
+            ),
+            GOGene(
+                gene_id='UniProtKB:Q04771',
+                symbol='ACVR1',
+                taxon_id='NCBITaxon:9606',
+            ),
+        ]
+
+    network._ontology.fetch_go_genes = fetch_go_genes
+
+    def connect_component(network, comp_a, comp_b, **kwargs):
+        network.nodes.loc[len(network.nodes)] = {
+            'Genesymbol': 'ACVR1',
+            'Uniprot': 'Q04771',
+            'Type': 'NaN',
+        }
+        network.edges.loc[len(network.edges)] = {
+            'source': 'P12931',
+            'target': 'Q04771',
+            'Type': 'interaction',
+            'Effect': 'inhibition',
+            'References': 'PMID:1',
+        }
+
+    monkeypatch.setattr(strategies, 'connect_component', connect_component)
+
+    strategies.connect_genes_to_phenotype(
+        network,
+        id_accession='GO:0062043',
+        compress=True,
+    )
+
+    phenotype = (
+        'positive_regulation_of_cardiac_epithelial_to_mesenchymal_transition'
+    )
+    phenotype_nodes = network.nodes[
+        network.nodes['Genesymbol'] == phenotype
+    ]
+    phenotype_edges = network.edges[
+        (network.edges['source'] == 'P12931')
+        & (network.edges['target'] == phenotype)
+    ]
+
+    assert len(phenotype_nodes) == 1
+    assert len(phenotype_edges) == 1
+    assert phenotype_edges.iloc[0]['Effect'] == 'bimodal'
+    assert phenotype_edges.iloc[0]['References'] == (
+        'PMID:1; Gene Ontology: GO:0062043'
+    )
+    assert 'Q04771' not in network.nodes['Uniprot'].values
+
 def test_connect_nodes_omnipath():
     # Use a small set of genes known to be in Omnipath
     genes = ["TP53", "MDM2", "CDKN1A", "RB1"]

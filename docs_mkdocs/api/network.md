@@ -38,6 +38,17 @@ Exact-term human annotations are used by default. Use
 `include_descendants=True` to include genes annotated to more specific GO
 terms, or change `taxon_id` for another organism.
 
+With `compress=True`, connected GO-associated genes are replaced by one node
+named from the canonical GO term label. If collapsing those genes produces both
+an activating and an inhibiting interaction between the same two nodes, NeKo
+retains the conflicting evidence as one `bimodal` interaction. References and
+interaction types from the contributing edges are preserved.
+
+Parallel regulatory edges elsewhere in a network follow the same rule: an
+`A stimulation B` edge together with an `A inhibition B` edge is represented
+as `A bimodal B`. Complex formation remains separate because it does not encode
+a regulatory sign.
+
 ---
 
 ## Class reference

@@ -267,6 +267,38 @@ def translate_paths(paths) -> list[list[str]]:
     return translated_list
 
 
+def _is_missing(value) -> bool:
+    """Return whether a scalar edge value should be treated as missing."""
+
+    if value is None or value is False:
+        return True
+
+    if not pd.api.types.is_scalar(value):
+        return False
+    return bool(pd.isna(value))
+
+
+def _join_unique_values(values, separator: str = '; ') -> str | None:
+    """Join non-empty values once while preserving their input order."""
+
+    unique_values = []
+
+    for value in values:
+        if _is_missing(value):
+            continue
+
+        # References and types are already merged with semicolons elsewhere in
+        # the package. Split them here so repeated consolidation remains
+        # idempotent.
+        parts = str(value).split(';')
+        for part in parts:
+            part = part.strip()
+            if part and part not in unique_values:
+                unique_values.append(part)
+
+    return separator.join(unique_values) if unique_values else None
+
+
 def join_unique(series) -> str:
     """
     This function takes a pandas Series, filters out None values, and returns a string of unique values joined by a comma.
@@ -277,10 +309,97 @@ def join_unique(series) -> str:
     Returns: - A string of unique values in the series, joined by a comma. If a value in the series is None,
                 it is not included in the output string.
     """
-    # Filter out None values before converting to set and joining
-    filtered_series = [str(item) for item in series if item is not None]
-    unique_items = set(filtered_series)
-    return ', '.join(unique_items)
+    return _join_unique_values(series, separator=', ') or ''
+
+
+def _normalize_effect(effect) -> str:
+    """Normalize effect spelling before parallel edges are consolidated."""
+
+    if _is_missing(effect):
+        return 'undefined'
+
+    normalized = str(effect).strip().lower().replace('_', ' ')
+    aliases = {
+        'activate': 'stimulation',
+        'activation': 'stimulation',
+        'stimulate': 'stimulation',
+        'inhibit': 'inhibition',
+        'both': 'bimodal',
+        'form complex': 'form complex',
+    }
+    return aliases.get(normalized, normalized or 'undefined')
+
+
+def consolidate_edges(edges: pd.DataFrame) -> pd.DataFrame:
+    """Merge parallel working edges without discarding conflicting signs.
+
+    Regulatory evidence is consolidated per source-target pair. Observing both
+    stimulation and inhibition produces one ``bimodal`` edge, regardless of
+    evidence counts. Complex formation and non-regulatory effects remain
+    separate because they cannot be represented by a regulatory sign.
+    """
+
+    if not isinstance(edges, pd.DataFrame):
+        raise TypeError('edges must be a pandas DataFrame.')
+
+    required = {'source', 'target', 'Effect'}
+    missing_columns = required.difference(edges.columns)
+    if missing_columns:
+        detail = ', '.join(sorted(missing_columns))
+        raise ValueError(f'Edges are missing required column(s): {detail}.')
+
+    columns = ['source', 'target', 'Type', 'Effect', 'References']
+    if edges.empty:
+        return edges.reindex(columns=columns).copy().reset_index(drop=True)
+
+    working = edges.copy()
+    for column in ('Type', 'References'):
+        if column not in working.columns:
+            working[column] = None
+
+    working['_normalized_effect'] = working['Effect'].map(_normalize_effect)
+    consolidated = []
+    regulatory_effects = {'stimulation', 'inhibition', 'bimodal'}
+
+    for (source, target), group in working.groupby(
+            ['source', 'target'], sort=False, dropna=False):
+        categories = []
+        for effect in group['_normalized_effect']:
+            if effect in regulatory_effects:
+                category = 'regulatory'
+            elif effect == 'form complex':
+                category = 'form complex'
+            else:
+                category = effect
+            if category not in categories:
+                categories.append(category)
+
+        for category in categories:
+            if category == 'regulatory':
+                selected = group[
+                    group['_normalized_effect'].isin(regulatory_effects)
+                ]
+                effects = set(selected['_normalized_effect'])
+                if 'bimodal' in effects or {
+                        'stimulation', 'inhibition'}.issubset(effects):
+                    effect = 'bimodal'
+                elif 'stimulation' in effects:
+                    effect = 'stimulation'
+                else:
+                    effect = 'inhibition'
+            else:
+                selected = group[group['_normalized_effect'] == category]
+                effect = category
+
+            consolidated.append({
+                'source': source,
+                'target': target,
+                'Type': _join_unique_values(selected['Type']),
+                'Effect': effect,
+                'References': _join_unique_values(selected['References']),
+            })
+
+    return pd.DataFrame(consolidated, columns=columns).reset_index(drop=True)
 
 
 def determine_most_frequent_effect(effects):

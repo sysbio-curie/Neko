@@ -134,6 +134,104 @@ def test_bnet_export_keeps_formulas_for_sanitized_signor_nodes(tmp_path):
     assert 'PROTEIN_FAMILY_ERK1_2, (P1)' in content
 
 
+def test_bnet_export_preserves_custom_phenotype_and_merges_signs(
+        tmp_path, monkeypatch):
+    import neko.core.network as network_module
+    from neko.core.network import Network
+    from neko._outputs.exports import Exports
+
+    phenotype = 'cell_cycle_arrest'
+    net = Network.__new__(Network)
+    net.nodes = pd.DataFrame([
+        {'Genesymbol': 'A', 'Uniprot': 'UP_A', 'Type': 'NaN'},
+        {
+            'Genesymbol': phenotype,
+            'Uniprot': phenotype,
+            'Type': 'phenotype',
+        },
+    ])
+    net.edges = pd.DataFrame([
+        {
+            'source': 'UP_A',
+            'target': phenotype,
+            'Type': 'interaction',
+            'Effect': 'stimulation',
+            'References': 'PMID:1',
+        },
+        {
+            'source': 'UP_A',
+            'target': phenotype,
+            'Type': 'interaction',
+            'Effect': 'inhibition',
+            'References': 'PMID:2',
+        },
+    ])
+
+    monkeypatch.setattr(
+        network_module,
+        'mapping_node_identifier',
+        lambda identifier: pytest.fail(
+            f'unexpected external translation for {identifier}',
+        ),
+    )
+
+    exporter = Exports(net)
+    assert exporter.interactions.loc[0, 'Effect'] == 'bimodal'
+    assert exporter.interactions.loc[0, 'References'] == 'PMID:1; PMID:2'
+
+    exporter.export_bnet(str(tmp_path / 'phenotype.bnet'))
+
+    activating = (tmp_path / 'phenotype_1.bnet').read_text()
+    inhibiting = (tmp_path / 'phenotype_2.bnet').read_text()
+    assert f'{phenotype}, (A)' in activating
+    assert f'{phenotype}, !(A)' in inhibiting
+    assert 'None' not in activating + inhibiting
+
+
+def test_bnet_export_rejects_null_endpoints(tmp_path):
+    from neko._outputs.exports import Exports
+
+    exporter = Exports.__new__(Exports)
+    exporter.nodes = pd.DataFrame({'Genesymbol': ['A', 'B']})
+    exporter.interactions = pd.DataFrame({
+        'source': ['A'],
+        'target': [None],
+        'Effect': ['stimulation'],
+        'References': ['ref'],
+    })
+
+    with pytest.raises(ValueError, match='null or empty identifier'):
+        exporter.export_bnet(str(tmp_path / 'invalid.bnet'))
+
+
+def test_edge_consolidation_keeps_complex_formation_separate():
+    from neko.core.tools import consolidate_edges
+
+    edges = pd.DataFrame([
+        {
+            'source': 'A',
+            'target': 'B',
+            'Type': 'regulation',
+            'Effect': 'stimulation',
+            'References': 'PMID:1',
+        },
+        {
+            'source': 'A',
+            'target': 'B',
+            'Type': 'binding',
+            'Effect': 'form complex',
+            'References': 'PMID:2',
+        },
+    ])
+
+    consolidated = consolidate_edges(edges)
+
+    assert consolidated['Effect'].tolist() == [
+        'stimulation',
+        'form complex',
+    ]
+
+
 def test_sif_export_creates_parent_directory(tmp_path):
     from neko.core.network import Network
     from neko._outputs.exports import Exports

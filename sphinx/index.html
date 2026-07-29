@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,20 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Neko &mdash; neko  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
     <link rel="shortcut icon" href="_static/neko_logo.png"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -37,9 +35,6 @@
             
               <img src="_static/neko_logo.png" class="logo" alt="Logo"/>
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -98,7 +93,7 @@
 <a class="reference external image-reference" href="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml"><img alt="Tests" src="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg" /></a>
 <a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/"><img alt="MkDocs Documentation" src="https://img.shields.io/badge/docs-MkDocs-brightgreen.svg" /></a>
 <a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/sphinx/"><img alt="Sphinx Documentation" src="https://img.shields.io/badge/docs-Sphinx-blue.svg" /></a>
-<p>Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It’s built on top of <a class="reference external" href="https://github.com/saezlab/omnipath">Omnipath</a>, <a class="reference external" href="https://github.com/saezlab/pypath">Pypath</a>, and <a class="reference external" href="https://github.com/druglogics/atopo">Atopo</a>.</p>
+<p>Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It integrates <a class="reference external" href="https://github.com/saezlab/omnipath">OmniPath</a> and other interaction resources, uses UniProt tables for identifier translation, and exports networks for tools such as <a class="reference external" href="https://github.com/druglogics/atopo">Atopo</a>.</p>
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
 <p>If you use NeKo in your research, please cite our paper:</p>
@@ -114,6 +109,33 @@
 <li><p>Interaction database integration</p></li>
 <li><p>Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls</p></li>
 </ul>
+</section>
+<section id="signor-entity-normalization">
+<h2>SIGNOR entity normalization<a class="headerlink" href="#signor-entity-normalization" title="Link to this heading"></a></h2>
+<p>The built-in <code class="docutils literal notranslate"><span class="pre">signor()</span></code> input loads SIGNOR’s human interaction table and its
+complex, protein-family, phenotype, and stimulus dictionaries from NeKo’s
+validated local cache. Missing resources are downloaded once and added to the
+cache. Proprietary endpoint IDs are normalized before the <code class="docutils literal notranslate"><span class="pre">Universe</span></code> is
+built: complexes use the same <code class="docutils literal notranslate"><span class="pre">COMPLEX:</span></code> member syntax as OmniPath, while
+the other group/context nodes use readable <code class="docutils literal notranslate"><span class="pre">PROTEIN_FAMILY:</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PHENOTYPE:</span></code>, and <code class="docutils literal notranslate"><span class="pre">STIMULUS:</span></code> identifiers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">signor</span>
+
+<span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After one successful load, the cached release can be used offline. Set
+<code class="docutils literal notranslate"><span class="pre">NEKO_CACHE_DIR</span></code> to choose the cache root. Preloaded dictionary DataFrames
+can still be passed through <code class="docutils literal notranslate"><span class="pre">entity_dictionaries</span></code>. Normalization can be
+explicitly disabled with <code class="docutils literal notranslate"><span class="pre">normalize_entities=False</span></code> when the raw SIGNOR
+identifiers are required.</p>
+<p>SIGNOR ChEBI accessions remain canonical network identifiers and are never
+sent to UniProt for translation. When a resource contains ChEBI nodes, NeKo
+lazily downloads the official compressed <code class="docutils literal notranslate"><span class="pre">compounds.tsv.gz</span></code> table once and
+caches only the names needed by that resource for display. If the download is
+unavailable, network construction continues with the ChEBI accession as its
+label. ChEBI data are provided by EMBL-EBI under the <a class="reference external" href="https://www.ebi.ac.uk/chebi/aboutChebiForward.do">Creative Commons
+Attribution 4.0 International license</a>.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>

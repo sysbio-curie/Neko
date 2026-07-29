@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,20 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Reference &mdash; neko  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
     <link rel="shortcut icon" href="_static/neko_logo.png"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -39,9 +37,6 @@
             
               <img src="_static/neko_logo.png" class="logo" alt="Logo"/>
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -325,8 +320,24 @@ the genesymbol and ‘Uniprot’ as the uniprot. The ‘Type’ is set as ‘NaN
 
 <dl class="py method">
 <dt class="sig sig-object py" id="neko.core.network.Network.connect_genes_to_phenotype">
-<span class="sig-name descname"><span class="pre">connect_genes_to_phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_accession</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_genes_to_phenotype" title="Link to this definition"></a></dt>
-<dd><p>Delegates to strategies.connect_genes_to_phenotype.</p>
+<span class="sig-name descname"><span class="pre">connect_genes_to_phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_accession</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_descendants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_automatic_assertions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neko.core.network.Network.connect_genes_to_phenotype" title="Link to this definition"></a></dt>
+<dd><p>Connect this network to genes associated with a GO term.</p>
+<p>The GO accession is authoritative. Exact human annotations are used
+by default; <code class="docutils literal notranslate"><span class="pre">include_descendants</span></code> enables annotations propagated
+from more specific terms. When <code class="docutils literal notranslate"><span class="pre">compress</span></code> is true, connected GO
+genes are replaced by a node carrying the canonical GO term label.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>phenotype: Optional backward-compatible phenotype alias.
+id_accession: GO accession such as <code class="docutils literal notranslate"><span class="pre">GO:0062043</span></code>.
+sub_genes: Optional subset of network genes to connect from.
+maxlen: Maximum path length in the interaction resource.
+only_signed: Restrict paths to signed interactions.
+compress: Collapse connected GO genes into one phenotype node.
+taxon_id: NCBI taxonomy ID or <code class="docutils literal notranslate"><span class="pre">NCBITaxon:</span></code> CURIE.
+include_descendants: Include associations to descendant GO terms.
+exclude_automatic_assertions: Exclude <code class="docutils literal notranslate"><span class="pre">ECO:0000501</span></code> records.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -358,6 +369,10 @@ the genesymbol and ‘Uniprot’ as the uniprot. The ‘Type’ is set as ‘NaN
 <span class="sig-name descname"><span class="pre">convert_edgelist_into_genesymbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#neko.core.network.Network.convert_edgelist_into_genesymbol" title="Link to this definition"></a></dt>
 <dd><p>This function generates a new edges dataframe with the source and target identifiers translated (if possible)
 in Genesymbol format.</p>
+<p>The network’s node table is the primary mapping source so custom nodes
+such as phenotypes are retained. Identifiers unknown to both the node
+table and the biological mapper are preserved rather than replaced by
+null values.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>None</p></li>
@@ -657,7 +672,7 @@ the edges between the nodes in the path.</p>
 <td><p>Delegates to strategies.connect_component.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_genes_to_phenotype" title="neko.core.network.Network.connect_genes_to_phenotype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_genes_to_phenotype</span></code></a>([...])</p></td>
-<td><p>Delegates to strategies.connect_genes_to_phenotype.</p></td>
+<td><p>Connect this network to genes associated with a GO term.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#neko.core.network.Network.connect_nodes" title="neko.core.network.Network.connect_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neko.core.network.Network.connect_nodes</span></code></a>([...])</p></td>
 <td><p>Delegates to strategies.connect_nodes.</p></td>

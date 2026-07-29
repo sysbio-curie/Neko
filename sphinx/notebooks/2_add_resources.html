@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,23 +8,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Build network using user-defined resources &mdash; neko  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
 
   
     <link rel="shortcut icon" href="../_static/neko_logo.png"/>
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -42,9 +40,6 @@
             
               <img src="../_static/neko_logo.png" class="logo" alt="Logo"/>
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -449,8 +444,7 @@ Wall time: 4.2 s
 </pre></div>
 </div>
 <div class="input_area docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>  <span class="c1"># this function accept as argument also a PATH to the signor file</span>
-<span class="n">resources</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>  <span class="c1"># uses NeKo&#39;s SIGNOR cache before downloading</span>
 </pre></div>
 </div>
 </div>
@@ -676,7 +670,8 @@ Wall time: 4.2 s
 <p>In order to avoid conflict or errors, ensure that the file contains at least the following columns: IDA, IDB, EFFECT, ANNOTATOR, PMID, SIGNOR_ID</p>
 <div class="admonition note">
 <p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
-<p>SIGNOR uses has different identifiers for complexes, protein family, phenotype, etc. It is possible that the network contains nodes names like “Signor_pf32” or something like this… This is not yet translated, but if you are interested in what those nodes consist of, you can use download their vocabulary for the entities: <a class="reference external" href="https://signor.uniroma2.it/downloads.php">https://signor.uniroma2.it/downloads.php</a></p>
+<p>SIGNOR uses proprietary identifiers for complexes, protein families, phenotypes, and stimuli. NeKo downloads SIGNOR’s entity dictionaries automatically and normalizes these nodes before building the Universe. Complexes use OmniPath-compatible <code class="docutils literal notranslate"><span class="pre">COMPLEX:</span></code> member identifiers; the other entities use readable <code class="docutils literal notranslate"><span class="pre">PROTEIN_FAMILY:</span></code>, <code class="docutils literal notranslate"><span class="pre">PHENOTYPE:</span></code>, and <code class="docutils literal notranslate"><span class="pre">STIMULUS:</span></code> identifiers. To retain the original SIGNOR identifiers, call <code class="docutils literal notranslate"><span class="pre">signor(...,</span> <span class="pre">normalize_entities=False)</span></code>. NeKo caches the validated
+interaction table and entity dictionaries after the first load; <code class="docutils literal notranslate"><span class="pre">NEKO_CACHE_DIR</span></code> can be used to select the cache root. Preloaded dictionary DataFrames can also be supplied with <code class="docutils literal notranslate"><span class="pre">entity_dictionaries</span></code>.</p>
 </div>
 </section>
 </section>

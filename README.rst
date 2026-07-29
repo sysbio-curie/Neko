@@ -19,7 +19,7 @@ NeKo: Network Konstructor
    :target: https://sysbio-curie.github.io/Neko/sphinx/
    :alt: Sphinx Documentation
 
-Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It's built on top of `Omnipath <https://github.com/saezlab/omnipath>`_, `Pypath <https://github.com/saezlab/pypath>`_, and `Atopo <https://github.com/druglogics/atopo>`_.
+Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It integrates `OmniPath <https://github.com/saezlab/omnipath>`_ and other interaction resources, uses UniProt tables for identifier translation, and exports networks for tools such as `Atopo <https://github.com/druglogics/atopo>`_.
 
 Citation
 --------
@@ -37,6 +37,38 @@ Features
 - Network visualization and export helpers
 - Interaction database integration
 - Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls
+
+SIGNOR entity normalization
+---------------------------
+
+The built-in ``signor()`` input loads SIGNOR's human interaction table and its
+complex, protein-family, phenotype, and stimulus dictionaries from NeKo's
+validated local cache. Missing resources are downloaded once and added to the
+cache. Proprietary endpoint IDs are normalized before the ``Universe`` is
+built: complexes use the same ``COMPLEX:`` member syntax as OmniPath, while
+the other group/context nodes use readable ``PROTEIN_FAMILY:``,
+``PHENOTYPE:``, and ``STIMULUS:`` identifiers.
+
+.. code-block:: python
+
+    from neko.inputs import signor
+
+    resources = signor()
+
+After one successful load, the cached release can be used offline. Set
+``NEKO_CACHE_DIR`` to choose the cache root. Preloaded dictionary DataFrames
+can still be passed through ``entity_dictionaries``. Normalization can be
+explicitly disabled with ``normalize_entities=False`` when the raw SIGNOR
+identifiers are required.
+
+SIGNOR ChEBI accessions remain canonical network identifiers and are never
+sent to UniProt for translation. When a resource contains ChEBI nodes, NeKo
+lazily downloads the official compressed ``compounds.tsv.gz`` table once and
+caches only the names needed by that resource for display. If the download is
+unavailable, network construction continues with the ChEBI accession as its
+label. ChEBI data are provided by EMBL-EBI under the `Creative Commons
+Attribution 4.0 International license
+<https://www.ebi.ac.uk/chebi/aboutChebiForward.do>`_.
 
 Installation
 ------------

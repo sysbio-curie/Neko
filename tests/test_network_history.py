@@ -1,9 +1,6 @@
 import pandas as pd
 import pytest
 
-pytest.importorskip('pypath.utils.mapping')
-pytest.importorskip('pypath_common')
-
 from neko.core.network import Network
 
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ..inputs import _universe
+from ..inputs import _universe, chebi_mapping
 from .._methods.enrichment_methods import Connections
 import copy
 from contextlib import contextmanager
@@ -44,6 +44,13 @@ def _record_state_operation(method):
             return method(self, *args, **kwargs)
 
         depth = getattr(self, "_auto_state_depth", 0)
+
+        # The outer decorated operation records the complete state change.
+        # Nested operations must not recompute full DataFrame fingerprints for
+        # every added edge or node; they never create independent snapshots.
+        if depth > 0:
+            return method(self, *args, **kwargs)
+
         self._auto_state_depth = depth + 1
 
         before_nodes = _frame_fingerprint(self.nodes)
@@ -55,9 +62,6 @@ def _record_state_operation(method):
             self._auto_state_depth = depth
 
         if getattr(self, "_is_initializing", False):
-            return result
-
-        if depth > 0:
             return result
 
         nodes_changed = before_nodes != _frame_fingerprint(self.nodes)
@@ -121,12 +125,26 @@ class Network:
 
     def _add_node_obj(self, genesymbol, uniprot, node_type="NaN", metadata=None):
         node_id = uniprot if pd.notna(uniprot) else genesymbol
-        node = Node(node_id=node_id, node_type=node_type, metadata=metadata or {})
+        node_metadata = dict(metadata or {})
+        node_metadata.setdefault("Genesymbol", genesymbol)
+        node = Node(
+            node_id=node_id,
+            node_type=node_type,
+            metadata=node_metadata,
+        )
         self._node_objs.add(node)
         return node
 
     def _add_edge_obj(self, source, target, interaction_type="undefined", effect=None, references=None, metadata=None):
-        edge = Edge(source=source, target=target, interaction_type=interaction_type, evidence=references, metadata=metadata or {})
+        edge_metadata = dict(metadata or {})
+        edge_metadata.setdefault("Effect", effect)
+        edge = Edge(
+            source=source,
+            target=target,
+            interaction_type=interaction_type,
+            evidence=references,
+            metadata=edge_metadata,
+        )
         self._edge_objs.add(edge)
         return edge
 
@@ -166,12 +184,34 @@ class Network:
             interactions
         )
 
+        # Resolve all ChEBI labels in one pass. The canonical accessions stay
+        # usable even when this optional, best-effort enrichment is offline.
+        chebi_mapping.ensure_names(
+            chebi_mapping.identifiers_in_frame(self.resources),
+        )
+
         if self.initial_nodes:
             nodes_found = []
             for node in self.initial_nodes:
                 if self.add_node(node):
-                    nodes_found.append(node)
-            self.initial_nodes = nodes_found
+                    identifiers = mapping_node_identifier(node)
+                    candidates = {
+                        identifier
+                        for identifier in (node, *identifiers)
+                        if identifier is not None
+                    }
+                    matching_nodes = self.nodes[
+                        self.nodes[['Genesymbol', 'Uniprot']]
+                        .isin(candidates)
+                        .any(axis=1)
+                    ]
+                    canonical = (
+                        matching_nodes.iloc[0]['Genesymbol']
+                        if not matching_nodes.empty
+                        else identifiers[0] or identifiers[1] or node
+                    )
+                    nodes_found.append(canonical)
+            self.initial_nodes = list(dict.fromkeys(nodes_found))
             self._drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
 
@@ -290,13 +330,29 @@ class Network:
             self.initial_nodes = list(set(self.initial_nodes))
             return True
         complex_string, genesymbol, uniprot = mapping_node_identifier(node)
-        if complex_string:
-            new_entry = {"Genesymbol": complex_string, "Uniprot": node, "Type": "NaN"}
-        else:
-            new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
-        if not self.check_node(uniprot) and not self.check_node(genesymbol):
+
+        # The identifier stored in ``Uniprot`` is also the identifier used by
+        # resource edges. Prefer the caller's exact identifier when the
+        # resource uses it (e.g. PhosphoSitePlus gene symbols and sites), and
+        # otherwise use its translated UniProt or display identifier.
+        resource_identifier = next(
+            (
+                identifier
+                for identifier in (node, uniprot, genesymbol)
+                if identifier is not None and self.check_node(identifier)
+            ),
+            None,
+        )
+
+        if resource_identifier is None:
             print("Error: node %s is not present in the resources database" % node)
             return False
+
+        new_entry = {
+            "Genesymbol": complex_string or genesymbol or node,
+            "Uniprot": resource_identifier,
+            "Type": "NaN",
+        }
         self.nodes.loc[len(self.nodes)] = new_entry
         self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
         self._add_node_obj(new_entry["Genesymbol"], new_entry["Uniprot"], new_entry["Type"])
@@ -314,14 +370,34 @@ class Network:
         Returns:
             - None
         """
-        # Remove the node from the nodes DataFrame
-        self.nodes = self.nodes[(self.nodes.Genesymbol != node) & (self.nodes.Uniprot != node)]
+        if node is None or (not isinstance(node, str) and pd.isna(node)):
+            return
 
-        # Translate the node identifier to Uniprot
-        node = mapping_node_identifier(node)[2]
+        matching_nodes = self.nodes[
+            (self.nodes["Genesymbol"] == node)
+            | (self.nodes["Uniprot"] == node)
+        ]
+        identifiers = {node}
+        identifiers.update(
+            value
+            for value in matching_nodes[["Genesymbol", "Uniprot"]].stack()
+            if pd.notna(value)
+        )
 
-        # Remove any edges associated with the node from the edges DataFrame
-        self.edges = self.edges[~self.edges[['source', 'target']].isin([node]).any(axis=1)]
+        if matching_nodes.empty:
+            translated = mapping_node_identifier(node)
+            identifiers.update(value for value in translated if value is not None)
+
+        self.nodes = self.nodes[
+            ~self.nodes[["Genesymbol", "Uniprot"]]
+            .isin(identifiers)
+            .any(axis=1)
+        ]
+        self.edges = self.edges[
+            ~self.edges[["source", "target"]]
+            .isin(identifiers)
+            .any(axis=1)
+        ]
 
         return
 
@@ -363,17 +439,9 @@ class Network:
         if edge["target"].values[0] not in uniprot_nodes:
             self.add_node(edge["target"].values[0])
 
-        # if in the edge dataframe there is an edge with the same source, target and effect, merge the references
-        existing_edge = self.edges[(self.edges["source"] == edge["source"].values[0]) &
-                                   (self.edges["target"] == edge["target"].values[0]) &
-                                   (self.edges["Effect"] == effect)]
-        if not existing_edge.empty and references is not None:
-            self.edges.loc[existing_edge.index, "References"] += "; " + str(references)
-        else:
-            # Concatenate the new edge DataFrame with the existing edges in the graph
-            self.edges = pd.concat([self.edges, df_edge])
-
-        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
+        self.edges = consolidate_edges(self.edges)
+        self.sync_edges_from_df()
         return
 
     @_record_state_operation
@@ -609,6 +677,9 @@ class Network:
         for node in nodes:
             self.add_node(node, from_sif=True)
 
+        self.edges = consolidate_edges(self.edges)
+        self.sync_edges_from_df()
+
         return
 
     def _add_paths_to_edge_list(self, paths) -> None:
@@ -712,12 +783,50 @@ class Network:
         return connect_to_upstream_nodes(self, nodes_to_connect=nodes_to_connect, depth=depth, rank=rank, only_signed=only_signed, consensus=consensus)
 
     @_record_state_operation
-    def connect_genes_to_phenotype(self, phenotype: str = None, id_accession: str = None, sub_genes: list = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False) -> None:
+    def connect_genes_to_phenotype(
+            self,
+            phenotype: str = None,
+            id_accession: str = None,
+            sub_genes: list = None,
+            maxlen: int = 2,
+            only_signed: bool = False,
+            compress: bool = False,
+            taxon_id=9606,
+            include_descendants: bool = False,
+            exclude_automatic_assertions: bool = False,
+        ) -> None:
         """
-        Delegates to strategies.connect_genes_to_phenotype.
+        Connect this network to genes associated with a GO term.
+
+        The GO accession is authoritative. Exact human annotations are used
+        by default; ``include_descendants`` enables annotations propagated
+        from more specific terms. When ``compress`` is true, connected GO
+        genes are replaced by a node carrying the canonical GO term label.
+
+        Args:
+            phenotype: Optional backward-compatible phenotype alias.
+            id_accession: GO accession such as ``GO:0062043``.
+            sub_genes: Optional subset of network genes to connect from.
+            maxlen: Maximum path length in the interaction resource.
+            only_signed: Restrict paths to signed interactions.
+            compress: Collapse connected GO genes into one phenotype node.
+            taxon_id: NCBI taxonomy ID or ``NCBITaxon:`` CURIE.
+            include_descendants: Include associations to descendant GO terms.
+            exclude_automatic_assertions: Exclude ``ECO:0000501`` records.
         """
         from .strategies import connect_genes_to_phenotype
-        return connect_genes_to_phenotype(self, phenotype=phenotype, id_accession=id_accession, sub_genes=sub_genes, maxlen=maxlen, only_signed=only_signed, compress=compress)
+        return connect_genes_to_phenotype(
+            self,
+            phenotype=phenotype,
+            id_accession=id_accession,
+            sub_genes=sub_genes,
+            maxlen=maxlen,
+            only_signed=only_signed,
+            compress=compress,
+            taxon_id=taxon_id,
+            include_descendants=include_descendants,
+            exclude_automatic_assertions=exclude_automatic_assertions,
+        )
 
     @_record_state_operation
     def connect_network_radially(self, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None, loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:
@@ -775,6 +884,11 @@ class Network:
         This function generates a new edges dataframe with the source and target identifiers translated (if possible)
         in Genesymbol format.
 
+        The network's node table is the primary mapping source so custom nodes
+        such as phenotypes are retained. Identifiers unknown to both the node
+        table and the biological mapper are preserved rather than replaced by
+        null values.
+
         Args:
              - None
 
@@ -783,9 +897,52 @@ class Network:
                 format.
         """
 
-        def convert_identifier(x):
-            identifiers = mapping_node_identifier(x)
-            return identifiers[0] or identifiers[1]
+        uniprot_to_genesymbol = {}
+        genesymbols = set()
+
+        for _, node in self.nodes.iterrows():
+            genesymbol = node.get("Genesymbol")
+            uniprot = node.get("Uniprot")
+
+            if pd.notna(genesymbol):
+                genesymbols.add(genesymbol)
+
+            if pd.isna(uniprot) or pd.isna(genesymbol):
+                continue
+
+            existing = uniprot_to_genesymbol.get(uniprot)
+            if existing is not None and existing != genesymbol:
+                raise ValueError(
+                    f"Network identifier {uniprot!r} has multiple gene-symbol "
+                    f"labels: {existing!r} and {genesymbol!r}."
+                )
+            uniprot_to_genesymbol[uniprot] = genesymbol
+
+        ambiguous = {
+            identifier: label
+            for identifier, label in uniprot_to_genesymbol.items()
+            if identifier in genesymbols and identifier != label
+        }
+        if ambiguous:
+            detail = ", ".join(
+                f"{identifier!r} -> {label!r}"
+                for identifier, label in ambiguous.items()
+            )
+            raise ValueError(
+                "Network identifiers are ambiguous between the Uniprot and "
+                f"Genesymbol columns ({detail})."
+            )
+
+        def convert_identifier(identifier):
+            if pd.isna(identifier):
+                return identifier
+            if identifier in uniprot_to_genesymbol:
+                return uniprot_to_genesymbol[identifier]
+            if identifier in genesymbols:
+                return identifier
+
+            identifiers = mapping_node_identifier(identifier)
+            return identifiers[0] or identifiers[1] or identifier
 
         gs_edges = self.edges.copy()
 
@@ -1085,13 +1242,6 @@ class Network:
         from .._visual.history import history_digraph
 
         return history_digraph(self, include_metadata=include_metadata)
-
-    def history_html(self, include_metadata: bool = True, div_class: str = "neko-history-graph") -> str:
-        """Return an HTML snippet embedding the history graph."""
-
-        from .._visual.history import history_html
-
-        return history_html(self, include_metadata=include_metadata, div_class=div_class)
 
     def history_html(self, include_metadata: bool = True, div_class: str = "neko-history-graph") -> str:
         """Return an HTML snippet embedding the history graph."""

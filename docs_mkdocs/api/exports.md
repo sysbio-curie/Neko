@@ -1,6 +1,6 @@
 # Exports
 
-`Exports` converts a `Network` object into various file formats used by modelling tools such as MaBoSS, GINsim, and CoBrexa.
+`Exports` converts a `Network` object into various file formats used by modelling tools such as MaBoSS, GINsim, and more.
 
 ## Import
 
@@ -14,8 +14,6 @@ from neko._outputs.exports import Exports
 |---|---|---|
 | BNet (Boolean Network) | `export_bnet()` | MaBoSS, PyBoolNet |
 | SIF (Simple Interaction Format) | `export_sif()` | Cytoscape |
-| GML | via `networkx` on `net.graph` | Various |
-| GraphML | via `networkx` on `net.graph` | Gephi, yEd |
 
 ## Quick example
 
@@ -31,12 +29,17 @@ exporter.export_bnet("my_model.bnet")
 exporter.export_sif("my_network.sif")
 ```
 
-!!! tip "Exporting directly from `Network`"
-    The convenience wrappers on `Network` call `Exports` internally, so in most cases you do not need to instantiate `Exports` yourself:
+`export_bnet("my_model.bnet")` writes numbered files such as
+`my_model_1.bnet`, because each bimodal edge can produce stimulation and
+inhibition variants. Opposite parallel regulatory edges are normalized to one
+bimodal edge before export. Pass `n=` to cap the number of variants generated.
 
-    ```python
-    net.export_bnet("model.bnet")
-    ```
+SIGNOR group/context labels and other identifiers containing spaces, `/`, `-`,
+`#`, or `:` are sanitized for BNet output. Export raises `ValueError` if two
+different labels would collapse to the same sanitized identifier. Custom nodes,
+including compressed GO phenotypes, are resolved using the network's node table
+rather than being treated as protein identifiers. Null endpoints and endpoints
+missing from that node table are rejected with a descriptive error.
 
 ---
 

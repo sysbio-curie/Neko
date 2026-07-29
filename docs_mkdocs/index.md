@@ -9,7 +9,7 @@
 [![PyPI](https://img.shields.io/pypi/v/nekomata.svg)](https://pypi.org/project/nekomata/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-**NeKo** is a Python package for extracting, visualising, converting, and studying interactions from databases into executable activity flow-based models. It is built on top of [OmniPath](https://github.com/saezlab/omnipath), [PyPath](https://github.com/saezlab/pypath), and [Atopo](https://github.com/druglogics/atopo).
+**NeKo** is a Python package for extracting, visualising, converting, and studying interactions from databases into executable activity flow-based models. It integrates [OmniPath](https://github.com/saezlab/omnipath) and other interaction resources, uses UniProt tables for identifier translation, and exports networks for tools such as [Atopo](https://github.com/druglogics/atopo).
 
 ---
 
@@ -46,8 +46,7 @@ from neko.inputs import Universe
 from neko._visual.visualize_network import NetworkVisualizer
 
 # Load the interaction universe from OmniPath
-resources = Universe()
-resources.build()
+resources = Universe("omnipath")
 
 # Create a network from a list of genes
 net = Network(["EGFR", "KRAS", "TP53", "AKT1"], resources=resources.interactions)

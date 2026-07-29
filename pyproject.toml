@@ -40,11 +40,12 @@ unipressed = "*"
 jupyterlab = "*"
 pycurl = "*"
 graphviz = "*"
-pandas = "2.2.2"
-pypath-common = "^0.2.5"
-omnipath = "1.0.9"
-pypath-omnipath = "0.16.20"
-paramiko = "<4.0.0"
+pypath-common = ">=0.2.6"
+requests = ">=2.31,<3"
+typing-extensions = ">=4.8"
+tqdm = ">=4.66,<5"
+pandas = ">=2.2,<4"
+omnipath = ">=1.0.9,<2"
 
 [tool.poetry.dev-dependencies]
 pandoc = "*"
@@ -54,7 +55,7 @@ pre-commit = ">=2.17.0"
 bump2version = "*"
 coverage = ">=6.0"
 pytest-cov = "^6.0.0"
-codecov-cli = "^0.8.0"
+codecov-cli = "^11.3.1"
 sphinx = "^7.2.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
@@ -168,4 +169,7 @@ addopts = [
 ]
 filterwarnings = [
     # "ignore:.*U.*mode is deprecated:DeprecationWarning",
+]
+markers = [
+    "live: tests which call external data providers and require network access",
 ]

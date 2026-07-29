@@ -1,6 +1,8 @@
 # Ontology
 
-The `Ontology` class provides Gene Ontology (GO) utilities: fetching gene sets from GO accessions and mapping phenotypic categories to network nodes.
+The `Ontology` class retrieves GO term metadata and gene associations from
+the official Gene Ontology API. GO accessions are authoritative; phenotype
+text is used only as a display label or a locally registered alias.
 
 ## Import
 
@@ -13,23 +15,29 @@ from neko._annotations.gene_ontology import Ontology
 ```python
 from neko._annotations.gene_ontology import Ontology
 
-onto = Ontology()
+onto = Ontology(taxon_id=9606)
 
-# Fetch all genes annotated to a specific GO term
-genes = onto.fetch_genes_from_go_id("GO:0007165")  # signal transduction
+# Structured records retain both the gene symbol and source identifier.
+genes = onto.fetch_go_genes("GO:0062043")
+print([(gene.symbol, gene.gene_id) for gene in genes])
 
-# Map nodes in a network to tissue expression data
-onto.add_tissue_expression(net, tissue="liver")
+# The backward-compatible helper returns symbols only.
+markers = onto.get_markers(id_accession="GO:0062043")
 ```
 
----
+By default, only associations whose object is the requested GO term are
+returned. Set `include_descendants=True` to include annotations propagated
+from more specific terms. The default taxon is human (`NCBITaxon:9606`).
+Numeric taxonomy IDs and complete `NCBITaxon:` CURIEs are both accepted.
 
-## Helper function
+Automatic assertions are included by default. Pass
+`exclude_automatic_assertions=True` to remove `ECO:0000501` associations.
+This and the exact-term filter are enforced locally because deployments of
+the upstream API have not always applied their corresponding query flags.
 
-::: neko._annotations.gene_ontology.fetch_nodes_from_url
-    options:
-      show_root_heading: true
-      heading_level: 3
+HTTP, decoding, and response-schema failures raise `GeneOntologyError`.
+Unknown accessions raise `GeneOntologyNotFoundError`; a valid term with no
+matching genes returns an empty list.
 
 ---
 

@@ -67,12 +67,20 @@ def omnipath(**kwargs) -> Universe:
 
 
 def signor(path: str | None = None, **kwargs) -> Universe:
-    # If path is provided and exists, use it. Otherwise, use the new signor() logic to download/process.
+    # A missing legacy path falls back to NeKo's validated SIGNOR cache. The
+    # adapter downloads and populates that cache only when it has no usable
+    # cached release.
     if path and os.path.exists(path):
-        return Universe(_signor.signor(path))
+        return Universe(_signor.signor(path, **kwargs))
     else:
-        # Use the new signor() logic: download and process if path is None
-        return Universe(_signor.signor())
+        if path:
+            logging.warning(
+                'SIGNOR path does not exist: %s. Falling back to the '
+                'managed NeKo cache.',
+                os.path.abspath(path),
+            )
+
+        return Universe(_signor.signor(**kwargs))
 
 
 def phosphosite(

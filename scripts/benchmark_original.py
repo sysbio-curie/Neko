@@ -55,7 +55,7 @@ print("Building resources...")
 
 # Load SIGNOR resources
 
-resources_signor = signor("../neko/_data/signor_db.tsv")  # this function accept only tab separated values
+resources_signor = signor()  # uses NeKo's SIGNOR cache before downloading
 resources_signor.build()
 resources_omnipath = Universe()
 post_translational = op.interactions.PostTranslational().get()

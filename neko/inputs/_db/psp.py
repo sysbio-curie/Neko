@@ -127,7 +127,7 @@ def psp(
     for index, row in ks.iterrows():
 
         source, target = row['source'], row['target']
-        target_protein = target.split('_')[0]
+        target_protein = target.rsplit('_', 1)[0]
         expanded_rows.append({'source': target, 'target': target_protein, 'is_directed': True,
                               'is_stimulation': row['is_stimulation'], 'is_inhibition': row['is_inhibition'],
                               'consensus_direction': False, 'consensus_stimulation': False,

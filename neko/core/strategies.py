@@ -4,12 +4,46 @@ Connection strategies for NeKo networks.
 This module contains high-level strategies for connecting nodes in a Network object.
 Each function should accept a Network instance as the first argument.
 """
-from typing import List, Optional, Union
-import pandas as pd
+import logging
 from itertools import combinations
+from typing import List, Optional, Union
+
+import pandas as pd
 from typing_extensions import Literal
+
 from .._methods.enrichment_methods import Connections
-from .tools import is_connected
+from .tools import consolidate_edges, is_connected
+
+logger = logging.getLogger(__name__)
+
+
+def _node_identifiers(nodes: pd.DataFrame) -> pd.Series:
+    """Return each node's edge identifier, with a label fallback."""
+
+    return nodes["Uniprot"].where(
+        nodes["Uniprot"].notna(),
+        nodes["Genesymbol"],
+    )
+
+
+def _remove_nodes(network, nodes: pd.DataFrame) -> bool:
+    """Remove rows and report whether the node count decreased."""
+
+    previous_count = len(network.nodes)
+
+    for node in _node_identifiers(nodes).dropna().tolist():
+        network.remove_node(node)
+
+    made_progress = len(network.nodes) < previous_count
+
+    if not made_progress:
+        logger.warning(
+            'Stopped disconnected-node cleanup because no removable '
+            'identifier was found.',
+        )
+
+    return made_progress
+
 
 def connect_nodes(network, only_signed: bool = False, consensus_only: bool = False) -> None:
     """
@@ -95,45 +129,130 @@ def connect_to_upstream_nodes(network, nodes_to_connect=None, depth: int = 1, ra
     network.edges.drop_duplicates().reset_index(drop=True)
     return
 
-def connect_genes_to_phenotype(network, phenotype: str = None, id_accession: str = None, sub_genes: list = None, maxlen: int = 2, only_signed: bool = False, compress: bool = False) -> None:
+def connect_genes_to_phenotype(
+        network,
+        phenotype: str = None,
+        id_accession: str = None,
+        sub_genes: list = None,
+        maxlen: int = 2,
+        only_signed: bool = False,
+        compress: bool = False,
+        taxon_id=9606,
+        include_descendants: bool = False,
+        exclude_automatic_assertions: bool = False,
+    ) -> None:
     """
-    Connect genes to a phenotype and optionally compress the network.
+    Connect a network to GO-associated genes and optionally compress them.
+
+    GO-provided UniProt identifiers are used directly. Gene-symbol mapping is
+    retained only as a fallback for associations in another identifier space.
     """
-    uniprot_gene_list = []
-    genesymbols_genes = []
-    phenotype_genes = network._ontology.get_markers(phenotype=phenotype, id_accession=id_accession)
-    if not phenotype_genes:
-        print("Something went wrong while getting the markers for:", phenotype, "and", id_accession)
-        print("Check URL and try again")
+    id_accession = network._ontology.resolve_accession(
+        phenotype=phenotype,
+        id_accession=id_accession,
+    )
+    term = network._ontology.get_term(id_accession)
+    go_genes = network._ontology.fetch_go_genes(
+        id_accession,
+        taxon_id=taxon_id,
+        include_descendants=include_descendants,
+        exclude_automatic_assertions=exclude_automatic_assertions,
+    )
+    if not go_genes:
+        logger.warning(
+            "No genes associated with %s for taxon %s.",
+            term.go_id,
+            taxon_id,
+        )
         return
-    uniprot_genes = [network.mapping_node_identifier(i)[2] for i in phenotype_genes]
+
+    uniprot_genes = []
+    for gene in go_genes:
+        uniprot = None
+        if gene.gene_id and gene.gene_id.startswith("UniProtKB:"):
+            uniprot = gene.gene_id.split(":", 1)[1]
+        if uniprot is None and gene.symbol:
+            uniprot = network.mapping_node_identifier(gene.symbol)[2]
+        if uniprot is None:
+            logger.warning(
+                "Skipping GO gene without a usable network identifier: %s",
+                gene.gene_id or gene.symbol,
+            )
+            continue
+        uniprot_genes.append(uniprot)
+
+    if not uniprot_genes:
+        logger.warning(
+            "No genes associated with %s could be mapped to network IDs.",
+            term.go_id,
+        )
+        return
+
+    uniprot_gene_list = []
     if sub_genes:
-        if network.check_gene_list_format(sub_genes):
-            uniprot_gene_list = sub_genes
-            genesymbols_genes = [network.mapping_node_identifier(i)[2] for i in sub_genes]
-        else:
-            uniprot_gene_list = [network.mapping_node_identifier(i)[2] for i in sub_genes]
-            genesymbols_genes = sub_genes
-    print("Starting connecting network's nodes to:", phenotype_genes)
-    unique_uniprot = set(uniprot_genes) - set(uniprot_gene_list if uniprot_gene_list else network.nodes["Uniprot"])
-    unique_genesymbol = set(phenotype_genes) - set(genesymbols_genes if genesymbols_genes else network.nodes["Genesymbol"])
-    connect_component(network, uniprot_gene_list if uniprot_gene_list else network.nodes["Uniprot"].tolist(), list(unique_uniprot), mode="OUT", maxlen=maxlen, only_signed=only_signed)
+        for gene in sub_genes:
+            _, _, uniprot = network.mapping_node_identifier(gene)
+            uniprot_gene_list.append(uniprot or gene)
+
+    source_uniprot = (
+        uniprot_gene_list
+        if uniprot_gene_list
+        else network.nodes["Uniprot"].dropna().tolist()
+    )
+    unique_uniprot = set(uniprot_genes) - set(source_uniprot)
+    connect_component(
+        network,
+        source_uniprot,
+        sorted(unique_uniprot),
+        mode="OUT",
+        maxlen=maxlen,
+        only_signed=only_signed,
+    )
     if compress:
-        phenotype = phenotype or network._ontology.accession_to_phenotype_dict[id_accession]
-        phenotype_modified = phenotype.replace(" ", "_")
-        network.nodes['Uniprot'] = network.nodes['Uniprot'].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
-        network.nodes['Genesymbol'] = network.nodes['Genesymbol'].apply(lambda x: phenotype_modified if x in unique_genesymbol else x)
+        phenotype_modified = term.label.replace(" ", "_")
+        compressed_node_mask = network.nodes['Uniprot'].isin(unique_uniprot)
+        has_compressed_nodes = compressed_node_mask.any()
+
+        network.nodes = network.nodes.loc[~compressed_node_mask].copy()
         for column in ['source', 'target']:
-            network.edges[column] = network.edges[column].apply(lambda x: phenotype_modified if x in unique_uniprot else x)
-        network.edges = network.edges.groupby(['source', 'target']).agg({
-            'Type': 'first',
-            'Effect': 'first',
-            'References': 'first'
-        }).reset_index()
-        common_genes = set(uniprot_genes).intersection(set(uniprot_gene_list if uniprot_gene_list else network.nodes["Uniprot"]))
-        for gene in common_genes:
-            new_edge = pd.DataFrame({"source": [gene], "target": [phenotype_modified], "Effect": ["stimulation"], "References": ["Gene Ontology"]})
-            network.edges = pd.concat([network.edges, new_edge], ignore_index=True)
+            network.edges[column] = network.edges[column].replace(
+                dict.fromkeys(unique_uniprot, phenotype_modified),
+            )
+
+        common_genes = set(uniprot_genes).intersection(source_uniprot)
+        if has_compressed_nodes or common_genes:
+            phenotype_node = pd.DataFrame([{
+                'Genesymbol': phenotype_modified,
+                'Uniprot': phenotype_modified,
+                'Type': 'phenotype',
+            }])
+            network.nodes = pd.concat(
+                [network.nodes, phenotype_node],
+                ignore_index=True,
+            )
+            network.nodes = network.nodes.drop_duplicates(
+                subset=['Genesymbol', 'Uniprot'],
+            ).reset_index(drop=True)
+
+        if common_genes:
+            go_edges = pd.DataFrame({
+                'source': sorted(common_genes),
+                'target': phenotype_modified,
+                'Type': 'gene ontology association',
+                'Effect': 'stimulation',
+                'References': f'Gene Ontology: {term.go_id}',
+            })
+            network.edges = pd.concat(
+                [network.edges, go_edges],
+                ignore_index=True,
+            )
+
+        network.edges = consolidate_edges(network.edges)
+
+        if hasattr(network, 'sync_nodes_from_df'):
+            network.sync_nodes_from_df()
+        if hasattr(network, 'sync_edges_from_df'):
+            network.sync_edges_from_df()
     return
 
 def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None, loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:
@@ -141,7 +260,11 @@ def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT'
     Connect all nodes of a network in a radial manner.
     """
     initial_nodes = network.initial_nodes
-    initial_nodes_set = set([network.mapping_node_identifier(i)[2] for i in initial_nodes])
+    initial_nodes_set = {
+        identifier
+        for node in initial_nodes
+        if (identifier := network.mapping_node_identifier(node)[2]) is not None
+    }
     i = 0
     source_nodes = initial_nodes_set
     target_nodes = initial_nodes_set
@@ -174,36 +297,68 @@ def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT'
     # Remove disconnected nodes
     target_nodes_set = set(network.edges["target"].unique())
     source_nodes_set = set(network.edges["source"].unique())
+    node_identifiers = _node_identifiers(network.nodes)
     disconnected_nodes = network.nodes[
-        ~network.nodes["Uniprot"].isin(initial_nodes_set) & (
-            ~network.nodes["Uniprot"].isin(target_nodes_set) | ~network.nodes["Uniprot"].isin(source_nodes_set))]
+        ~node_identifiers.isin(initial_nodes_set) & (
+            ~node_identifiers.isin(target_nodes_set)
+            | ~node_identifiers.isin(source_nodes_set)
+        )
+    ]
     while not disconnected_nodes.empty:
-        nodes_to_remove = disconnected_nodes["Uniprot"].tolist()
-        for node in nodes_to_remove:
-            network.remove_node(node)
+        if not _remove_nodes(network, disconnected_nodes):
+            break
         target_nodes_set = set(network.edges["target"].unique())
         source_nodes_set = set(network.edges["source"].unique())
+        node_identifiers = _node_identifiers(network.nodes)
         disconnected_nodes = network.nodes[
-            ~network.nodes["Uniprot"].isin(initial_nodes_set) & (
-                ~network.nodes["Uniprot"].isin(target_nodes_set) | ~network.nodes["Uniprot"].isin(source_nodes_set))]
+            ~node_identifiers.isin(initial_nodes_set) & (
+                ~node_identifiers.isin(target_nodes_set)
+                | ~node_identifiers.isin(source_nodes_set)
+            )
+        ]
     return
 
 def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = None, max_len: int = 1, loops: bool = False, outputs=None, only_signed: bool = True, consensus: bool = False) -> None:
     """
     Connect all nodes of a network in a topological manner.
     """
-    initial_nodes = [network.mapping_node_identifier(i)[2] for i in network.initial_nodes]
+    initial_nodes = [
+        identifier
+        for node in network.initial_nodes
+        if (identifier := network.mapping_node_identifier(node)[2]) is not None
+    ]
     initial_nodes_set = set(initial_nodes)
     if strategy == 'radial':
         connect_network_radially(network, max_len, direction=None, loops=loops, consensus=consensus, only_signed=only_signed)
     elif strategy == 'complete':
         network.complete_connection(max_len, minimal=True, only_signed=only_signed, consensus=consensus, connect_with_bias=False)
-    starting_nodes = set(network.nodes["Uniprot"].tolist())
+    starting_nodes = set(_node_identifiers(network.nodes).dropna())
     if outputs is None:
         return
+
+    outputs_uniprot = []
+    invalid_outputs = []
+
     for node in outputs:
-        network.add_node(node)
-    outputs_uniprot = [network.mapping_node_identifier(i)[2] for i in outputs]
+        if network.add_node(node):
+            identifier = network.mapping_node_identifier(node)[2]
+
+            if identifier is not None:
+                outputs_uniprot.append(identifier)
+                continue
+
+        invalid_outputs.append(node)
+
+    if invalid_outputs:
+        logger.warning(
+            'Ignoring output nodes without a usable resource identifier: %s',
+            ', '.join(map(str, invalid_outputs)),
+        )
+
+    if not outputs_uniprot:
+        logger.warning('No valid output nodes were available for connection.')
+        return
+
     depth = 1
     while not is_connected(network):
         connect_to_upstream_nodes(network, outputs_uniprot, depth=depth, rank=len(outputs_uniprot), only_signed=only_signed, consensus=consensus)
@@ -220,15 +375,20 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
         depth += 1
     network.edges.drop_duplicates().reset_index(drop=True)
     target_nodes_set = set(network.edges["target"].unique())
+    node_identifiers = _node_identifiers(network.nodes)
     disconnected_nodes = network.nodes[
-        ~network.nodes["Uniprot"].isin(initial_nodes_set) & ~network.nodes["Uniprot"].isin(target_nodes_set)]
+        ~node_identifiers.isin(initial_nodes_set)
+        & ~node_identifiers.isin(target_nodes_set)
+    ]
     while not disconnected_nodes.empty:
-        nodes_to_remove = disconnected_nodes["Uniprot"].tolist()
-        for node in nodes_to_remove:
-            network.remove_node(node)
+        if not _remove_nodes(network, disconnected_nodes):
+            break
         target_nodes_set = set(network.edges["target"].unique())
+        node_identifiers = _node_identifiers(network.nodes)
         disconnected_nodes = network.nodes[
-            ~network.nodes["Uniprot"].isin(initial_nodes_set) & ~network.nodes["Uniprot"].isin(target_nodes_set)]
+            ~node_identifiers.isin(initial_nodes_set)
+            & ~node_identifiers.isin(target_nodes_set)
+        ]
     return
 
 def complete_connection(network,

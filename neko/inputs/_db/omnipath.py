@@ -1,8 +1,6 @@
 import omnipath as op
 import pandas as pd
 import logging
-import pypath
-from pypath.utils import mapping
 
 from . import _misc as _misc
 

@@ -5,12 +5,13 @@ from typing import Dict
 
 
 def wrap_node_name(node_name):
-    if ":" in node_name:
-        node_name = node_name.replace(":", "_")
-    if node_name.startswith("COMPLEX"):
+    if node_name.startswith("COMPLEX:"):
         return node_name[8:]
-    else:
-        return node_name
+
+    if ":" in node_name:
+        return node_name.replace(":", "_")
+
+    return node_name
 
 
 class NetworkVisualizer:
@@ -72,8 +73,7 @@ class NetworkVisualizer:
 
         self.__dataframe_edges = self.__dataframe_edges.drop_duplicates(subset=['source', 'target', 'Type', 'Effect'])
 
-        self.__add_edges_to_graph()
-        self.__add_nodes_to_graph()
+        self.__build_graph()
 
     def set_custom_edge_colors(self, custom_edge_colors):
         # Update the edge_colors dictionary with custom mappings
@@ -81,7 +81,20 @@ class NetworkVisualizer:
 
     def set_node_colors(self, node_colors):
         # Update the node_colors dictionary with custom node colorsdataframe_nodes
-        self.__node_colors.update(node_colors)
+        self.__node_colors.update({
+            wrap_node_name(node): color
+            for node, color in node_colors.items()
+        })
+
+    def __build_graph(
+        self,
+        highlight_nodes=None,
+        highlight_color='lightyellow',
+    ):
+        """Build one clean graph using canonical node IDs and final colors."""
+        self.graph = Digraph(format='pdf')
+        self.__add_edges_to_graph()
+        self.__add_nodes_to_graph(highlight_nodes, highlight_color)
 
     def __add_edges_to_graph(self):
         for _, row in self.__dataframe_edges.iterrows():
@@ -122,7 +135,15 @@ class NetworkVisualizer:
             # Add the edge to the graph with specified attributes
             self.graph.edge(source, target, color=color, arrowhead=arrowhead, dir=dir)
 
-    def __add_nodes_to_graph(self):
+    def __add_nodes_to_graph(
+        self,
+        highlight_nodes=None,
+        highlight_color='lightyellow',
+    ):
+        highlighted = {
+            wrap_node_name(node)
+            for node in (highlight_nodes or [])
+        }
         for _, row in self.__dataframe_nodes.iterrows():
             node = row['Genesymbol']
             # add function to set color
@@ -130,6 +151,8 @@ class NetworkVisualizer:
             if node in self.initial_nodes and self.__noi:
                 node_color = 'lightyellow'
             node_color = self.__node_colors.get(node, node_color)
+            if node in highlighted:
+                node_color = highlight_color
 
             # Display only the predefined node and its connections
             if self.predefined_node and (node != self.predefined_node):
@@ -143,10 +166,11 @@ class NetworkVisualizer:
         Color the nodes based on their expression in the tissue of interest (based on data from The Human Protein Atlas).
 
         Args:
-            tissue_df (DataFrame): DataFrame containing results indicating whether each gene symbol has tissue annotations containing the selected tissue.
+            tissue_df (DataFrame): DataFrame indicating whether each gene has
+                detected expression in the selected tissue.
         """
         for _, row in tissue_df.iterrows():
-            gene_symbol = row['Genesymbol']
+            gene_symbol = wrap_node_name(row['Genesymbol'])
             in_tissue = row['in_tissue']
             node_color = 'lightblue' if in_tissue else 'lightgray'
             self.__node_colors[gene_symbol] = node_color
@@ -161,19 +185,7 @@ class NetworkVisualizer:
             highlight_nodes (list): List of nodes to highlight.
             highlight_color (str): Color to use for highlighting nodes.
         """
-        # Apply colors from __node_colors if available
-        if self.__node_colors:
-            for node, color in self.__node_colors.items():
-                if node in self.__dataframe_nodes['Genesymbol'].values:
-                    self.graph.node(node, style='filled', fillcolor=color)
-
-        # If highlight_nodes is provided, set the color for each node in the list
-        if highlight_nodes is not None:
-            for node in highlight_nodes:
-                # first check that the node is in the node dataframe
-                if wrap_node_name(node) in self.__dataframe_nodes['Genesymbol'].values:
-                    # then change the color only of the node in the graph
-                    self.graph.node(wrap_node_name(node), style='filled', fillcolor=highlight_color)
+        self.__build_graph(highlight_nodes, highlight_color)
         if view:
             self.graph.view(filename=output_file)
         else:
@@ -192,10 +204,15 @@ class NetworkVisualizer:
         objects = []
         for idx, item in self.__dataframe_nodes.iterrows():
             obj = {
-                "id": self.__dataframe_nodes["Uniprot"].loc[idx],
-                "properties": {"label": self.__dataframe_nodes["Genesymbol"].loc[idx]},
+                # Edges have already been converted to display identifiers,
+                # so node IDs must use the same namespace. This is especially
+                # important for complexes and typed SIGNOR entities.
+                "id": self.__dataframe_nodes["Genesymbol"].loc[idx],
+                "properties": {
+                    "label": self.__dataframe_nodes["Genesymbol"].loc[idx],
+                },
                 "color": "#ffffff",
-                "styles": {"backgroundColor": "#ffffff"}
+                "styles": {"backgroundColor": "#ffffff"},
             }
             objects.append(obj)
         w.nodes = objects

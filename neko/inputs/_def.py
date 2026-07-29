@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import Any, Callable
+from collections import namedtuple
 import re
-import typing
-from typing import Callable
 import functools
+import importlib
 
 import pypath_common._misc as _common
+import pandas as pd
 
 """
 Define, access and process fields from network inputs.
@@ -14,10 +16,16 @@ Define, access and process fields from network inputs.
 
 def _to_fields(loc: dict) -> dict[str, Field]:
 
-    return {k: Field(v) for k, v in loc.items() if k != 'cls'}
+    return {
+        key: Field(value)
+        for key, value in loc.items()
+        if key not in {'cls', '__class__'}
+    }
 
 
-class NodeDef(typing.NamedTuple):
+class NodeDef(namedtuple('_NodeDef', ('id', 'id_type', 'entity_type', 'organism'))):
+    __slots__ = ()
+
     id: Field
     id_type: Field
     entity_type: Field
@@ -36,7 +44,9 @@ class NodeDef(typing.NamedTuple):
         return super().__new__(cls, **args)
 
 
-class EdgeDef(typing.NamedTuple):
+class EdgeDef(namedtuple('_EdgeDef', ('type', 'directed', 'effect'))):
+    __slots__ = ()
+
     type: Field
     directed: Field
     effect: Field
@@ -116,7 +126,7 @@ class Field:
                 # use custom python code
                 definition = _common.code_to_func(definition)
 
-        elif isinstance(definition, tuple):
+        if isinstance(definition, tuple):
 
             definition = self.short(self._SEP0.join(definition))
 
@@ -171,15 +181,15 @@ class Field:
         this class.
         """
 
-        definition = _RECOLPFX.sub('', definition)
+        definition = cls._RECOLPFX.sub('', definition)
         col, *maps = definition.split(cls._SEP0)
         col, *seps = col.split(cls._SEP1)
         datasep, defsep = (s or None for s in (seps + [None] * 2)[:2])
 
-        maps =
-            self._func_from_module(maps)
-                if maps and re.match(r'^[\w\.]+$', maps[0])
-            [self._process_map(i, m, defsep) for i, m in enumerate(maps)]
+        maps = (
+            cls._func_from_module(maps[0])
+                if maps and re.match(r'^[\w\.]+$', maps[0]) else
+            [cls._process_map(i, m, defsep) for i, m in enumerate(maps)]
         )
 
         return {
@@ -245,7 +255,7 @@ class Field:
 
         for v, map_to in param['maps']:
 
-            if match := (op_many(v) if isinstance(v, set) else op_one(v)):
+            if op_many(v) if isinstance(v, set) else op_one(v):
 
                 return map_to
 
@@ -262,8 +272,8 @@ class Field:
     def _func_from_module(func: str) -> Callable:
 
         # refer to any custom function from any module
-        mod, *func = definition.rsplit('.', maxsplit = 1)
-        mod = __import__(mod)
+        mod, func = func.rsplit('.', maxsplit = 1)
+        mod = importlib.import_module(mod)
         return getattr(mod, func)
 
 

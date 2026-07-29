@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+
 import pandas as pd
 
 
@@ -9,6 +10,10 @@ def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:
         "False": False,
         "true": True,
         "false": False,
+        "YES": True,
+        "NO": False,
+        "yes": True,
+        "no": False,
         1: True,
         -1: False,
         0: False,
@@ -19,7 +24,7 @@ def bool_col(df: pd.DataFrame, col: str, mappings: dict = None) -> pd.DataFrame:
 
     # Avoid FutureWarning: Downcasting behavior in `replace` is deprecated
     df[col] = df[col].replace(mappings)
-    df[col] = df[col].infer_objects(copy=False).astype(bool)
+    df[col] = df[col].infer_objects().fillna(False).astype(bool)
 
     return df
 

@@ -14,14 +14,40 @@ from neko.core.network import Network
 from neko.core.network import Network
 from neko.inputs import Universe
 
-resources = Universe()
-resources.build()
+resources = Universe("omnipath")
 
 net = Network(["EGFR", "KRAS", "MYC"], resources=resources.interactions)
 net.connect_nodes()
 print(net.nodes)
 print(net.edges)
 ```
+
+## Connect to a GO term
+
+```python
+net.connect_genes_to_phenotype(
+    id_accession="GO:0062043",
+    only_signed=True,
+    compress=True,
+    maxlen=1,
+)
+```
+
+The accession is sufficient: NeKo obtains the canonical term label from GO.
+Exact-term human annotations are used by default. Use
+`include_descendants=True` to include genes annotated to more specific GO
+terms, or change `taxon_id` for another organism.
+
+With `compress=True`, connected GO-associated genes are replaced by one node
+named from the canonical GO term label. If collapsing those genes produces both
+an activating and an inhibiting interaction between the same two nodes, NeKo
+retains the conflicting evidence as one `bimodal` interaction. References and
+interaction types from the contributing edges are preserved.
+
+Parallel regulatory edges elsewhere in a network follow the same rule: an
+`A stimulation B` edge together with an `A inhibition B` edge is represented
+as `A bimodal B`. Complex formation remains separate because it does not encode
+a regulatory sign.
 
 ---
 

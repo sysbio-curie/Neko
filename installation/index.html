@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/neko_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -604,10 +604,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#omnipath-pypath-connectivity" class="md-nav__link">
+  <a href="#omnipath-and-uniprot-connectivity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OmniPath / PyPath connectivity
+        OmniPath and UniProt connectivity
       
     </span>
   </a>
@@ -1541,10 +1541,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#omnipath-pypath-connectivity" class="md-nav__link">
+  <a href="#omnipath-and-uniprot-connectivity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OmniPath / PyPath connectivity
+        OmniPath and UniProt connectivity
       
     </span>
   </a>
@@ -1657,9 +1657,20 @@
 <p>If <code>import graphviz</code> fails, ensure the system Graphviz binary is on your <code>PATH</code>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>which<span class="w"> </span>dot<span class="w">   </span><span class="c1"># should point to the graphviz dot binary</span>
 </span></code></pre></div>
-<h3 id="omnipath-pypath-connectivity">OmniPath / PyPath connectivity<a class="headerlink" href="#omnipath-pypath-connectivity" title="Permanent link">&para;</a></h3>
-<p>NeKo downloads interaction data from the OmniPath web service on first use.<br />
-Ensure you have a working internet connection when calling <code>Universe().build()</code>.</p>
+<h3 id="omnipath-and-uniprot-connectivity">OmniPath and UniProt connectivity<a class="headerlink" href="#omnipath-and-uniprot-connectivity" title="Permanent link">&para;</a></h3>
+<p>NeKo downloads interaction data from OmniPath when building an OmniPath
+universe. Identifier translation lazily downloads a reviewed-human mapping
+table from UniProt and caches it locally. SIGNOR similarly caches its validated
+interaction table and entity dictionaries, so later loads can run offline. If
+a resource contains ChEBI accessions, NeKo also caches the compressed ChEBI
+compounds table and a small accession-to-name subset. The names are optional:
+if ChEBI is unreachable, the canonical accession is used as the display label
+and network construction continues. Ensure the first use has network access,
+or provide an existing cache with <code>NEKO_CACHE_DIR</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Universe</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">resources</span> <span class="o">=</span> <span class="n">Universe</span><span class="p">(</span><span class="s2">&quot;omnipath&quot;</span><span class="p">)</span>
+</span></code></pre></div>
 
 
 
@@ -1682,7 +1693,7 @@ Ensure you have a working internet connection when calling <code>Universe().buil
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 23, 2026 08:51:14 UTC">February 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 05:20:26 UTC">July 29, 2026</span>
   </span>
 
     

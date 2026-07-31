@@ -25,7 +25,8 @@ import importlib.metadata
 
 import toml
 
-_VERSION = '0.0.1'
+_DISTRIBUTION_NAME = 'nekomata'
+_FALLBACK_VERSION = '0+unknown'
 
 
 def get_metadata():
@@ -64,14 +65,17 @@ def get_metadata():
 
             meta = {
                 k.lower(): v for k, v in
-                importlib.metadata.metadata(here.name).items()
+                importlib.metadata.metadata(_DISTRIBUTION_NAME).items()
             }
 
         except importlib.metadata.PackageNotFoundError:
 
             pass
 
-    meta['version'] = meta.get('version', None) or _VERSION
+    meta['version'] = (
+        meta.get('version', None)
+        or _FALLBACK_VERSION
+    )
 
     return meta
 

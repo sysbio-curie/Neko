@@ -88,17 +88,13 @@
   <section id="neko">
 <h1>Neko<a class="headerlink" href="#neko" title="Link to this heading"></a></h1>
 <figure class="align-right" style="width: 50px">
-<img alt="NeKo Logo" src="docs/src/neko_logo.png" />
+<img alt="NeKo Logo" src="_images/neko_logo.png" />
 </figure>
 <a class="reference external image-reference" href="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml"><img alt="Tests" src="https://github.com/sysbio-curie/Neko/actions/workflows/build.yaml/badge.svg" /></a>
-<a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/"><img alt="MkDocs Documentation" src="https://img.shields.io/badge/docs-MkDocs-brightgreen.svg" /></a>
-<a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/sphinx/"><img alt="Sphinx Documentation" src="https://img.shields.io/badge/docs-Sphinx-blue.svg" /></a>
+<a class="reference external image-reference" href="https://sysbio-curie.github.io/Neko/"><img alt="Documentation" src="https://img.shields.io/badge/docs-latest-brightgreen.svg" /></a>
 <p>Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It integrates <a class="reference external" href="https://github.com/saezlab/omnipath">OmniPath</a> and other interaction resources, uses UniProt tables for identifier translation, and exports networks for tools such as <a class="reference external" href="https://github.com/druglogics/atopo">Atopo</a>.</p>
-<section id="citation">
-<h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
-<p>If you use NeKo in your research, please cite our paper:</p>
-<p>Ruscone M, Tsirvouli E, Checcoli A, Turei D, Barillot E, et al. (2025) NeKo: A tool for automatic network construction from prior knowledge. <em>PLOS Computational Biology</em> 21(9): e1013300. <a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1013300">https://doi.org/10.1371/journal.pcbi.1013300</a></p>
-</section>
+<p><strong>Note</strong>: NeKo is distributed as Beta software under the PyPI name
+<code class="docutils literal notranslate"><span class="pre">nekomata</span></code>; the Python import package remains <code class="docutils literal notranslate"><span class="pre">neko</span></code>.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
 <ul class="simple">
@@ -107,43 +103,16 @@
 <li><p>Gene-to-phenotype mapping</p></li>
 <li><p>Network visualization and export helpers</p></li>
 <li><p>Interaction database integration</p></li>
-<li><p>Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls</p></li>
+<li><p>Branching network history with automatic snapshots, HTML/SVG rendering, and pruning controls</p></li>
 </ul>
-</section>
-<section id="signor-entity-normalization">
-<h2>SIGNOR entity normalization<a class="headerlink" href="#signor-entity-normalization" title="Link to this heading"></a></h2>
-<p>The built-in <code class="docutils literal notranslate"><span class="pre">signor()</span></code> input loads SIGNOR’s human interaction table and its
-complex, protein-family, phenotype, and stimulus dictionaries from NeKo’s
-validated local cache. Missing resources are downloaded once and added to the
-cache. Proprietary endpoint IDs are normalized before the <code class="docutils literal notranslate"><span class="pre">Universe</span></code> is
-built: complexes use the same <code class="docutils literal notranslate"><span class="pre">COMPLEX:</span></code> member syntax as OmniPath, while
-the other group/context nodes use readable <code class="docutils literal notranslate"><span class="pre">PROTEIN_FAMILY:</span></code>,
-<code class="docutils literal notranslate"><span class="pre">PHENOTYPE:</span></code>, and <code class="docutils literal notranslate"><span class="pre">STIMULUS:</span></code> identifiers.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neko.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">signor</span>
-
-<span class="n">resources</span> <span class="o">=</span> <span class="n">signor</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>After one successful load, the cached release can be used offline. Set
-<code class="docutils literal notranslate"><span class="pre">NEKO_CACHE_DIR</span></code> to choose the cache root. Preloaded dictionary DataFrames
-can still be passed through <code class="docutils literal notranslate"><span class="pre">entity_dictionaries</span></code>. Normalization can be
-explicitly disabled with <code class="docutils literal notranslate"><span class="pre">normalize_entities=False</span></code> when the raw SIGNOR
-identifiers are required.</p>
-<p>SIGNOR ChEBI accessions remain canonical network identifiers and are never
-sent to UniProt for translation. When a resource contains ChEBI nodes, NeKo
-lazily downloads the official compressed <code class="docutils literal notranslate"><span class="pre">compounds.tsv.gz</span></code> table once and
-caches only the names needed by that resource for display. If the download is
-unavailable, network construction continues with the ChEBI accession as its
-label. ChEBI data are provided by EMBL-EBI under the <a class="reference external" href="https://www.ebi.ac.uk/chebi/aboutChebiForward.do">Creative Commons
-Attribution 4.0 International license</a>.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">NeKo</span></code> is still in its alpha version. You can install it from PyPI and also install the necessary external dependencies.</p>
+<p>Install the <code class="docutils literal notranslate"><span class="pre">nekomata</span></code> distribution from PyPI. Do not confuse it with the
+unrelated <code class="docutils literal notranslate"><span class="pre">neko</span></code> or <code class="docutils literal notranslate"><span class="pre">pyneko</span></code> distributions.</p>
 <ol class="arabic">
 <li><p><strong>Install `NeKo` from PyPI</strong>:</p>
-<p>Install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>nekomata
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>nekomata
 </pre></div>
 </div>
 </li>
@@ -154,27 +123,29 @@ Attribution 4.0 International license</a>.</p>
 <p>For the latest development version, you can still clone the repository and install directly from the source:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sysbio-curie/Neko.git
 <span class="nb">cd</span><span class="w"> </span>Neko
-pip<span class="w"> </span>install<span class="w"> </span>.
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
 </div>
-<p>This will give you the latest version of <code class="docutils literal notranslate"><span class="pre">NeKo</span></code> (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.</p>
+<p>This installs the latest development version from the checked-out source.</p>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
-<p>If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
-You can install it on Linux system with the following command:</p>
+<p>If Graphviz-related installation or rendering fails, install Graphviz using
+your system package manager. On Linux:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>graphviz<span class="w"> </span>libgraphviz-dev
 </pre></div>
 </div>
-<p>or on Mac system:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>graphviz<span class="w"> </span>libgraphviz-dev
+<p>On macOS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>graphviz
 </pre></div>
 </div>
 <p>For more details visit: <a class="reference external" href="https://graphviz.org/download/">https://graphviz.org/download/</a></p>
 </section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
-<p>For full documentation, including API reference and detailed tutorials, visit our <a class="reference external" href="https://sysbio-curie.github.io/Neko/">GitHub Pages documentation</a>.</p>
+<p>For full documentation, including API reference and detailed tutorials, visit our <a class="reference external" href="https://sysbio-curie.github.io/Neko/">GitHub Pages documentation</a>.
+Users upgrading an existing workflow should also read the
+<a class="reference external" href="https://sysbio-curie.github.io/Neko/migration-1.9/">NeKo 1.9 migration guide</a>.</p>
 </section>
 <section id="jupyter-notebooks">
 <h2>Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Link to this heading"></a></h2>
@@ -203,17 +174,6 @@ You can install it on Linux system with the following command:</p>
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
 <p>This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.</p>
 <p>Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.</p>
-</section>
-<section id="version-1-1-0">
-<h2>version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.</p></li>
-<li><p>Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resource to mine for interactions.</p></li>
-<li><p>Database translation: The package provides methods to convert the identifiers of a database storing edges list, into Uniprot.</p></li>
-<li><p>Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.</p></li>
-<li><p>Connection of genes to phenotype: The package provides a method to connect genes to a phenotype based on provided parameters. This includes retrieving phenotype markers, identifying unique Uniprot genes, and connecting them to the network.</p></li>
-<li><p>Branching network history: automatic state capture for every enrichment step, undo/redo, HTML/SVG graph visualisation, and configurable pruning via <code class="docutils literal notranslate"><span class="pre">set_max_history</span></code>.</p></li>
-</ul>
 </section>
 </section>
 

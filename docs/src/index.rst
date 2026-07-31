@@ -2,7 +2,7 @@
  Neko
 ==================
 
-.. figure:: docs/src/neko_logo.png
+.. figure:: neko_logo.png
    :align: right
    :figwidth: 50px
    :alt: NeKo Logo
@@ -17,7 +17,8 @@
 
 Neko is a Python package for extracting, visualizing, converting, and studying interactions from databases into executable activity flow-based models. It integrates `OmniPath <https://github.com/saezlab/omnipath>`_ and other interaction resources, uses UniProt tables for identifier translation, and exports networks for tools such as `Atopo <https://github.com/druglogics/atopo>`_.
 
-**Note**: Neko is currently in development and approaching its final stages. It is available on pip under the name "nekomata".
+**Note**: NeKo is distributed as Beta software under the PyPI name
+``nekomata``; the Python import package remains ``neko``.
 
 Features
 --------
@@ -32,25 +33,14 @@ Features
 Installation
 ------------
 
-`NeKo` is still in its alpha version. You can install it from PyPI and also install the necessary external dependencies.
+Install the ``nekomata`` distribution from PyPI. Do not confuse it with the
+unrelated ``neko`` or ``pyneko`` distributions.
 
 1. **Install `NeKo` from PyPI**:
 
-   First, install the main package from PyPI (nekomata, do not confuse with pip install neko or pip install pyneko, those are other packages):
-
    .. code-block:: bash
 
-       pip install nekomata
-
-2. **Install External Dependencies**:
-
-   `NeKo` requires some external dependencies that are not available on PyPI. To install these dependencies, run:
-
-   .. code-block:: bash
-
-       pip install -r https://raw.githubusercontent.com/sysbio-curie/Neko/main/requirements.txt
-
-This two-step process will install both the core `NeKo` package and its external dependencies.
+       python -m pip install nekomata
 
 Installation from Source
 ------------------------
@@ -61,26 +51,25 @@ For the latest development version, you can still clone the repository and insta
 
     git clone https://github.com/sysbio-curie/Neko.git
     cd Neko
-    pip install .
-    pip install -r requirements.txt
+    python -m pip install .
 
-This will give you the latest version of `NeKo` (not officially released, so be aware there could be some bugs) along with the necessary external dependencies.
+This installs the latest development version from the checked-out source.
 
 Troubleshooting
 ---------------
 
-If during the installation you encounter problems with the installation of Graphviz, you could be missing basic Graphiz installation on your machine.
-You can install it on Linux system with the following command:
+If Graphviz-related installation or rendering fails, install Graphviz using
+your system package manager. On Linux:
 
 .. code-block:: bash
 
     sudo apt-get install python3-dev graphviz libgraphviz-dev
 
-or on Mac system:
+On macOS:
 
 .. code-block:: bash
 
-    brew install python3-dev graphviz libgraphviz-dev
+    brew install graphviz
 
 For more details visit: https://graphviz.org/download/
 
@@ -88,6 +77,8 @@ Documentation
 -------------
 
 For full documentation, including API reference and detailed tutorials, visit our `GitHub Pages documentation <https://sysbio-curie.github.io/Neko/>`_.
+Users upgrading an existing workflow should also read the
+`NeKo 1.9 migration guide <https://sysbio-curie.github.io/Neko/migration-1.9/>`_.
 
 Jupyter Notebooks
 -----------------
@@ -121,12 +112,3 @@ Acknowledgements
 This project is a collaborative effort between Institut Curie, NTNU, Saez lab and BSC.
 
 Current contributors: Marco Ruscone, Eirini Tsirvouli, Andrea Checcoli, Dénes Turei, Aasmund Flobak, Emmanuel Barillot, Loredana Martignetti, Julio Saez-Rodriguez and Laurence Calzone.
-
-version 1.1.0
---------------
-
-- Network creation and manipulation: The package allows for the creation of a network of nodes and edges, with various methods for enrichment analysis. This includes adding and removing nodes and edges, loading a network from a SIF (Simple Interaction Format) file, and adding paths to the edge list of the network.
-- Database integration: The package provides methods to integrate interactions from databases such as Omnipath, Signor, HURI and others. The user can also integrate personal resources to mine for interactions.
-- Database translation: The package provides methods to convert the identifiers of a database storing edge lists into Uniprot.
-- Connection of nodes: The package provides several methods to connect nodes in the network. This includes connecting all nodes, connecting a subgroup of nodes, connecting all nodes of a network object, and connecting subcomponents of a network object.
-- Branching network history: automatic state capture for each enrichment step, undo/redo with branching, HTML/SVG history visualisation, and configurable pruning via ``set_max_history``.

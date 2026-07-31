@@ -2,7 +2,7 @@
  Neko
 ==================
 
-.. figure:: docs/src/neko_logo.png
+.. figure:: neko_logo.png
    :align: right
    :figwidth: 50px
    :alt: NeKo Logo

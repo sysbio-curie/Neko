@@ -30,20 +30,6 @@ years = '-'.join(sorted({'2022', f'{datetime.now():%Y}'}))
 copyright = f'{years}, Sysbio-Curie'
 repository_url = 'https://github.com/sysbio-curie/Neko'
 
-readme_lines = []
-readme = pathlib.Path().absolute().parents[1].joinpath('README.rst')
-
-if readme.exists():
-
-    with readme.open('r') as fp:
-
-        readme_lines = fp.readlines()[4:]
-
-with open('index.rst', 'w') as fp:
-
-    fp.write('==================\n Neko \n==================\n\n')
-    fp.write(''.join(readme_lines))
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

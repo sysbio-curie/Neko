@@ -79,10 +79,61 @@ No compatibility wrappers are provided for the removed ontology interfaces.
 
 ---
 
+## [Unreleased]
+
+### Added
+- Explicit `path_policy` values (`one_shortest`, `all_shortest`, and
+  `all_bounded`) for `complete_connection`
+- Explicit `reuse_policy` values (`none`, `discovered_paths`, and
+  `induced_subgraph`)
+- Shortest-path predecessor-DAG selection for the union of all shortest paths
+- Visible migration warnings with exact replacements for legacy connection
+  parameters
+
+### Changed
+- `complete_connection` now checks the two directed orientations sequentially,
+  allowing newly exposed paths to prevent redundant resource searches
+- New completion policies require a finite positive `maxlen`
+- Resource edge lookup, path insertion, cascade insertion, and induced closure
+  use indexed and batched mutation
+- Neighbor ordering is stable for reproducible unweighted shortest-path choice
+
+### Fixed
+- Restored the semantic distinction between independent searches and reuse of
+  discovered paths
+- Working `Effect="undefined"` edges are no longer treated as signed paths
+- Removed deduplication of stale DataFrame objects after path mutation
+- History metadata no longer attempts identifier translation for policy strings
+
+### Deprecated
+- `algorithm`, `minimal`, and `connect_with_bias` in `complete_connection`; use
+  `path_policy` and `reuse_policy`
+
+### Validation and compatibility
+
+- The refactor passed 148 deterministic tests, including every legacy
+  BFS/DFS × `minimal` × `connect_with_bias` mapping and the corresponding
+  explicit-policy topology.
+- On the pinned 18-gene SIGNOR benchmark, performance-only changes preserved
+  100% of nodes, signed directed edges, initial seeds, and seed-pair directed
+  reachability for `connect_nodes`, `all_bounded + discovered_paths`,
+  `connect_subgroup`, `connect_component(mode="OUT")`, upstream connection,
+  and Atopo-complete construction.
+- `all_bounded + discovered_paths` improved from 113.9 seconds to 5.3 seconds
+  (21.6×), while retaining its 111-node/771-edge topology exactly.
+- Historical BFS selected equal-length routes through unordered set iteration.
+  The deterministic `one_shortest` policy can therefore choose a different
+  but equally short bridge topology; it retained 100% of initial seeds and
+  directed seed-pair reachability in the reference benchmark.
+- For users who need robustness across all equal-length alternatives,
+  `all_shortest + none` contained 100% of the historical BFS topology, while
+  `all_shortest + discovered_paths` retained 97.3% of historical nodes and
+  95.7% of historical signed edges. Both retained 100% of seeds and directed
+  reachability and remained 6.6–8.0× faster than historical BFS.
 ## [1.1.0] – 2025
 
 ### Added
-- Branching **NetworkHistory** with automatic state snapshots and HTML/SVG rendering
+- Branching network history with automatic `NetworkState` snapshots and HTML/SVG rendering
 - `NetworkState` class for point-in-time network snapshots
 - BFS / DFS graph traversal algorithms in `neko.core.algorithms`
 - `connect_to_upstream_nodes` method

@@ -177,6 +177,70 @@ class Connections:
                             queue.append((neighbor, path + [neighbor], depth + 1))
         return []
 
+    def bfs_all_shortest_edges(
+            self,
+            start: str,
+            end: str,
+            maxlen: int,
+            only_signed: bool = False,
+            consensus: bool = False,
+        ) -> List[Tuple[str, str]]:
+        """Return the edge union of all minimum-length paths within a cutoff."""
+
+        if start == end:
+            return []
+
+        distances = {start: 0}
+        predecessors = defaultdict(set)
+        queue = deque([start])
+        shortest_distance = None
+
+        while queue:
+            node = queue.popleft()
+            depth = distances[node]
+
+            if depth >= maxlen:
+                continue
+            if shortest_distance is not None and depth >= shortest_distance:
+                continue
+
+            for neighbor in self.find_target_neighbours(node):
+                if only_signed and not self.is_signed_edge(
+                        node,
+                        neighbor,
+                        consensus,
+                    ):
+                    continue
+
+                next_depth = depth + 1
+                known_depth = distances.get(neighbor)
+                if known_depth is None:
+                    distances[neighbor] = next_depth
+                    predecessors[neighbor].add(node)
+                    queue.append(neighbor)
+                elif known_depth == next_depth:
+                    predecessors[neighbor].add(node)
+
+                if neighbor == end:
+                    shortest_distance = next_depth
+
+        if end not in distances:
+            return []
+
+        shortest_edges = set()
+        pending = [end]
+        expanded = set()
+        while pending:
+            node = pending.pop()
+            if node in expanded:
+                continue
+            expanded.add(node)
+            for predecessor in predecessors[node]:
+                shortest_edges.add((predecessor, node))
+                pending.append(predecessor)
+
+        return sorted(shortest_edges, key=lambda edge: (str(edge[0]), str(edge[1])))
+
 
     def find_paths(self,
                    start: Union[str, pd.DataFrame, List[str]],

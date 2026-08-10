@@ -23,6 +23,25 @@ conn = Connections(db)
 paths = conn.find_paths("EGFR", "AKT1", maxlen=3)
 ```
 
+## Search semantics
+
+The public `Network.complete_connection` API describes results through
+`path_policy` rather than exposing traversal details:
+
+- `one_shortest` uses BFS and selects one stable minimum-edge path.
+- `all_shortest` uses a BFS predecessor DAG and selects the edge union of all
+  minimum-edge paths.
+- `all_bounded` uses bounded DFS and selects all simple paths through the
+  cutoff.
+
+All public completion policies require a finite positive cutoff. Low-level
+`Connections.bfs` retains its legacy `force` behavior for specialized internal
+use, but unbounded traversal is not an implicit network-construction policy.
+
+`Connections` also stores indexed resource rows and signed adjacency maps.
+Connection strategies should use those indexes and bulk network mutation rather
+than scanning a DataFrame or calling `Network.add_edge` for every interaction.
+
 ---
 
 ## Class reference

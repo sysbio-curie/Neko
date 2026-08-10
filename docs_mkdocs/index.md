@@ -21,7 +21,7 @@
 | **Node connection** | Connect nodes and subnetworks with flexible stepwise strategies |
 | **Gene-to-phenotype** | Map gene sets to phenotypic categories via Gene Ontology |
 | **Visualisation** | Render networks with Graphviz or the interactive yFiles widget |
-| **Export** | Export to SIF, GML, GraphML, BND/CFG logical model formats |
+| **Export** | Export to SIF and BNet formats for Cytoscape and Boolean-network tools |
 | **Network history** | Automatic snapshots, branching state management, and HTML/SVG rendering |
 | **Comparison** | Compare two networks and highlight differences |
 

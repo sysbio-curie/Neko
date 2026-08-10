@@ -22,6 +22,36 @@ print(net.nodes)
 print(net.edges)
 ```
 
+## Complete a seed network
+
+`complete_connection` attempts both directed orientations for every original
+seed pair. Path selection and reuse are explicit:
+
+```python
+net.complete_connection(
+    maxlen=2,
+    path_policy="all_shortest",
+    reuse_policy="induced_subgraph",
+    only_signed=True,
+    consensus=False,
+)
+```
+
+Path policies are `one_shortest`, `all_shortest`, and `all_bounded`. Reuse
+policies are `none`, `discovered_paths`, and `induced_subgraph`. A finite
+positive `maxlen` is mandatory. The legacy `algorithm`, `minimal`, and
+`connect_with_bias` parameters remain temporarily available and emit a
+migration warning with the equivalent explicit call.
+
+If neither old nor new selectors are supplied, the transition release keeps
+the former effective default: `all_bounded + discovered_paths`. An explicitly
+disabled `minimal` flag maps to `none` unless bias is enabled; either biased
+legacy combination maps to `induced_subgraph`.
+
+See [Choosing a connection strategy](../strategies/index.md) for the full
+policy matrix, fictitious topology diagrams, and the biological implications
+of all public connection strategies.
+
 ## Connect to a GO term
 
 ```python

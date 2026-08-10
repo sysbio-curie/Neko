@@ -13,6 +13,12 @@ from typing_extensions import Literal
 
 from .._methods.enrichment_methods import Connections
 from .tools import consolidate_edges, is_connected
+from .strategy_options import (
+    PathPolicy,
+    ReusePolicy,
+    UNSET,
+    resolve_connection_policies,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -338,7 +344,13 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
     if strategy == 'radial':
         connect_network_radially(network, max_len, direction=None, loops=loops, consensus=consensus, only_signed=only_signed)
     elif strategy == 'complete':
-        network.complete_connection(max_len, minimal=True, only_signed=only_signed, consensus=consensus, connect_with_bias=False)
+        network.complete_connection(
+            maxlen=max_len,
+            path_policy="all_bounded",
+            reuse_policy="discovered_paths",
+            only_signed=only_signed,
+            consensus=consensus,
+        )
     starting_nodes = set(_node_identifiers(network.nodes).dropna())
     if outputs is None:
         return
@@ -400,41 +412,99 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
 
 def complete_connection(network,
                         maxlen: Optional[int] = 2,
-                        algorithm: Literal['bfs', 'dfs'] = 'dfs',
-                        minimal: bool = True,
+                        algorithm=UNSET,
+                        minimal=UNSET,
                         only_signed: bool = False,
                         consensus: bool = False,
-                        connect_with_bias: bool = False,
+                        connect_with_bias=UNSET,
+                        *,
+                        path_policy: Optional[PathPolicy] = None,
+                        reuse_policy: Optional[ReusePolicy] = None,
+                        _warning_stacklevel: int = 3,
                         ) -> None:
     """
-    Attempts to connect all nodes of a network object using one of the methods presented in the Connection object.
-    For each node pair, checks for existing paths in both directions using BFS (with sign/consensus as needed).
-    If a path is missing, calls the selected algorithm to try to find and add a path.
-    Uses the minimal flag to reset the Connections object as needed.
-    After all, if connect_with_bias is False, calls connect_nodes and deduplicates edges.
-    If maxlen=None, performs a single unbounded BFS (no iterative deepening needed).
+    Greedily complete every original seed pair in both directed orientations.
+
+    ``path_policy`` controls which resource paths are selected when the
+    working graph lacks a connection. ``reuse_policy`` controls whether later
+    searches see no additions, explicitly discovered paths, or the induced
+    resource subgraph over selected nodes. Legacy ``algorithm``, ``minimal``,
+    and ``connect_with_bias`` arguments remain temporarily supported through a
+    visible migration warning.
     """
+    resolved = resolve_connection_policies(
+        maxlen=maxlen,
+        path_policy=path_policy,
+        reuse_policy=reuse_policy,
+        algorithm=algorithm,
+        minimal=minimal,
+        connect_with_bias=connect_with_bias,
+        warning_stacklevel=_warning_stacklevel,
+    )
+
     nodes = network.nodes.copy()
-    connect_network = Connections(network.edges)
+    working_graph = Connections(network.edges)
+
+    def select_resource_paths(start, end):
+        if resolved.path_policy == "one_shortest":
+            return network._connect.bfs(
+                start=start,
+                end=end,
+                maxlen=resolved.maxlen,
+                only_signed=only_signed,
+                consensus=consensus,
+            )
+        if resolved.path_policy == "all_shortest":
+            return network._connect.bfs_all_shortest_edges(
+                start=start,
+                end=end,
+                maxlen=resolved.maxlen,
+                only_signed=only_signed,
+                consensus=consensus,
+            )
+        return network._connect.find_paths(
+            start=start,
+            end=end,
+            maxlen=resolved.maxlen,
+            minlen=1,
+            only_signed=only_signed,
+            consensus=consensus,
+        )
 
     for node1, node2 in combinations(nodes["Uniprot"], 2):
         if not network.check_node(node1) or not network.check_node(node2):
             continue
-        if minimal:
-            connect_network = Connections(network.edges)
-        def find_bfs_path(start, end):
-            return connect_network.bfs(start=start, end=end, maxlen=maxlen, only_signed=only_signed, consensus=consensus)
-        # Check for existing paths in both directions
-        paths_in = find_bfs_path(node2, node1)
-        paths_out = find_bfs_path(node1, node2)
-        # If a path is missing, call the selected algorithm to try to find and add a path
-        if not paths_in:
-            network._algorithms[algorithm](node1=node2, node2=node1, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
-            connect_network = Connections(network.edges)
-        if not paths_out:
-            network._algorithms[algorithm](node1=node1, node2=node2, maxlen=maxlen, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
-            connect_network = Connections(network.edges)
-    if not connect_with_bias:
-        network.connect_nodes(only_signed, consensus)
-        network.edges = network.edges.drop_duplicates().reset_index(drop=True)
+
+        for source, target in ((node2, node1), (node1, node2)):
+            existing_path = working_graph.bfs(
+                start=source,
+                end=target,
+                maxlen=resolved.maxlen,
+                only_signed=only_signed,
+                consensus=consensus,
+            )
+            if existing_path:
+                continue
+
+            selected_paths = select_resource_paths(source, target)
+            if not selected_paths:
+                continue
+
+            network._add_paths_to_edge_list(selected_paths)
+
+            if resolved.reuse_policy == "induced_subgraph":
+                connect_nodes(
+                    network,
+                    only_signed=only_signed,
+                    consensus_only=consensus,
+                )
+            if resolved.reuse_policy != "none":
+                working_graph = Connections(network.edges)
+
+    connect_nodes(
+        network,
+        only_signed=only_signed,
+        consensus_only=consensus,
+    )
+    network.edges = network.edges.drop_duplicates().reset_index(drop=True)
     return

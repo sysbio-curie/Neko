@@ -80,7 +80,11 @@ plugins:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -116,13 +120,21 @@ nav:
       - "09 · Recreating Famous Pathways": tutorials/9-Recreating_famous_pathways.ipynb
       - "10 · Import & Complete a Network": tutorials/10_Import_and_complete_a_network.ipynb
       - "11 · Network History": tutorials/11_network_history.ipynb
+  - Connection strategies:
+      - Choosing a strategy: strategies/index.md
   - API Reference:
       - Overview: api/index.md
       - Network: api/network.md
+      - Strategies: api/strategies.md
       - NetworkVisualizer: api/visualizer.md
       - Connections: api/connections.md
+      - Inputs and Universe: api/inputs.md
+      - Identifier mapping: api/identifiers.md
+      - Comparison: api/comparison.md
       - Ontology: api/ontology.md
       - Exports: api/exports.md
+      - History and states: api/history.md
+      - Core objects and tools: api/core-objects.md
   - Development:
       - Contributing: contributing.md
       - Changelog: changelog.md

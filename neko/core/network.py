@@ -9,6 +9,13 @@ from .tools import *
 from .node import Node
 from .edge import Edge
 from .network_state import NetworkState
+from .strategy_options import (
+    PATH_POLICIES,
+    REUSE_POLICIES,
+    PathPolicy,
+    ReusePolicy,
+    UNSET,
+)
 from typing import Optional
 from typing_extensions import Literal
 from itertools import combinations
@@ -903,17 +910,31 @@ class Network:
     @_record_state_operation
     def complete_connection(self,
                         maxlen: Optional[int] = 2,
-                        algorithm: Literal['bfs', 'dfs'] = 'dfs',
-                        minimal: bool = True,
+                        algorithm=UNSET,
+                        minimal=UNSET,
                         only_signed: bool = False,
                         consensus: bool = False,
-                            connect_with_bias: bool = False,
+                        connect_with_bias=UNSET,
+                        *,
+                        path_policy: Optional[PathPolicy] = None,
+                        reuse_policy: Optional[ReusePolicy] = None,
                             ) -> None:
         """
         Delegates to strategies.complete_connection.
         """
         from .strategies import complete_connection
-        return complete_connection(self, maxlen=maxlen, algorithm=algorithm, minimal=minimal, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
+        return complete_connection(
+            self,
+            maxlen=maxlen,
+            algorithm=algorithm,
+            minimal=minimal,
+            only_signed=only_signed,
+            consensus=consensus,
+            connect_with_bias=connect_with_bias,
+            path_policy=path_policy,
+            reuse_policy=reuse_policy,
+            _warning_stacklevel=5,
+        )
 
     @_record_state_operation
     def remove_undefined_interactions(self):
@@ -1186,6 +1207,8 @@ class Network:
 
     def _serialize_history_value(self, value) -> str:
         if isinstance(value, str):
+            if value in PATH_POLICIES | REUSE_POLICIES | {"bfs", "dfs"}:
+                return value
             label = self._node_display_label(value)
             return label if label is not None else value
         if isinstance(value, (list, tuple, set)):

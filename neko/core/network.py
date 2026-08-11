@@ -546,49 +546,44 @@ class Network:
 
     @_record_state_operation
     def modify_node_name(self, old_name: str, new_name: str,
-                         type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'
+                         type: Literal['Genesymbol'] = 'Genesymbol'
                          ) -> None:
-        """
-        This function modifies the name of a node in the network. It takes the old name of the node and the new name
-        as input and modifies the name of the node in the nodes and in the edges DataFrame. If type is set to
-        'Genesymbol', it modifies the genesymbol name of the node in the nodes DataFrame. If type is set to
-        'Uniprot', it modifies the uniprot name of the node in the edges DataFrame. If type is set to 'both',
-        it modifies both the genesymbol and uniprot names of the node in the nodes and edges DataFrame.
+        """Change a node label without changing its network identifier.
 
-
-        Args:
-            - old_name: A string representing the old name of the node. - new_name: A string representing the new
-            name of the node. - type: A string indicating the type of name to be modified. It can be 'Genesymbol',
-            'Uniprot', or 'both'. Default is 'Genesymbol'.
-
-        Returns:
-            -None
+        ``Uniprot`` values, edge endpoints, resource identifiers, and initial
+        seed names are deliberately preserved. A dedicated display-label
+        column should eventually replace this use of ``Genesymbol``.
         """
 
-        if type == 'Genesymbol':
-            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
-        elif type == 'Uniprot':
-            self.nodes.loc[self.nodes["Uniprot"] == old_name, "Uniprot"] = new_name
-            # Update the source and target columns in the edges DataFrame
-            self.edges.loc[self.edges["source"] == old_name, "source"] = new_name
-            self.edges.loc[self.edges["target"] == old_name, "target"] = new_name
-        elif type == 'both':
-            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
-            # check if it is possible to translate the genesymbol to uniprot
-            try:
-                new_name_uniprot = mapping_node_identifier(new_name)[2]
-                old_name_uniprot = mapping_node_identifier(old_name)[2]
-            except:
-                new_name_uniprot = new_name
-                old_name_uniprot = old_name
-            self.nodes.loc[self.nodes["Uniprot"] == old_name_uniprot, "Uniprot"] = new_name_uniprot
-            # Update the source and target columns in the edges DataFrame
-            self.edges.loc[self.edges["source"] == old_name_uniprot, "source"] = new_name_uniprot
-            self.edges.loc[self.edges["target"] == old_name_uniprot, "target"] = new_name_uniprot
-        else:
-            print("Error: Invalid type. Please choose 'Genesymbol', 'Uniprot', or 'both'.")
+        if type != 'Genesymbol':
+            raise ValueError(
+                "modify_node_name only supports type='Genesymbol'; "
+                "network identifiers cannot be renamed safely."
+            )
+        if not isinstance(old_name, str) or not old_name.strip():
+            raise ValueError('old_name must be a non-empty string.')
+        if not isinstance(new_name, str) or not new_name.strip():
+            raise ValueError('new_name must be a non-empty string.')
+        if new_name != new_name.strip():
+            raise ValueError(
+                'new_name must not contain leading or trailing whitespace.'
+            )
 
-        return
+        matching_nodes = self.nodes["Genesymbol"] == old_name
+        if not matching_nodes.any():
+            raise ValueError(f"Node label {old_name!r} is not in the network.")
+
+        conflicting_nodes = (
+            (self.nodes["Genesymbol"] == new_name)
+            & ~matching_nodes
+        )
+        if conflicting_nodes.any():
+            raise ValueError(
+                f"Node label {new_name!r} is already used by another node."
+            )
+
+        self.nodes.loc[matching_nodes, "Genesymbol"] = new_name
+        self.sync_nodes_from_df()
 
     def print_my_paths(self,
                        node1: str,

@@ -61,6 +61,13 @@ vis.render()
 
 See the [Tutorials](tutorials/index.md) for full worked examples, or jump to the [API Reference](api/index.md) for detailed documentation.
 
+!!! important "Upgrading to NeKo 1.9"
+    NeKo 1.9 modernizes identifier mapping, SIGNOR, Gene Ontology, tissue
+    mapping, and exports. Existing tutorial notebooks remain valid, but a
+    small number of ontology and identifier behaviors changed. Read the
+    [1.9 migration guide](migration-1.9.md) before upgrading an existing
+    workflow.
+
 ---
 
 ## Comparison with Sphinx docs

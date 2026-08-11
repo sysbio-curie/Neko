@@ -102,6 +102,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Installation: installation.md
+  - Upgrading to 1.9: migration-1.9.md
   - Tutorials:
       - Overview: tutorials/index.md
       - "01 · Network Building": tutorials/1_network_building.ipynb

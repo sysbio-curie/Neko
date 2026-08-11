@@ -35,7 +35,6 @@ Method Details
    neko.core.network.Network.connect_subgroup
    neko.core.network.Network.connect_to_upstream_nodes
    neko.core.network.Network.convert_edgelist_into_genesymbol
-   neko.core.network.Network.is_connected
 
 NetworkVisualizer Class Methods
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

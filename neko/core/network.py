@@ -192,6 +192,12 @@ class Network:
             chebi_mapping.identifiers_in_frame(self.resources),
         )
 
+        # Resolve all ChEBI labels in one pass. The canonical accessions stay
+        # usable even when this optional, best-effort enrichment is offline.
+        chebi_mapping.ensure_names(
+            chebi_mapping.identifiers_in_frame(self.resources),
+        )
+
         if self.initial_nodes:
             nodes_found = []
             for node in self.initial_nodes:

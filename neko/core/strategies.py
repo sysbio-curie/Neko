@@ -53,17 +53,24 @@ def connect_nodes(network, only_signed: bool = False, consensus_only: bool = Fal
         print("Number of node insufficient to create connection")
         return
 
-    def add_edge_if_not_empty_and_signed(node1, node2):
-        if node2 in network._connect.find_all_neighbours(node1):
-            interaction = network.resources.loc[(network.resources["source"] == node1) &
-                                                (network.resources["target"] == node2)]
-            if not interaction.empty and (
-                not only_signed or network.check_sign(interaction, consensus_only) != "undefined"):
-                network.add_edge(interaction)
+    interactions = []
+
+    def select_edge_if_present_and_signed(node1, node2):
+        interaction = network._connect.find_interactions(node1, node2)
+        if not interaction.empty and (
+            not only_signed
+            or network.check_sign(interaction, consensus_only) != "undefined"
+        ):
+            interactions.append(interaction)
 
     for node1, node2 in combinations(network.nodes["Uniprot"], 2):
-        add_edge_if_not_empty_and_signed(node1, node2)
-        add_edge_if_not_empty_and_signed(node2, node1)
+        select_edge_if_present_and_signed(node1, node2)
+        select_edge_if_present_and_signed(node2, node1)
+
+    if interactions:
+        network._add_resource_interactions(
+            pd.concat(interactions, ignore_index=True),
+        )
     return
 
 def connect_subgroup(network, group, maxlen: int = 1, only_signed: bool = False, consensus: bool = False) -> None:

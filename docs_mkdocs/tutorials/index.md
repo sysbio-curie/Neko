@@ -13,7 +13,7 @@ The tutorials below are Jupyter notebooks that walk you through every major NeKo
 | 7 | [Tissue Mapping](7_tissue_mapping.ipynb) | Filter interactions by tissue expression |
 | 8 | [Compare Networks](8_Compare_networks.ipynb) | Diff two networks and highlight differences |
 | 9 | [Recreating Famous Pathways](9-Recreating_famous_pathways.ipynb) | Reproduce well-known signalling diagrams |
-| 10 | [Import & Complete a Network](10_Import_and_complete_a_network.ipynb) | Import from SIF / GraphML and fill gaps |
+| 10 | [Import & Complete a Network](10_Import_and_complete_a_network.ipynb) | Import from SIF and fill network gaps |
 | 11 | [Network History](11_network_history.ipynb) | Snapshot, branch, and diff network states |
 
 ---

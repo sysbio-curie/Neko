@@ -38,6 +38,120 @@ Features
 - Interaction database integration
 - Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls
 
+Connection strategies and topology
+----------------------------------
+
+NeKo connection methods answer different biological and topological questions.
+Choose a strategy according to the intended flow of information rather than
+only according to runtime.
+
+The `diagram-based strategy guide
+<docs_mkdocs/strategies/index.md>`_ illustrates every public connection
+strategy with fictitious nodes and includes a research-question decision
+table.
+
+.. list-table:: Public connection strategies
+   :header-rows: 1
+   :widths: 16 22 15 24 23
+
+   * - Strategy
+     - Topological objective
+     - Direction handling
+     - Biological use
+     - Main caveat
+   * - ``connect_nodes``
+     - Induced subgraph on the current nodes; no bridge nodes.
+     - Every available resource direction.
+     - Complete known cross-talk in a chosen node set.
+     - Can mix biological contexts and densify around well-studied nodes.
+   * - ``complete_connection``
+     - Greedy completion of every original seed pair.
+     - Attempts both directed orientations.
+     - Exploratory, direction-agnostic network construction.
+     - Path reuse, pair order, hubs, and literature coverage influence the result.
+   * - ``connect_subgroup``
+     - Pairwise completion inside one selected subset.
+     - Searches both orientations.
+     - Enrich one module without treating every network node as a seed.
+     - Bounded path enumeration can grow rapidly.
+   * - ``connect_component``
+     - Join component A to component B.
+     - Explicit ``IN``, ``OUT``, or ``ALL``.
+     - Connect modules with a stated causal orientation.
+     - ``ALL`` and follow-up subgroup connections can add substantial topology.
+   * - ``connect_to_upstream_nodes``
+     - Add ranked upstream regulatory cascades.
+     - Upstream toward selected targets.
+     - Propose regulators and upstream context.
+     - Database degree and rank selection can dominate relevance.
+   * - ``connect_network_radially``
+     - Expand neighbor layers around the initial nodes.
+     - ``IN``, ``OUT``, or both.
+     - Explore local regulatory surroundings.
+     - The frontier can expand quickly through hubs.
+   * - ``connect_as_atopo``
+     - Build a topology for Atopo-style downstream processing and outputs.
+     - Inherits its radial/complete seed strategy and upstream output flow.
+     - Construct output-constrained executable networks.
+     - Inherits the topology and cost of delegated strategies.
+   * - ``connect_genes_to_phenotype``
+     - Link the network to GO-associated genes, optionally compressed.
+     - Network to phenotype-associated genes through component ``OUT`` mode.
+     - Connect mechanisms to a GO process or phenotype.
+     - GO scope, descendants, evidence filtering, and compression change interpretation.
+
+``complete_connection`` separates path selection from reuse of topology already
+constructed during the same call:
+
+.. list-table:: Complete-connection path and reuse combinations
+   :header-rows: 1
+   :widths: 16 27 28 29
+
+   * - Path policy
+     - ``reuse_policy="none"``
+     - ``reuse_policy="discovered_paths"``
+     - ``reuse_policy="induced_subgraph"``
+   * - ``one_shortest``
+     - Select one shortest path for every independently missing direction.
+     - Reuse an earlier selected path before searching again.
+     - Close the selected-node subgraph online and reuse emergent cross-links.
+   * - ``all_shortest``
+     - Select the edge union of all shortest alternatives for every independently missing direction.
+     - Reuse the shortest-path union for later pairs.
+     - Close that union online; typically broader than one-path selection but still bounded.
+   * - ``all_bounded``
+     - Select every simple path through ``maxlen`` for every independently missing direction.
+     - Skip later searches already satisfied by the bounded-path union.
+     - Combine bounded paths with online induced closure; potentially the densest and most expensive mode.
+
+``maxlen`` is a mandatory positive edge cutoff for the new policies. For
+shortest-path policies it limits the search but does not request a longer path:
+if a two-edge path exists and ``maxlen=5``, NeKo selects the two-edge shortest
+path or paths. ``all_bounded`` can be combinatorial as the cutoff grows.
+
+The recommended explicit syntax is:
+
+.. code-block:: python
+
+    net.complete_connection(
+        maxlen=2,
+        path_policy="all_shortest",
+        reuse_policy="induced_subgraph",
+        only_signed=True,
+        consensus=False,
+    )
+
+The former ``algorithm``, ``minimal``, and ``connect_with_bias`` arguments are
+temporarily supported with a migration warning. ``algorithm="bfs"`` maps to
+``one_shortest``; ``algorithm="dfs"`` maps to ``all_bounded``;
+``minimal=True`` maps to ``discovered_paths``; ``minimal=False`` with bias
+disabled maps to ``none``; and either ``connect_with_bias=True`` combination
+maps to ``induced_subgraph``. When no old or new selector is supplied, the
+transition release preserves the former effective default as
+``all_bounded + discovered_paths`` without emitting a warning. Deterministic
+unweighted selection improves reproducibility but is not a biological
+ranking. Externally derived edge weights are planned for NeKo 2.0.
+
 SIGNOR entity normalization
 ---------------------------
 

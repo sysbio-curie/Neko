@@ -9,6 +9,13 @@ from .tools import *
 from .node import Node
 from .edge import Edge
 from .network_state import NetworkState
+from .strategy_options import (
+    PATH_POLICIES,
+    REUSE_POLICIES,
+    PathPolicy,
+    ReusePolicy,
+    UNSET,
+)
 from typing import Optional
 from typing_extensions import Literal
 from itertools import combinations
@@ -183,6 +190,14 @@ class Network:
             network_universe(self._init_args['resources']).
             interactions
         )
+        self._resource_nodes = set(self.resources["source"].dropna())
+        self._resource_nodes.update(self.resources["target"].dropna())
+
+        # Resolve all ChEBI labels in one pass. The canonical accessions stay
+        # usable even when this optional, best-effort enrichment is offline.
+        chebi_mapping.ensure_names(
+            chebi_mapping.identifiers_in_frame(self.resources),
+        )
 
         # Resolve all ChEBI labels in one pass. The canonical accessions stay
         # usable even when this optional, best-effort enrichment is offline.
@@ -241,8 +256,7 @@ class Network:
         Returns:
             - A list[str] of node identifiers that are present in the resources database.
         """
-        return [node for node in nodes if
-                node in self.resources["source"].unique() or node in self.resources["target"].unique()]
+        return [node for node in nodes if node in self._resource_nodes]
 
     def check_node(self, node: str) -> bool:
         """
@@ -444,6 +458,48 @@ class Network:
         self.sync_edges_from_df()
         return
 
+    def _add_resource_interactions(self, interactions: pd.DataFrame) -> None:
+        """Add a batch of resource interactions with one consolidation pass.
+
+        Resource adapters may retain multiple evidence rows for a directed
+        source-target pair. ``add_edge`` historically derives the working sign,
+        type, and references from the first such row and then consolidates the
+        resulting working edges. This helper preserves that behavior while
+        avoiding one full DataFrame rebuild per interaction.
+        """
+
+        if interactions.empty:
+            return
+
+        additions = []
+        for (_, _), group in interactions.groupby(
+                ["source", "target"],
+                sort=False,
+                dropna=False,
+            ):
+            first = group.iloc[0]
+            additions.append({
+                "source": first["source"],
+                "target": first["target"],
+                "Type": first.get("type"),
+                "Effect": check_sign(first),
+                "References": first.get("references"),
+            })
+
+        if not additions:
+            return
+
+        existing_nodes = set(self.nodes["Uniprot"].dropna())
+        for addition in additions:
+            for endpoint in (addition["source"], addition["target"]):
+                if endpoint not in existing_nodes and self.add_node(endpoint):
+                    existing_nodes.add(endpoint)
+
+        new_edges = pd.DataFrame(additions, columns=self.edges.columns)
+        self.edges = pd.concat([self.edges, new_edges], ignore_index=True)
+        self.edges = consolidate_edges(self.edges)
+        self.sync_edges_from_df()
+
     @_record_state_operation
     def remove_edge(self, node1: str, node2: str) -> None:
         """
@@ -490,49 +546,44 @@ class Network:
 
     @_record_state_operation
     def modify_node_name(self, old_name: str, new_name: str,
-                         type: Literal['Genesymbol', 'Uniprot', 'both'] = 'Genesymbol'
+                         type: Literal['Genesymbol'] = 'Genesymbol'
                          ) -> None:
-        """
-        This function modifies the name of a node in the network. It takes the old name of the node and the new name
-        as input and modifies the name of the node in the nodes and in the edges DataFrame. If type is set to
-        'Genesymbol', it modifies the genesymbol name of the node in the nodes DataFrame. If type is set to
-        'Uniprot', it modifies the uniprot name of the node in the edges DataFrame. If type is set to 'both',
-        it modifies both the genesymbol and uniprot names of the node in the nodes and edges DataFrame.
+        """Change a node label without changing its network identifier.
 
-
-        Args:
-            - old_name: A string representing the old name of the node. - new_name: A string representing the new
-            name of the node. - type: A string indicating the type of name to be modified. It can be 'Genesymbol',
-            'Uniprot', or 'both'. Default is 'Genesymbol'.
-
-        Returns:
-            -None
+        ``Uniprot`` values, edge endpoints, resource identifiers, and initial
+        seed names are deliberately preserved. A dedicated display-label
+        column should eventually replace this use of ``Genesymbol``.
         """
 
-        if type == 'Genesymbol':
-            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
-        elif type == 'Uniprot':
-            self.nodes.loc[self.nodes["Uniprot"] == old_name, "Uniprot"] = new_name
-            # Update the source and target columns in the edges DataFrame
-            self.edges.loc[self.edges["source"] == old_name, "source"] = new_name
-            self.edges.loc[self.edges["target"] == old_name, "target"] = new_name
-        elif type == 'both':
-            self.nodes.loc[self.nodes["Genesymbol"] == old_name, "Genesymbol"] = new_name
-            # check if it is possible to translate the genesymbol to uniprot
-            try:
-                new_name_uniprot = mapping_node_identifier(new_name)[2]
-                old_name_uniprot = mapping_node_identifier(old_name)[2]
-            except:
-                new_name_uniprot = new_name
-                old_name_uniprot = old_name
-            self.nodes.loc[self.nodes["Uniprot"] == old_name_uniprot, "Uniprot"] = new_name_uniprot
-            # Update the source and target columns in the edges DataFrame
-            self.edges.loc[self.edges["source"] == old_name_uniprot, "source"] = new_name_uniprot
-            self.edges.loc[self.edges["target"] == old_name_uniprot, "target"] = new_name_uniprot
-        else:
-            print("Error: Invalid type. Please choose 'Genesymbol', 'Uniprot', or 'both'.")
+        if type != 'Genesymbol':
+            raise ValueError(
+                "modify_node_name only supports type='Genesymbol'; "
+                "network identifiers cannot be renamed safely."
+            )
+        if not isinstance(old_name, str) or not old_name.strip():
+            raise ValueError('old_name must be a non-empty string.')
+        if not isinstance(new_name, str) or not new_name.strip():
+            raise ValueError('new_name must be a non-empty string.')
+        if new_name != new_name.strip():
+            raise ValueError(
+                'new_name must not contain leading or trailing whitespace.'
+            )
 
-        return
+        matching_nodes = self.nodes["Genesymbol"] == old_name
+        if not matching_nodes.any():
+            raise ValueError(f"Node label {old_name!r} is not in the network.")
+
+        conflicting_nodes = (
+            (self.nodes["Genesymbol"] == new_name)
+            & ~matching_nodes
+        )
+        if conflicting_nodes.any():
+            raise ValueError(
+                f"Node label {new_name!r} is already used by another node."
+            )
+
+        self.nodes.loc[matching_nodes, "Genesymbol"] = new_name
+        self.sync_nodes_from_df()
 
     def print_my_paths(self,
                        node1: str,
@@ -695,30 +746,30 @@ class Network:
         Returns:
             - None
         """
-        # Access the resources database
-        database = self.resources
+        existing_edges = set(self.edges[["source", "target"]].itertuples(
+            index=False,
+            name=None,
+        ))
+        interactions = []
 
-        # Iterate through the list of paths
         for path in paths:
-            # Handle single string or tuple
             if isinstance(path, (str)):
                 path = [path]
 
-            # Iterate through the nodes in the path
-            for i in range(0, len(path)):
-                # Break the loop if it's the last node in the path
-                if i == len(path) - 1:
-                    break
+            for source, target in zip(path, path[1:]):
+                edge_key = (source, target)
+                if edge_key in existing_edges:
+                    continue
 
-                # Check if there is an interaction between the current node and the next node in the resources database
-                interaction = database.loc[(database["source"] == path[i]) &
-                                           (database["target"] == path[i + 1])]
-
-                # If an interaction exists, add it to the edge list of the network
+                interaction = self._connect.find_interactions(source, target)
                 if not interaction.empty:
-                    if not ((self.edges['source'] == interaction['source'].values[0]) &
-                            (self.edges['target'] == interaction['target'].values[0])).any():
-                        self.add_edge(interaction)
+                    interactions.append(interaction)
+                    existing_edges.add(edge_key)
+
+        if interactions:
+            self._add_resource_interactions(
+                pd.concat(interactions, ignore_index=True),
+            )
 
         # Remove duplicate edges from the edge list
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
@@ -737,15 +788,22 @@ class Network:
         Returns:
             - None
         """
-        database = self.resources
+        interactions = []
 
         for cascade in cascades:
-            interaction_in = database.loc[(database["source"] == cascade[0]) &
-                                          (database["target"] == cascade[1])]
+            interaction_in = self._connect.find_interactions(
+                cascade[0],
+                cascade[1],
+            )
             if interaction_in.empty:
                 print("Empty interaction for node ", cascade[0], " and ", cascade[1])
             else:
-                self.add_edge(interaction_in)
+                interactions.append(interaction_in)
+
+        if interactions:
+            self._add_resource_interactions(
+                pd.concat(interactions, ignore_index=True),
+            )
         self.edges = self.edges.drop_duplicates().reset_index(drop=True)
 
         return
@@ -847,17 +905,31 @@ class Network:
     @_record_state_operation
     def complete_connection(self,
                         maxlen: Optional[int] = 2,
-                        algorithm: Literal['bfs', 'dfs'] = 'dfs',
-                        minimal: bool = True,
+                        algorithm=UNSET,
+                        minimal=UNSET,
                         only_signed: bool = False,
                         consensus: bool = False,
-                            connect_with_bias: bool = False,
+                        connect_with_bias=UNSET,
+                        *,
+                        path_policy: Optional[PathPolicy] = None,
+                        reuse_policy: Optional[ReusePolicy] = None,
                             ) -> None:
         """
         Delegates to strategies.complete_connection.
         """
         from .strategies import complete_connection
-        return complete_connection(self, maxlen=maxlen, algorithm=algorithm, minimal=minimal, only_signed=only_signed, consensus=consensus, connect_with_bias=connect_with_bias)
+        return complete_connection(
+            self,
+            maxlen=maxlen,
+            algorithm=algorithm,
+            minimal=minimal,
+            only_signed=only_signed,
+            consensus=consensus,
+            connect_with_bias=connect_with_bias,
+            path_policy=path_policy,
+            reuse_policy=reuse_policy,
+            _warning_stacklevel=5,
+        )
 
     @_record_state_operation
     def remove_undefined_interactions(self):
@@ -1130,6 +1202,8 @@ class Network:
 
     def _serialize_history_value(self, value) -> str:
         if isinstance(value, str):
+            if value in PATH_POLICIES | REUSE_POLICIES | {"bfs", "dfs"}:
+                return value
             label = self._node_display_label(value)
             return label if label is not None else value
         if isinstance(value, (list, tuple, set)):
@@ -1164,6 +1238,18 @@ class Network:
     def _node_display_label(self, identifier):
         if pd.isna(identifier):
             return identifier
+
+        matching_nodes = self.nodes[
+            (self.nodes["Genesymbol"] == identifier)
+            | (self.nodes["Uniprot"] == identifier)
+        ]
+        if not matching_nodes.empty:
+            node = matching_nodes.iloc[0]
+            for candidate in (node["Genesymbol"], node["Uniprot"]):
+                if pd.notna(candidate) and candidate:
+                    return candidate
+            return identifier
+
         identifiers = self.mapping_node_identifier(identifier)
         for candidate in (identifiers[1], identifiers[0], identifiers[2], identifier):
             if candidate:
@@ -1280,7 +1366,6 @@ class Network:
             connect_with_bias=connect_with_bias,
             add_paths_func=self._add_paths_to_edge_list,
             connect_nodes_func=self.connect_nodes,
-            edges_df=self.edges
         )
 
     def bfs_algorithm(self,
@@ -1304,5 +1389,4 @@ class Network:
             connect_with_bias=connect_with_bias,
             add_paths_func=self._add_paths_to_edge_list,
             connect_nodes_func=self.connect_nodes,
-            edges_df=self.edges
         )

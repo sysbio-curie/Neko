@@ -80,9 +80,9 @@ def test_phosphosite_network_uses_resource_identifiers(monkeypatch):
 
     network.complete_connection(
         maxlen=2,
-        algorithm='bfs',
+        path_policy='one_shortest',
+        reuse_policy='induced_subgraph',
         only_signed=True,
-        connect_with_bias=True,
     )
 
     assert set(network.nodes['Uniprot']) >= {'S1_S9', 'S1', 'S2_T10'}

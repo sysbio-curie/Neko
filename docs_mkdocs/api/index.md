@@ -1,14 +1,21 @@
 # API Reference
 
-NeKo's public API is organised into five main areas:
+NeKo's documented API is organized by the role each surface plays in a
+network-construction workflow:
 
 | Module | Description |
 |---|---|
 | [`neko.core.network.Network`](network.md) | Core class – build, manipulate, and query a signalling network |
+| [`neko.core.strategies`](strategies.md) | High-level connection and enrichment strategies exposed by `Network` |
 | [`neko._visual.visualize_network.NetworkVisualizer`](visualizer.md) | Render networks with Graphviz or the yFiles widget |
-| [`neko._methods.enrichment_methods.Connections`](connections.md) | Algorithms for enriching a network from an interaction database |
+| [`neko._methods.enrichment_methods.Connections`](connections.md) | Low-level indexed graph searches used by connection strategies |
+| [`neko.inputs`](inputs.md) | `Universe` plus OmniPath, SIGNOR, HuRI, and PhosphoSitePlus adapters |
+| [Identifier mapping](identifiers.md) | Cached UniProt/gene-symbol translation and batched translation |
+| [`compare_networks`](comparison.md) | Shared and unique topology across two networks |
 | [`neko._annotations.gene_ontology.Ontology`](ontology.md) | Gene Ontology utilities and phenotype mapping |
-| [`neko._outputs.exports`](exports.md) | Export helpers (SIF, GML, GraphML, BND/CFG) |
+| [`neko._outputs.exports`](exports.md) | Implemented BNet and SIF export helpers |
+| [History and states](history.md) | Branching `Network` history, snapshots, and renderers |
+| [Core objects and tools](core-objects.md) | `Node`, `Edge`, and public graph utilities |
 
 ---
 
@@ -21,7 +28,10 @@ NeKo follows a **Network-centric** design:
 3. Use `Network` methods to connect, expand, and annotate nodes.
 4. Visualise or export the result.
 
-All mutation methods on `Network` automatically create a snapshot in the branching **NetworkHistory**, so every intermediate state is recoverable.
+Decorated mutation methods on `Network` automatically create snapshots in its
+branching history tree, so intermediate states are recoverable. History is a
+facility of `Network` plus `NetworkState`, not a separate `NetworkHistory`
+class.
 
 ---
 

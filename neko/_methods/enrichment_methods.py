@@ -14,15 +14,83 @@ class Connections:
 
     def __init__(self, database: pd.DataFrame):
         self.resources = database.copy()
+        self.resource_nodes = set(self.resources['source'].dropna())
+        self.resource_nodes.update(self.resources['target'].dropna())
+        self._edge_positions = defaultdict(list)
+        for position, (source, target) in enumerate(
+                self.resources[['source', 'target']].itertuples(
+                    index=False,
+                    name=None,
+                )):
+            self._edge_positions[(source, target)].append(position)
         self.target_neighbours_map = self._preprocess_target_neighbours()
         self.source_neighbours_map = self._preprocess_source_neighbours()
-        # Precompute edge sign cache for both consensus True/False
+        # Precompute edge sign cache for both consensus True/False. Resource
+        # tables carry boolean evidence columns, while working network edges
+        # carry one canonical ``Effect`` value.
         self.signed_edges = {}
         self.signed_edges_consensus = {}
-        for _, row in self.resources.iterrows():
-            key = (row['source'], row['target'])
-            self.signed_edges[key] = check_sign(row, consensus=False) != "undefined"
-            self.signed_edges_consensus[key] = check_sign(row, consensus=True) != "undefined"
+        signed, signed_consensus = self._signed_masks()
+        edge_keys = self.resources[['source', 'target']].itertuples(
+            index=False,
+            name=None,
+        )
+        for key, is_signed, is_consensus_signed in zip(
+                edge_keys,
+                signed,
+                signed_consensus,
+            ):
+            # Preserve the historical last-row-wins behavior for parallel
+            # resource rows. Resource adapters normally consolidate these.
+            self.signed_edges[key] = bool(is_signed)
+            self.signed_edges_consensus[key] = bool(is_consensus_signed)
+
+    def _signed_masks(self):
+        resource_columns = {
+            'is_stimulation',
+            'is_inhibition',
+            'form_complex',
+        }
+        if resource_columns.issubset(self.resources.columns):
+            stimulation = self.resources['is_stimulation'].fillna(False).astype(bool)
+            inhibition = self.resources['is_inhibition'].fillna(False).astype(bool)
+            complex_formation = self.resources['form_complex'].fillna(False).astype(bool)
+            signed = stimulation | inhibition | complex_formation
+
+            if {
+                    'consensus_stimulation',
+                    'consensus_inhibition',
+                }.issubset(self.resources.columns):
+                signed_consensus = (
+                    self.resources['consensus_stimulation'].fillna(False).astype(bool)
+                    | self.resources['consensus_inhibition'].fillna(False).astype(bool)
+                )
+            else:
+                signed_consensus = pd.Series(
+                    False,
+                    index=self.resources.index,
+                )
+            return signed, signed_consensus
+
+        effects = self.resources.get(
+            'Effect',
+            pd.Series('undefined', index=self.resources.index),
+        )
+        effects = (
+            effects
+            .fillna('undefined')
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .str.replace('_', ' ', regex=False)
+        )
+        signed = effects.isin({
+            'stimulation',
+            'inhibition',
+            'bimodal',
+            'form complex',
+        })
+        return signed, signed.copy()
 
     def _preprocess_target_neighbours(self) -> dict:
         """
@@ -42,13 +110,13 @@ class Connections:
         """
         Optimized helper function that finds the neighbors of the target node.
         """
-        return list(self.target_neighbours_map.get(node, []))
+        return sorted(self.target_neighbours_map.get(node, []), key=str)
 
     def find_source_neighbours(self, node: str) -> List[str]:
         """
         Optimized helper function that finds the neighbors of the target node.
         """
-        return list(self.source_neighbours_map.get(node, []))
+        return sorted(self.source_neighbours_map.get(node, []), key=str)
 
     def find_all_neighbours(self, node: str) -> List[str]:
         """
@@ -56,7 +124,15 @@ class Connections:
         """
         target_neighs = self.find_target_neighbours(node)
         source_neighs = self.find_source_neighbours(node)
-        return list(set(target_neighs + source_neighs))
+        return sorted(set(target_neighs + source_neighs), key=str)
+
+    def find_interactions(self, source: str, target: str) -> pd.DataFrame:
+        """Return resource rows for one directed edge without scanning the table."""
+
+        positions = self._edge_positions.get((source, target), ())
+        if not positions:
+            return self.resources.iloc[0:0]
+        return self.resources.iloc[positions]
 
     def is_signed_edge(self, source, target, consensus=False):
         """
@@ -100,6 +176,70 @@ class Connections:
                         if not only_signed or self.is_signed_edge(node, neighbor, consensus):
                             queue.append((neighbor, path + [neighbor], depth + 1))
         return []
+
+    def bfs_all_shortest_edges(
+            self,
+            start: str,
+            end: str,
+            maxlen: int,
+            only_signed: bool = False,
+            consensus: bool = False,
+        ) -> List[Tuple[str, str]]:
+        """Return the edge union of all minimum-length paths within a cutoff."""
+
+        if start == end:
+            return []
+
+        distances = {start: 0}
+        predecessors = defaultdict(set)
+        queue = deque([start])
+        shortest_distance = None
+
+        while queue:
+            node = queue.popleft()
+            depth = distances[node]
+
+            if depth >= maxlen:
+                continue
+            if shortest_distance is not None and depth >= shortest_distance:
+                continue
+
+            for neighbor in self.find_target_neighbours(node):
+                if only_signed and not self.is_signed_edge(
+                        node,
+                        neighbor,
+                        consensus,
+                    ):
+                    continue
+
+                next_depth = depth + 1
+                known_depth = distances.get(neighbor)
+                if known_depth is None:
+                    distances[neighbor] = next_depth
+                    predecessors[neighbor].add(node)
+                    queue.append(neighbor)
+                elif known_depth == next_depth:
+                    predecessors[neighbor].add(node)
+
+                if neighbor == end:
+                    shortest_distance = next_depth
+
+        if end not in distances:
+            return []
+
+        shortest_edges = set()
+        pending = [end]
+        expanded = set()
+        while pending:
+            node = pending.pop()
+            if node in expanded:
+                continue
+            expanded.add(node)
+            for predecessor in predecessors[node]:
+                shortest_edges.add((predecessor, node))
+                pending.append(predecessor)
+
+        return sorted(shortest_edges, key=lambda edge: (str(edge[0]), str(edge[1])))
 
 
     def find_paths(self,

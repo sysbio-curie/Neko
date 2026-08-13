@@ -230,7 +230,12 @@ def test_sif_import_merges_opposite_signs(tmp_path, monkeypatch):
 def test_connect_nodes_and_complete_connection(sample_genes, sample_resources):
     net = Network(initial_nodes=sample_genes, resources=sample_resources)
     net.connect_nodes(only_signed=True, consensus_only=False)
-    net.complete_connection(maxlen=2, algorithm="dfs", only_signed=True)
+    net.complete_connection(
+        maxlen=2,
+        path_policy="all_bounded",
+        reuse_policy="discovered_paths",
+        only_signed=True,
+    )
     assert isinstance(net.edges, pd.DataFrame)
 
 def test_remove_bimodal_and_undefined(sample_genes, sample_resources):

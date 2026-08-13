@@ -23,7 +23,7 @@ def test_get_metadata_uses_nekomata_distribution(monkeypatch):
         requested_distributions.append(name)
         return {
             'Name': 'nekomata',
-            'Version': '1.9.0',
+            'Version': '1.10.0',
             'License': 'GPL-3.0-only',
         }
 
@@ -37,7 +37,7 @@ def test_get_metadata_uses_nekomata_distribution(monkeypatch):
 
     assert requested_distributions == ['nekomata']
     assert metadata['name'] == 'nekomata'
-    assert metadata['version'] == '1.9.0'
+    assert metadata['version'] == '1.10.0'
 
 
 def test_get_metadata_has_explicit_unknown_fallback(monkeypatch):

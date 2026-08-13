@@ -36,15 +36,14 @@
 <!-- SRC&#45;&gt;epithelial_to_mesenchymal_transition -->
 <g id="edge2" class="edge">
 <title>SRC&#45;&gt;epithelial_to_mesenchymal_transition</title>
-<path fill="none" stroke="red" d="M157.58,-143.85C160.17,-133.48 163.48,-120 166.23,-108 171.42,-85.39 176.91,-59.44 180.64,-41.42"/>
-<polygon fill="red" stroke="red" points="176.64,-36.06 186.44,-38.09 186.03,-40.05 176.24,-38.02 176.64,-36.06"/>
-<polyline fill="none" stroke="red" points="181.74,-36.1 180.73,-40.99 "/>
+<path fill="none" stroke="purple" d="M157.58,-143.85C160.17,-133.48 163.48,-120 166.23,-108 170.81,-88.02 175.63,-65.44 179.27,-48.02"/>
+<polygon fill="purple" stroke="purple" points="179.31,-47.85 176.61,-41.16 181.74,-36.1 184.44,-42.78 179.31,-47.85"/>
 </g>
 <!-- PTK2&#45;&gt;epithelial_to_mesenchymal_transition -->
 <g id="edge4" class="edge">
 <title>PTK2&#45;&gt;epithelial_to_mesenchymal_transition</title>
-<path fill="none" stroke="green" d="M135.44,-73.46C143.46,-64.69 153.66,-53.53 162.75,-43.6"/>
-<polygon fill="green" stroke="green" points="165.56,-45.7 169.73,-35.96 160.39,-40.98 165.56,-45.7"/>
+<path fill="none" stroke="purple" d="M135.44,-73.46C143.06,-65.13 152.66,-54.63 161.39,-45.08"/>
+<polygon fill="purple" stroke="purple" points="161.63,-44.82 162.72,-37.69 169.73,-35.96 168.63,-43.09 161.63,-44.82"/>
 </g>
 <!-- NOTCH1 -->
 <g id="node4" class="node">
@@ -55,8 +54,8 @@
 <!-- NOTCH1&#45;&gt;epithelial_to_mesenchymal_transition -->
 <g id="edge3" class="edge">
 <title>NOTCH1&#45;&gt;epithelial_to_mesenchymal_transition</title>
-<path fill="none" stroke="green" d="M247.08,-73.12C236.82,-64.14 223.79,-52.73 212.33,-42.71"/>
-<polygon fill="green" stroke="green" points="214.54,-40 204.71,-36.04 209.93,-45.26 214.54,-40"/>
+<path fill="none" stroke="purple" d="M247.08,-73.12C237.31,-64.57 225.03,-53.82 214,-44.17"/>
+<polygon fill="purple" stroke="purple" points="213.74,-43.95 206.59,-43.01 204.71,-36.04 211.86,-36.98 213.74,-43.95"/>
 </g>
 </g>
 </svg>

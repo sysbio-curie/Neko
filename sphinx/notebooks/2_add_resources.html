@@ -846,25 +846,16 @@ Wall time: 30 ms
 <p class="admonition-title fa fa-exclamation-circle"><strong>Note</strong></p>
 <p>NB! It is important to note, that not all the databases have the same structure as Omnipath. In particular, if the columns “consensus” are missing, we suggest to avoid to use the flag <code class="docutils literal notranslate"><span class="pre">consensus</span></code> or <code class="docutils literal notranslate"><span class="pre">consensus_only</span></code> when using NeKo with customize databases. As a general advise, we suggest to always use <code class="docutils literal notranslate"><span class="pre">consensus=False</span></code> when you are using a database different from the Omnipath.</p>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;one_shortest&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;discovered_paths&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-CPU times: user 1.18 s, sys: 1.08 ms, total: 1.18 s
-Wall time: 1.18 s
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:

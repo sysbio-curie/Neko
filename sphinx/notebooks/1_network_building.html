@@ -309,30 +309,20 @@ Wall time: 188 ms
 </section>
 <section id="2D.-Connect-disconnected-nodes-by-importing-intermediate-nodes.">
 <h3>2D. Connect disconnected nodes by importing intermediate nodes.<a class="headerlink" href="#2D.-Connect-disconnected-nodes-by-importing-intermediate-nodes." title="Link to this heading"></a></h3>
-<p>The parameter <em>maxlen</em> sets the maximum length of the paths to be searched of.</p>
-<p>The parameter <em>algorithm</em> sets the base algorithm to use when looking for paths in the resources. It can be ‘bfs’ (Breadth-First Search) or ‘dfs’ (Depth-First Search - iterative). The first one is faster but does not retrieve all the shortest path, just the first one found, while the second one retrieves all the possible shortest paths (but not only the shortest) at higher computational cost.</p>
-<p>The parameter <em>only_signed</em> forces the algorithm to look for just signed interactions.</p>
-<p>The parameter <em>consensus</em> retrieves those interactions with a sign consensus between the references (when possible).</p>
-<p>The parameter <em>connect_with_bias</em>, changes the base algorithm, making it look for possible connection between all the disconnected node in the network when a new bridge-gene is introduced in the network, biasing the final network topology.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<p><code class="docutils literal notranslate"><span class="pre">maxlen</span></code> is the mandatory maximum path length in edges.</p>
+<p><code class="docutils literal notranslate"><span class="pre">path_policy</span></code> controls which resource paths are selected when a connection is missing: <code class="docutils literal notranslate"><span class="pre">one_shortest</span></code> selects one stable shortest path, <code class="docutils literal notranslate"><span class="pre">all_shortest</span></code> selects the edge union of every shortest alternative, and <code class="docutils literal notranslate"><span class="pre">all_bounded</span></code> selects every simple path through <code class="docutils literal notranslate"><span class="pre">maxlen</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">reuse_policy</span></code> controls which topology can prevent later searches: <code class="docutils literal notranslate"><span class="pre">none</span></code> keeps pair searches independent, <code class="docutils literal notranslate"><span class="pre">discovered_paths</span></code> reuses explicitly selected paths, and <code class="docutils literal notranslate"><span class="pre">induced_subgraph</span></code> also exposes direct resource interactions among all selected nodes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">only_signed</span></code> restricts the search to signed interactions. <code class="docutils literal notranslate"><span class="pre">consensus</span></code> requires sign consensus between references when the resource provides it. Stable unweighted ordering improves reproducibility but is not a biological ranking.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;one_shortest&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;discovered_paths&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-CPU times: user 10.5 s, sys: 1.02 ms, total: 10.5 s
-Wall time: 10.5 s
-</pre></div></div>
 </div>
 </section>
 </section>

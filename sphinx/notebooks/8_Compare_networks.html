@@ -102,7 +102,7 @@
   <section id="Network-comparison">
 <h1>Network comparison<a class="headerlink" href="#Network-comparison" title="Link to this heading"></a></h1>
 <p>In some cases, it might be of interest to compare two networks with each other. For instance, you might want to compare an existing network with the Neko-generated network, or compare the resulting networks from two different network construction strategies.</p>
-<p>The following code shows the comparison of two networks, built with different input parameters of the <code class="docutils literal notranslate"><span class="pre">complete_connections</span></code> function.</p>
+<p>The following code shows the comparison of two networks, built with different input parameters of the <code class="docutils literal notranslate"><span class="pre">complete_connection</span></code> method.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -148,13 +148,13 @@ Wall time: 5.09 s
 <h3>2A. Build first network<a class="headerlink" href="#2A.-Build-first-network" title="Link to this heading"></a></h3>
 <p>For the first network, we specify that we do not want to take into account the concensus sign (i.e. activation vs inhibition) for the interactions.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
 <span class="n">new_net1</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;one_shortest&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;induced_subgraph&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -164,13 +164,13 @@ Wall time: 5.09 s
 <h3>2B. Build second network<a class="headerlink" href="#2B.-Build-second-network" title="Link to this heading"></a></h3>
 <p>For the second network, we set the <code class="docutils literal notranslate"><span class="pre">consensus</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">genes</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
 <span class="n">new_net2</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;dfs&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;all_bounded&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;induced_subgraph&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">consensus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

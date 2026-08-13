@@ -156,11 +156,11 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;bfs&#39;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net1</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;one_shortest&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;induced_subgraph&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
 </pre></div>
 </div>
 <div class="timing docutils container">
@@ -168,8 +168,8 @@
 </div>
 </div>
 </div>
-<p>In the previous cell, we have built a network from the genes we are interested in. We have used the OmniPath database to retrieve the interactions. We have then completed the network using a breadth-first search algorithm, considering only signed interactions. The option <code class="docutils literal notranslate"><span class="pre">connect_with_bias</span></code> allows us to connect the nodes prioritizing already existing interactions in the network, over new ones. This means that the resulting network will have a higher density of interactions between the nodes
-that were already connected. Moreover, our implementation of the bsf algorithm contains a random component, so the resulting network may vary each time you run the code.</p>
+<p>The previous cell completes the network with one shortest signed path whenever a seed-pair direction is missing. The <code class="docutils literal notranslate"><span class="pre">reuse_policy=&quot;induced_subgraph&quot;</span></code> setting connects direct resource interactions among newly selected bridge nodes and the existing network before later pairs are searched. This favors reuse, cross-talk, and feedback in the selected module, but can also amplify hubs, literature coverage, and pair-order effects. The unweighted tie-break is stable for reproducibility; it does not
+claim that one equal-length path is biologically preferable.</p>
 </section>
 <section id="3.-Visualize-the-network">
 <h2>3. Visualize the network<a class="headerlink" href="#3.-Visualize-the-network" title="Link to this heading"></a></h2>
@@ -557,11 +557,11 @@ that were already connected. Moreover, our implementation of the bsf algorithm c
 <h2>8. Manipulate the network: complete the network<a class="headerlink" href="#8.-Manipulate-the-network:-complete-the-network" title="Link to this heading"></a></h2>
 <p>We can now complete the network and connect the disconnected node that we have previously added. Moreover, by choosing a different algorithm, we can obtain a different network structure, and get interactions that we have not considered before.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;dfs&#39;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_net2</span><span class="o">.</span><span class="n">complete_connection</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">path_policy</span><span class="o">=</span><span class="s2">&quot;all_bounded&quot;</span><span class="p">,</span> <span class="n">reuse_policy</span><span class="o">=</span><span class="s2">&quot;discovered_paths&quot;</span><span class="p">,</span> <span class="n">only_signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="timing docutils container">

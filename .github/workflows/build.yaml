@@ -35,4 +35,4 @@ jobs:
         -   name: Smoke test installed wheel metadata
             working-directory: /tmp
             run: |
-                python -c 'import importlib.metadata as md; import neko; assert md.version("nekomata") == neko.__version__ == "1.9.0"'
+                python -c 'import importlib.metadata as md; import neko; assert md.version("nekomata") == neko.__version__ == "1.10.0"'

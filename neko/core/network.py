@@ -698,13 +698,25 @@ class Network:
             }
             return effect_types.get(interaction_type, "undefined")
 
+        reference_prefix = "# Reference PMID:"
+        pending_references = None
         with open(sif_file, "r") as f:
             for line in f:
-                if line.startswith('#'):  # Skip comment lines
+                if line.startswith(reference_prefix):
+                    # NeKo exports one reference comment before each edge.
+                    # Keep it local to that edge, including when a malformed
+                    # interaction is skipped below.
+                    pending_references = line[len(reference_prefix):].strip()
+                    continue
+                if line.startswith('#'):
                     continue
                 interaction = line.strip().split()
+                if not interaction:
+                    continue
+                references = pending_references or "SIF file"
+                pending_references = None
                 if len(interaction) < 3:
-                    continue  # Skip malformed lines
+                    continue  # Skip malformed lines without leaking references.
 
                 effect = determine_effect(interaction[1])
 
@@ -715,7 +727,7 @@ class Network:
                         [interaction[2]]) else interaction[2],
                     "Type": interaction[3] if len(interaction) > 3 else None,
                     "Effect": effect,
-                    "References": "SIF file"
+                    "References": references
                 })
                 node_set.update([interaction[0], interaction[2]])
 

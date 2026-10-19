@@ -331,17 +331,19 @@ class Network:
             complex_string, genesymbol, uniprot = mapping_node_identifier(node)
             if not complex_string and not genesymbol and not uniprot:
                 print("Error: node %s could not be automatically translated" % node)
-                new_entry = {"Genesymbol": node, "Uniprot": node, "Type": "NaN"}
-                self.nodes.loc[len(self.nodes)] = new_entry
-                self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
-                self._add_node_obj(node, node, "NaN")
-                return True
-            new_entry = {"Genesymbol": genesymbol, "Uniprot": uniprot, "Type": "NaN"}
+            # Complexes have a display name but no gene symbol. Keep the
+            # original SIF identifier for labels without a mapped accession.
+            new_entry = {
+                "Genesymbol": complex_string or genesymbol or node,
+                "Uniprot": uniprot or node,
+                "Type": "NaN",
+            }
             self.nodes.loc[len(self.nodes)] = new_entry
             self.nodes = self.nodes.drop_duplicates().reset_index(drop=True)
-            self._add_node_obj(genesymbol, uniprot, "NaN")
-            self.initial_nodes.append(new_entry["Genesymbol"])
-            self.initial_nodes = list(set(self.initial_nodes))
+            self._add_node_obj(new_entry["Genesymbol"], new_entry["Uniprot"], "NaN")
+            self.initial_nodes = list(dict.fromkeys(
+                [*(self.initial_nodes or []), new_entry["Genesymbol"]]
+            ))
             return True
         complex_string, genesymbol, uniprot = mapping_node_identifier(node)
 

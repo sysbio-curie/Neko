@@ -1,10 +1,14 @@
 import os
 import re
 import itertools
+import json
+import hashlib
+from pathlib import Path
 
 import pandas as pd
 
 from neko.core.tools import consolidate_edges
+from neko.core.history import history_payload, records, write_json
 
 
 def _sanitize_bnet_identifier(value: str) -> str:
@@ -23,10 +27,33 @@ class Exports:
     """
     def __init__(self, network):
         net = network.copy()
+        self._network = net
         df_edges = net.convert_edgelist_into_genesymbol()
         self.nodes = net.nodes
         self.interactions = consolidate_edges(df_edges)
         return
+
+    def _write_companion(self, file_name, format_name, interactions, mapping):
+        """Bind a lossy graph export to its exact state and retained history."""
+        network = getattr(self, '_network', None)
+        history = history_payload(network) if hasattr(network, '_states') else None
+        identifiers = []
+        for row in records(self.nodes):
+            identifier = row.get('Uniprot') or row['Genesymbol']
+            label = row['Genesymbol']
+            identifiers.append({'identifier': identifier, 'label': label,
+                                'exported_identifier': mapping.get(label, label)})
+        return write_json(str(file_name) + '.neko.json', {
+            'format': 'neko-export', 'schema_version': 1,
+            'export': {'format': format_name, 'file': Path(file_name).name,
+                       'sha256': hashlib.sha256(Path(file_name).read_bytes()).hexdigest(),
+                       'state_id': history['current_state_id'] if history else None,
+                       'identifiers': identifiers,
+                       'interactions': records(interactions),
+                       'omitted_effects': ['undefined'] if format_name == 'bnet' else []},
+            'history': history,
+            'history_limitation': None if history else 'No NetworkState history was supplied.',
+        })
 
     def export_bnet(self, file_name="logic_model.bnet", n=None):
         """
@@ -208,6 +235,7 @@ class Exports:
                     f.write(f"{sanitized_node}, {formula}\n")
 
             print(f"Created BNet file: {perm_file_name}")
+            self._write_companion(perm_file_name, 'bnet', interactions_copy, sanitized_nodes)
             generated += 1
 
         print(f"Generated {generated} BNet files.")
@@ -235,8 +263,11 @@ class Exports:
 
                 # Write a comment line with the interaction reference
                 file.write(f"# Reference PMID: {interaction_reference}\n")
+                if isinstance(row.get('Provenance'), dict):
+                    file.write('# NeKo provenance: ' + json.dumps(row['Provenance'], allow_nan=False) + '\n')
 
                 # Write the formatted interaction to the .sif file
                 file.write(f"{row['source']}\t{interaction_type}\t{row['target']}\n")
 
+        self._write_companion(file_name, 'sif', self.interactions, {})
         return

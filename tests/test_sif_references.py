@@ -11,9 +11,11 @@ import os
 import socket
 import tempfile
 import unittest
+import json
 from unittest import mock
 
 import pandas as pd
+from neko.core import history
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,16 +36,16 @@ def functions_from_source(path, names, namespace, class_name=None):
 
 FUNCTIONS = functions_from_source(ROOT / 'neko/core/tools.py',
     ['_is_missing', '_join_unique_values', '_normalize_effect', 'consolidate_edges'],
-    {'pd': pd})
+    {'pd': pd, '__package__': 'neko.core'})
 CONSOLIDATE = FUNCTIONS['consolidate_edges']
 PARSER = functions_from_source(ROOT / 'neko/core/network.py',
     ['_load_network_from_sif'],
-    {'pd': pd, 'consolidate_edges': CONSOLIDATE,
+    {'pd': pd, 'consolidate_edges': CONSOLIDATE, '_history': history,
      'mapping_node_identifier': lambda node: [None, node, node],
      'check_gene_list_format': lambda nodes: True},
     class_name='Network')['_load_network_from_sif']
 EXPORT_SIF = functions_from_source(ROOT / 'neko/_outputs/exports.py',
-    ['export_sif'], {'os': os}, class_name='Exports')['export_sif']
+    ['export_sif'], {'os': os, 'json': json}, class_name='Exports')['export_sif']
 
 
 class ParserHarness:
@@ -96,8 +98,12 @@ class SIFReferenceTests(unittest.TestCase):
         )
         original = read_sif(tmp_path, content)
         exported = tmp_path / 'exported.sif'
-        EXPORT_SIF(SimpleNamespace(interactions=CONSOLIDATE(original.edges)), str(exported))
-        assert exported.read_text() == content
+        EXPORT_SIF(SimpleNamespace(interactions=CONSOLIDATE(original.edges),
+                                  _write_companion=lambda *args: None), str(exported))
+        # New NeKo comments carry provenance without altering reference lines.
+        reference_and_edges = ''.join(line for line in exported.read_text().splitlines(True)
+                                     if not line.startswith('# NeKo provenance:'))
+        assert reference_and_edges == content
         imported = read_sif(tmp_path, exported.read_text(), 'roundtrip.sif')
         pd.testing.assert_frame_equal(original.edges, imported.edges)
         assert len(imported.nodes) == 3

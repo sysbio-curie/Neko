@@ -5,6 +5,9 @@ History is implemented directly by `Network`; there is no separate
 snapshots as `NetworkState` objects. Undo, redo, checkout, and subsequent
 mutations form a branching tree.
 
+For structured topology explanations, provenance, pruning gaps, and JSON
+export/recovery, see [Interaction curation](../interaction-curation.md).
+
 ```python
 net.connect_nodes()
 states = net.list_states()
@@ -35,6 +38,10 @@ html = net.history_html()
         - history_graph
         - history_digraph
         - history_html
+        - export_history
+        - from_history
+        - history_dict
+        - get_state
       show_source: true
       show_root_heading: true
       heading_level: 3

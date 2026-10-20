@@ -89,7 +89,7 @@ def test_sif_to_bnet_preserves_complex_logic_and_network(tmp_path):
         ('COMPLEX:P12931_P04637', 'custom-label', 'regulation', 'stimulation', 'SIF file'),
         ('P04637', 'custom-label', 'regulation', 'inhibition', 'SIF file'),
     }
-    assert set(net.edges.itertuples(index=False, name=None)) == expected_edges
+    assert set(net.edges[['source', 'target', 'Type', 'Effect', 'References']].itertuples(index=False, name=None)) == expected_edges
     assert {
         (edge.source, edge.target, edge.interaction_type,
          edge.metadata['Effect'], edge.evidence)

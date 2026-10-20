@@ -18,8 +18,9 @@ class Edge:
 
     def __eq__(self, other):
         return (isinstance(other, Edge) and self.source == other.source and self.target == other.target
-                and self.interaction_type == other.interaction_type)
+                and self.interaction_type == other.interaction_type
+                and self.metadata.get('Effect') == other.metadata.get('Effect'))
 
     def __hash__(self):
-        return hash((self.source, self.target, self.interaction_type))
+        return hash((self.source, self.target, self.interaction_type, self.metadata.get('Effect')))
 

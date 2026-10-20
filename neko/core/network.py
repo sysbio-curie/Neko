@@ -23,6 +23,8 @@ from .algorithms.graph_traversal import bfs_algorithm as _bfs_algorithm
 from .algorithms.graph_traversal import dfs_algorithm as _dfs_algorithm
 import pandas as pd
 from pandas.util import hash_pandas_object
+from . import history as _history
+from .curation import InteractionEdit, InteractionEditError, InteractionEditResult
 
 _METADATA_PREVIEW = 120
 
@@ -35,6 +37,8 @@ def _truncate_repr(value, limit=_METADATA_PREVIEW):
 
 
 def _frame_fingerprint(df: pd.DataFrame) -> tuple:
+    if "Provenance" in df:
+        return _history.frame_fingerprint(df)
     if df.empty:
         return (tuple(df.columns), 0, 0)
     hashed = hash_pandas_object(df, index=True)
@@ -44,8 +48,13 @@ def _frame_fingerprint(df: pd.DataFrame) -> tuple:
 def _record_state_operation(method):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
+        if method.__name__.startswith(("connect_", "complete_connection")) and not self._resources_available:
+            raise ValueError("Supply resources when loading history before constructing connections.")
         if not getattr(self, "_history_enabled", True):
-            return method(self, *args, **kwargs)
+            result = method(self, *args, **kwargs)
+            self.sync_nodes_from_df()
+            self.sync_edges_from_df()
+            return result
 
         if getattr(self, "_is_initializing", False):
             return method(self, *args, **kwargs)
@@ -59,12 +68,18 @@ def _record_state_operation(method):
             return method(self, *args, **kwargs)
 
         self._auto_state_depth = depth + 1
+        self._transition_context = {"operations": [], "stack": [], "reasons": []}
+        self._transition_context["untracked_changes"] = not _history.working_state_matches_current(self)
 
         before_nodes = _frame_fingerprint(self.nodes)
         before_edges = _frame_fingerprint(self.edges)
+        before_initial_nodes = copy.deepcopy(self.initial_nodes)
 
         try:
             result = method(self, *args, **kwargs)
+        except Exception:
+            self._transition_context = None
+            raise
         finally:
             self._auto_state_depth = depth
 
@@ -74,9 +89,14 @@ def _record_state_operation(method):
         nodes_changed = before_nodes != _frame_fingerprint(self.nodes)
         edges_changed = before_edges != _frame_fingerprint(self.edges)
 
-        if nodes_changed or edges_changed:
+        if nodes_changed or edges_changed or before_initial_nodes != self.initial_nodes:
             metadata = self._prepare_history_metadata(method.__name__, args, kwargs)
+            metadata["parameters"] = _history.bound_parameters(method, self, *args, **kwargs)
+            self.sync_nodes_from_df()
+            self.sync_edges_from_df()
             self.save_state(metadata=metadata)
+
+        self._transition_context = None
 
         return result
 
@@ -105,6 +125,8 @@ class Network:
             initial_nodes: list[str] = None,
             sif_file=None,
             resources=None,
+            *,
+            database_name=None,
         ):
 
         self._init_args = locals()
@@ -126,6 +148,9 @@ class Network:
         self._auto_state_depth: int = 0
         self._history_enabled: bool = True
         self._max_history: Optional[int] = None
+        self._pruned_state_ids = []
+        self._transition_context = None
+        self._resources_available = True
         self._is_initializing = True
         self._populate()
         self._is_initializing = False
@@ -169,7 +194,10 @@ class Network:
     def sync_edges_from_df(self):
         self._edge_objs = set()
         for _, row in self.edges.iterrows():
-            self._add_edge_obj(row["source"], row["target"], row.get("Type", "undefined"), row.get("Effect"), row.get("References"))
+            edge = self._add_edge_obj(row["source"], row["target"], _history.json_value(row.get("Type", "undefined")),
+                                      _history.json_value(row.get("Effect")), _history.json_value(row.get("References")),
+                                      metadata={"Provenance": _history.provenance(row)})
+            edge.database = edge.metadata["Provenance"]["original"].get("database_name")
 
     def sync_nodes_to_df(self):
         self.nodes = pd.DataFrame([
@@ -179,17 +207,23 @@ class Network:
 
     def sync_edges_to_df(self):
         self.edges = pd.DataFrame([
-            {"source": e.source, "target": e.target, "Type": e.interaction_type, "Effect": e.metadata.get("Effect"), "References": e.evidence}
+            {"source": e.source, "target": e.target, "Type": e.interaction_type, "Effect": e.metadata.get("Effect"), "References": e.evidence,
+             "Provenance": copy.deepcopy(e.metadata.get("Provenance"))}
             for e in self._edge_objs
         ])
 
     def _populate(self):
 
-        self.resources = (
-            _universe.
-            network_universe(self._init_args['resources']).
-            interactions
-        )
+        universe = _universe.network_universe(self._init_args['resources'])
+        supplied_name = self._init_args['database_name']
+        loader_name = universe.database_name
+        if supplied_name is not None and (not isinstance(supplied_name, str) or not supplied_name.strip()):
+            raise ValueError("database_name must be a nonempty string or None.")
+        supplied_name = supplied_name.strip() if supplied_name else None
+        if supplied_name and loader_name and supplied_name.casefold() != loader_name.casefold():
+            raise ValueError("database_name conflicts with the resource loader identity.")
+        self._database_name = loader_name or supplied_name
+        self.resources = universe.interactions
         self._resource_nodes = set(self.resources["source"].dropna())
         self._resource_nodes.update(self.resources["target"].dropna())
 
@@ -240,11 +274,82 @@ class Network:
             'bfs': self.bfs_algorithm,
         }
         if self._state_counter == 0:
-            self.save_state(metadata={"label": "initial"})
+            self.save_state(metadata={"label": "initial", "method": "__init__", "parameters": {
+                "initial_nodes": copy.deepcopy(self._init_args['initial_nodes']),
+                "sif_file": str(self._init_args['sif_file']) if self._init_args['sif_file'] else None,
+                "database_name": self.database_name,
+            }})
+
+    @property
+    def database_name(self):
+        """Database selected at construction; not the origin of every edge."""
+        return self._database_name
+
+    def edit_interactions(self, edits: list[InteractionEdit], expected_state_id: Optional[int] = None) -> InteractionEditResult:
+        """Atomically curate existing endpoints with explicit manual evidence.
+
+        See :mod:`neko.core.curation` and the interaction-curation guide for
+        request/result schemas and stable InteractionEditError codes.
+        """
+        from .curation import edit_interactions
+        return edit_interactions(self, edits, expected_state_id)
+
+    def export_history(self, path):
+        """Write all retained states, working state, provenance and ancestry."""
+        return _history.write_json(path, self.history_dict())
+
+    def history_dict(self) -> dict:
+        """Return the independent JSON-compatible payload used by export_history."""
+        return _history.history_payload(self)
+
+    def get_state(self, state_id: Optional[int] = None) -> dict:
+        """Read one exact saved state without checkout or mutable internal references."""
+        state_id = self.current_state_id if state_id is None else state_id
+        if type(state_id) is not int:
+            raise ValueError("state_id must be an integer.")
+        state = self._get_state(state_id)
+        return {
+            "id": state_id, "current": state_id == self.current_state_id,
+            "parent_ids": list(state.parent_ids), "children_ids": list(state.children_ids),
+            "nodes": _history.frame_payload(state.nodes), "edges": _history.frame_payload(state.edges),
+            "metadata": _history.json_value(state.metadata),
+        }
+
+    @classmethod
+    def from_history(cls, path, resources=None):
+        """Restore stored history offline; resources are needed for growth."""
+        return _history.load_history(cls, path, resources)
 
     def copy(self):
         new_instance = copy.deepcopy(self)
+        new_instance.nodes = _history.copy_frame(self.nodes)
+        new_instance.edges = _history.copy_frame(self.edges)
+        for sid, state in getattr(self, "_states", {}).items():
+            new_instance._states[sid].nodes = _history.copy_frame(state.nodes)
+            new_instance._states[sid].edges = _history.copy_frame(state.edges)
         return new_instance
+
+    def __setstate__(self, state):
+        """Keep existing serialized Network objects usable without invented history."""
+        self.__dict__.update(state)
+        if "_states" not in state:
+            return
+        self.__dict__.setdefault("_database_name", None)
+        self.__dict__.setdefault("_resources_available", True)
+        self.__dict__.setdefault("_pruned_state_ids", [])
+        self.__dict__.setdefault("_transition_context", None)
+        for snapshot in self._states.values():
+            if "transition" not in snapshot.metadata:
+                snapshot.metadata["transition"] = {
+                    "parent_state_id": None,
+                    "operations": [], "inclusion_reasons": [],
+                    "explanation_status": "unavailable",
+                    "limitations": [
+                        "This historical snapshot predates structured explanations. "
+                        "Original inclusion reasons, initial seeds and retention gaps are unknown."
+                    ],
+                }
+        self._state_metadata = {sid: snapshot.metadata for sid, snapshot in self._states.items()}
 
     def check_nodes(self, nodes: list[str]) -> list[str]:
         """
@@ -449,11 +554,25 @@ class Network:
         # Convert the "Uniprot" column to a set for efficient membership test
         uniprot_nodes = set(self.nodes["Uniprot"].unique())
 
-        # add the new nodes to the nodes dataframe
-        if edge["source"].values[0] not in uniprot_nodes:
-            self.add_node(edge["source"].values[0])
-        if edge["target"].values[0] not in uniprot_nodes:
-            self.add_node(edge["target"].values[0])
+        # Stage endpoint additions so a rejected node cannot leave a dangling
+        # edge or a partially expanded network through this legacy interface.
+        old_nodes = _history.copy_frame(self.nodes)
+        old_initial = copy.deepcopy(self.initial_nodes)
+        try:
+            for endpoint in dict.fromkeys([*edge["source"], *edge["target"]]):
+                if endpoint not in uniprot_nodes:
+                    if not self.add_node(endpoint) or endpoint not in set(self.nodes["Uniprot"].dropna()):
+                        raise ValueError(f"Cannot add edge: endpoint {endpoint!r} was rejected.")
+                    uniprot_nodes.add(endpoint)
+        except Exception:
+            self.nodes = old_nodes
+            self.initial_nodes = old_initial
+            self.sync_nodes_from_df()
+            raise
+
+        # Supplied low-level rows have unknown origin unless an explicit
+        # resource construction operation selected them.
+        df_edge["Provenance"] = [_history.provenance(row) for row in _history.records(df_edge)]
 
         self.edges = pd.concat([self.edges, df_edge], ignore_index=True)
         self.edges = consolidate_edges(self.edges)
@@ -487,6 +606,20 @@ class Network:
                 "Effect": check_sign(first),
                 "References": first.get("references"),
             })
+            additions[-1]["Provenance"] = _history.provenance(
+                additions[-1], "resource", self.database_name,
+            )
+            # Retain parallel evidence without changing the established
+            # first-row policy for the working effect and References column.
+            originals = []
+            for _, evidence in group.iterrows():
+                original = _history.provenance({"Effect": check_sign(evidence),
+                                                "References": evidence.get("references")},
+                                               "resource", self.database_name)["original"]
+                if original not in originals:
+                    originals.append(original)
+            if len(originals) > 1:
+                additions[-1]["Provenance"]["originals"] = originals
 
         if not additions:
             return
@@ -495,9 +628,10 @@ class Network:
         for addition in additions:
             for endpoint in (addition["source"], addition["target"]):
                 if endpoint not in existing_nodes and self.add_node(endpoint):
-                    existing_nodes.add(endpoint)
+                    existing_nodes.update(self.nodes["Uniprot"].dropna())
 
-        new_edges = pd.DataFrame(additions, columns=self.edges.columns)
+        additions = [row for row in additions if row["source"] in existing_nodes and row["target"] in existing_nodes]
+        new_edges = pd.DataFrame(additions)
         self.edges = pd.concat([self.edges, new_edges], ignore_index=True)
         self.edges = consolidate_edges(self.edges)
         self.sync_edges_from_df()
@@ -701,9 +835,16 @@ class Network:
             return effect_types.get(interaction_type, "undefined")
 
         reference_prefix = "# Reference PMID:"
+        provenance_prefix = "# NeKo provenance:"
         pending_references = None
+        pending_provenance = None
         with open(sif_file, "r") as f:
             for line in f:
+                if line.startswith(provenance_prefix):
+                    import json
+                    pending_provenance = json.loads(line[len(provenance_prefix):])
+                    _history.validate_provenance(pending_provenance)
+                    continue
                 if line.startswith(reference_prefix):
                     # NeKo exports one reference comment before each edge.
                     # Keep it local to that edge, including when a malformed
@@ -717,6 +858,8 @@ class Network:
                     continue
                 references = pending_references or "SIF file"
                 pending_references = None
+                imported_provenance = pending_provenance
+                pending_provenance = None
                 if len(interaction) < 3:
                     continue  # Skip malformed lines without leaking references.
 
@@ -731,6 +874,7 @@ class Network:
                     "Effect": effect,
                     "References": references
                 })
+                interactions[-1]["Provenance"] = imported_provenance or _history.provenance(interactions[-1], "import")
                 node_set.update([interaction[0], interaction[2]])
 
         # Create or update the edges DataFrame
@@ -747,7 +891,7 @@ class Network:
 
         return
 
-    def _add_paths_to_edge_list(self, paths) -> None:
+    def _add_paths_to_edge_list(self, paths, reason=None) -> None:
         """
         This method adds paths to the edge list of the network. A path is a sequence of nodes where each node is
         connected to the next node in the sequence. The function checks if there is an interaction between each pair
@@ -773,11 +917,15 @@ class Network:
             for source, target in zip(path, path[1:]):
                 edge_key = (source, target)
                 if edge_key in existing_edges:
+                    _history.inclusion(self, source, target,
+                                       reason or {"kind": "selected_path", "path": list(path)})
                     continue
 
                 interaction = self._connect.find_interactions(source, target)
                 if not interaction.empty:
                     interactions.append(interaction)
+                    _history.inclusion(self, source, target,
+                                       reason or {"kind": "selected_path", "path": list(path)})
                     existing_edges.add(edge_key)
 
         if interactions:
@@ -786,7 +934,7 @@ class Network:
             )
 
         # Remove duplicate edges from the edge list
-        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        self.edges = _history.unique_edges(self.edges)
 
         return
 
@@ -813,12 +961,13 @@ class Network:
                 print("Empty interaction for node ", cascade[0], " and ", cascade[1])
             else:
                 interactions.append(interaction_in)
+                _history.inclusion(self, cascade[0], cascade[1], {"kind": "upstream_cascade", "edge": list(cascade)})
 
         if interactions:
             self._add_resource_interactions(
                 pd.concat(interactions, ignore_index=True),
             )
-        self.edges = self.edges.drop_duplicates().reset_index(drop=True)
+        self.edges = _history.unique_edges(self.edges)
 
         return
 
@@ -1038,7 +1187,47 @@ class Network:
         return gs_edges
 
     def _build_state(self, metadata: Optional[dict], parent_id: Optional[int]) -> NetworkState:
-        metadata = metadata or {}
+        metadata = copy.deepcopy(metadata or {})
+        metadata["database_name"] = self.database_name
+        metadata["initial_nodes"] = copy.deepcopy(self.initial_nodes)
+        parent = self._states.get(parent_id)
+        context = self._transition_context or {"operations": [], "reasons": []}
+        before_nodes = parent.nodes if parent else self.nodes.iloc[:0]
+        before_edges = parent.edges if parent else self.edges.iloc[:0]
+        transition = {
+            "parent_state_id": parent_id,
+            "nodes": _history.delta(before_nodes, self.nodes, ["Uniprot", "Genesymbol"]),
+            "edges": _history.delta(before_edges, self.edges, ["source", "target"]),
+            "operations": copy.deepcopy(context["operations"]),
+            "inclusion_reasons": copy.deepcopy(context["reasons"]),
+            "explanation_status": "recorded" if context["operations"] or metadata.get("method") else "unavailable",
+            "limitations": [],
+        }
+        if metadata.get("method") and not transition["operations"]:
+            transition["operations"].append({"method": metadata["method"],
+                                              "parameters": metadata.get("parameters", {})})
+        if metadata.get("manual_changes"):
+            for change in metadata["manual_changes"]:
+                transition["inclusion_reasons"].append({
+                    "source": change["source"], "target": change["target"],
+                    "kind": "manual_edit", "edit": copy.deepcopy(change["after"]["Provenance"]["edits"][-1]),
+                    "operation_indices": [0],
+                })
+        if transition["explanation_status"] == "unavailable":
+            transition["limitations"].append("No construction trace is available; the exact snapshot difference is retained.")
+        if context.get("untracked_changes") or metadata.get("untracked_changes"):
+            transition["explanation_status"] = "partial"
+            transition["limitations"].append("The working network already differed from its current snapshot before this operation.")
+        explained = {(r["source"], r["target"]) for r in transition["inclusion_reasons"]}
+        explained.update((r["source"], r["target"]) for r in metadata.get("manual_changes", []))
+        for edge in transition["edges"]["added"]:
+            if (edge["source"], edge["target"]) not in explained:
+                transition["inclusion_reasons"].append({
+                    "source": edge["source"], "target": edge["target"], "kind": "unavailable",
+                    "explanation": "The inclusion reason was not recorded (import, legacy, or untracked edit).",
+                })
+                transition["explanation_status"] = "partial"
+        metadata["transition"] = transition
         state = NetworkState(
             nodes=self.nodes,
             edges=self.edges,
@@ -1119,12 +1308,18 @@ class Network:
                         parent_state = self._states.get(parent_id)
                         if parent_state and child_id not in parent_state.children_ids:
                             parent_state.children_ids.append(child_id)
+            for child_id in state.children_ids:
+                child = self._states.get(child_id)
+                if child:
+                    child.metadata.setdefault("ancestry_gaps", []).extend(
+                        [candidate, *state.metadata.get("ancestry_gaps", [])])
             state.children_ids = []
             for parent_id in state.parent_ids:
                 parent = self._states.get(parent_id)
                 if parent:
                     parent.children_ids = [c for c in parent.children_ids if c != candidate]
             self._states.pop(candidate, None)
+            self._pruned_state_ids.append(candidate)
             self._state_metadata.pop(candidate, None)
             self._state_log = [sid for sid in self._state_log if sid != candidate]
             idx = 0
@@ -1149,9 +1344,13 @@ class Network:
         """Restore the network to a previously saved state."""
 
         state = self._get_state(state_id)
-        self.nodes = state.nodes.copy(deep=True)
-        self.edges = state.edges.copy(deep=True)
+        self.nodes = _history.copy_frame(state.nodes)
+        self.edges = _history.copy_frame(state.edges)
+        self.initial_nodes = copy.deepcopy(state.metadata.get("initial_nodes", self.initial_nodes))
+        self._database_name = state.metadata.get("database_name", self.database_name)
         self._current_state_id = state_id
+        self.sync_nodes_from_df()
+        self.sync_edges_from_df()
 
     def restore_state(self, state_id: Optional[int] = None) -> None:
         """Backward compatible wrapper around :meth:`checkout`."""
@@ -1204,6 +1403,8 @@ class Network:
             "removed_nodes": list(nodes1 - nodes2),
             "added_edges": list(edges2 - edges1),
             "removed_edges": list(edges1 - edges2),
+            "node_changes": _history.delta(state1.nodes, state2.nodes, ["Uniprot", "Genesymbol"]),
+            "edge_changes": _history.delta(state1.edges, state2.edges, ["source", "target"]),
         }
         return diff
 
@@ -1274,18 +1475,24 @@ class Network:
         edges = state.edges
         if edges.empty:
             return set()
-        converted = edges.copy()
+        converted = edges[["source", "target", "Type", "Effect", "References"]].copy()
+        labels = {row["Uniprot"]: row["Genesymbol"] for _, row in state.nodes.iterrows()
+                  if pd.notna(row["Uniprot"]) and pd.notna(row["Genesymbol"])}
         if "source" in converted.columns:
-            converted["source"] = converted["source"].apply(self._node_display_label)
+            converted["source"] = converted["source"].map(lambda value: labels.get(value, value))
         if "target" in converted.columns:
-            converted["target"] = converted["target"].apply(self._node_display_label)
-        return set(tuple(row) for row in converted.to_records(index=False))
+            converted["target"] = converted["target"].map(lambda value: labels.get(value, value))
+        return {tuple(row.values()) for row in _history.records(converted)}
 
     def list_states(self) -> list:
         """Return a creation-ordered list of state metadata."""
 
         return [
-            {"id": state_id, "metadata": self._state_metadata.get(state_id, {})}
+            {"id": state_id, "metadata": copy.deepcopy(self._state_metadata.get(state_id, {})),
+             "parent_ids": list(self._states[state_id].parent_ids),
+             "children_ids": list(self._states[state_id].children_ids),
+             "current": state_id == self.current_state_id,
+             "pruned_state_ids": list(self._pruned_state_ids)}
             for state_id in self._state_log
         ]
 

@@ -122,6 +122,7 @@ nav:
       - "11 · Network History": tutorials/11_network_history.ipynb
   - Connection strategies:
       - Choosing a strategy: strategies/index.md
+  - Interaction curation: interaction-curation.md
   - API Reference:
       - Overview: api/index.md
       - Network: api/network.md

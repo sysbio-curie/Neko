@@ -37,6 +37,10 @@ Features
 - Network visualization and export helpers
 - Interaction database integration
 - Branching network history with automatic snapshots, HTML/SVG rendering, and state pruning controls
+- Validated manual interaction curation with evidence, structured topology explanations, and JSON history recovery
+
+See the `interaction-curation API and MCP integration contract <docs_mkdocs/interaction-curation.md>`_
+for editing requests, provenance fields, errors, and export companions.
 
 Connection strategies and topology
 ----------------------------------

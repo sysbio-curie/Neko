@@ -41,6 +41,12 @@ including compressed GO phenotypes, are resolved using the network's node table
 rather than being treated as protein identifiers. Null endpoints and endpoints
 missing from that node table are rejected with a descriptive error.
 
+Each output also receives a `<filename>.neko.json` companion preserving source
+state identity, canonical-to-exported identifier mappings, provenance, and retained
+history. SIF additionally embeds provenance comments. Keep the JSON companion for
+formats such as BNET that cannot carry this metadata. See
+[Interaction curation and persistence](../interaction-curation.md).
+
 ---
 
 ## Class reference

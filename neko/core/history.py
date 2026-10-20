@@ -444,16 +444,42 @@ def write_json(path, payload, *, pretty=False, _normalized=False):
     return str(path)
 
 
+def _referenced_history(companion, reference):
+    """Read the shared history next to a schema 2 export companion."""
+    name = reference.get("file") if isinstance(reference, dict) else None
+    digest = reference.get("sha256") if isinstance(reference, dict) else None
+    if (
+        not isinstance(name, str)
+        or not isinstance(digest, str)
+        or name in {"", ".", ".."}
+        or Path(name).name != name
+        or "\\" in name
+    ):
+        raise ValueError("Malformed shared history reference.")
+    target = Path(companion).parent / name
+    try:
+        raw = target.read_bytes()
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"Shared history {name!r} referenced by {Path(companion).name!r} "
+            "is missing; keep it next to the exported files."
+        ) from None
+    if hashlib.sha256(raw).hexdigest() != digest:
+        raise ValueError(
+            f"Shared history {name!r} does not match its recorded SHA-256."
+        )
+    return json.loads(raw.decode("utf-8"))
+
+
 def load_history(cls, path, resources=None):
     from .network_state import NetworkState
 
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    if (
-        isinstance(payload, dict)
-        and payload.get("format") == "neko-export"
-        and payload.get("schema_version") == 1
-    ):
-        payload = payload["history"]
+    if isinstance(payload, dict) and payload.get("format") == "neko-export":
+        if payload.get("schema_version") == 1:
+            payload = payload["history"]
+        elif payload.get("schema_version") == 2:
+            payload = _referenced_history(path, payload.get("history_file"))
     if (
         not isinstance(payload, dict)
         or payload.get("format") != "neko-history"

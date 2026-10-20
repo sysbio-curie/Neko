@@ -47,6 +47,10 @@ Planned release: **1.10.2**.
 - `describe_history()` and `history_digraph()` hide internal explanation
   metadata and show user-supplied metadata again.
 - History and export companion JSON files follow the umask instead of 0600.
+- Multi-variant BNet exports write the history once to
+  `<stem>.bnet.history.json`; their companions reference it (`neko-export`
+  schema version 2) instead of each embedding a full copy. Single-model exports
+  keep the self-contained schema version 1 companion.
 
 ---
 

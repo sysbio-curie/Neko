@@ -229,9 +229,12 @@ explicit manual curation; connection construction requires supplied resources.
 This restores stored topology and evidence. It does not prove that construction
 will replay identically against a different database with the same name.
 
-Every SIF or BNET output has a `<filename>.neko.json` companion (`neko-export`,
-schema version 1) with the source history, state ID, identifier mappings, output
-SHA-256, and export interaction records. BNET records identify the chosen bimodal
+Every SIF or BNET output has a `<filename>.neko.json` companion (`neko-export`)
+with the source history, state ID, identifier mappings, output SHA-256, and
+export interaction records. Schema version 1 embeds the history. When a BNET
+export produces several bimodal variants, their companions use schema version 2:
+the history is written once to `<stem>.bnet.history.json` and each companion
+records that file's name and SHA-256. BNET records identify the chosen bimodal
 variant; undefined effects are reported as omitted. The hash identifies the graph
 artifact, not a database dataset. Load the companion using `Network.from_history`
 to recover the original NeKo network, not the Boolean projection.

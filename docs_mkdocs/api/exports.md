@@ -52,6 +52,13 @@ constructed, without copying resource tables or connection indexes. Later edits,
 checkout or pruning of `net` do not change that export capture. All Boolean
 variants reuse the captured history.
 
+When `export_bnet` writes a single model, its companion embeds the history
+(schema version 1). When bimodal interactions produce several variants, the
+history is written once to `<stem>.bnet.history.json` and each variant's
+companion references it by file name and SHA-256 (schema version 2), so the
+output no longer grows by one full history per variant. Keep the shared file next
+to the companions; `Network.from_history` verifies its digest before loading.
+
 Companions and `net.export_history(path)` use compact JSON by default, retaining
 the same schema and every snapshot/evidence field. Use `Exports(net, pretty=True)`
 or `net.export_history(path, pretty=True)` for indented JSON. Compact serialization

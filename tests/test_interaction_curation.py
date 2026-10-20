@@ -768,3 +768,72 @@ def test_seeded_state_fingerprints_match_recomputed_ones(network):
             frame_fingerprint(state.nodes), frame_fingerprint(state.edges)
         )
     assert history_payload(network)["working_state_matches_current"]
+
+
+def test_single_bnet_variant_keeps_self_contained_companion(network, tmp_path):
+    # MCP export reads <stem>_1.bnet.neko.json and its inline history.
+    network.connect_nodes()
+    Exports(network).export_bnet(tmp_path / "model.bnet")
+    companion = json.loads((tmp_path / "model_1.bnet.neko.json").read_text())
+    assert companion["schema_version"] == 1
+    assert companion["history"] == history_payload(network)
+    assert "history_file" not in companion
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        "model_1.bnet", "model_1.bnet.neko.json",
+    ]
+
+
+def test_bnet_variants_share_one_history_file(network, tmp_path):
+    network.connect_nodes()
+    network.edit_interactions([edit(effect="bimodal")])
+    exporter = Exports(network)
+    exporter.export_bnet(tmp_path / "model.bnet")
+    shared = tmp_path / "model.bnet.history.json"
+    assert json.loads(shared.read_text()) == history_payload(network)
+    for variant in ("model_1.bnet", "model_2.bnet"):
+        companion = json.loads((tmp_path / f"{variant}.neko.json").read_text())
+        assert companion["schema_version"] == 2
+        assert "history" not in companion
+        assert companion["history_file"]["file"] == shared.name
+        assert companion["export"]["file"] == variant
+        assert companion["export"]["state_id"] == network.current_state_id
+        assert history_payload(
+            Network.from_history(tmp_path / f"{variant}.neko.json")
+        ) == history_payload(network)
+    assert history_payload(Network.from_history(shared)) == history_payload(
+        network
+    )
+    effects = {
+        json.dumps(
+            json.loads((tmp_path / f"model_{i}.bnet.neko.json").read_text())[
+                "export"]["interactions"]
+        )
+        for i in (1, 2)
+    }
+    assert len(effects) == 2
+
+    single = tmp_path / "single"
+    exporter.export_bnet(single / "model.bnet", n=1)
+    companion = json.loads((single / "model_1.bnet.neko.json").read_text())
+    assert companion["schema_version"] == 1
+    assert not (single / "model.bnet.history.json").exists()
+
+
+def test_shared_history_reference_is_verified(network, tmp_path):
+    network.edit_interactions([edit(effect="bimodal")])
+    Exports(network).export_bnet(tmp_path / "model.bnet")
+    companion = tmp_path / "model_1.bnet.neko.json"
+    shared = tmp_path / "model.bnet.history.json"
+
+    shared.write_text(shared.read_text().replace("SIGNOR", "SIGNOX"))
+    with pytest.raises(ValueError, match="SHA-256"):
+        Network.from_history(companion)
+    shared.unlink()
+    with pytest.raises(FileNotFoundError, match="model.bnet.history.json"):
+        Network.from_history(companion)
+    payload = json.loads(companion.read_text())
+    for name in ("../model.bnet.history.json", "/tmp/x.json", "..", ""):
+        payload["history_file"]["file"] = name
+        companion.write_text(json.dumps(payload))
+        with pytest.raises(ValueError, match="Malformed shared history"):
+            Network.from_history(companion)

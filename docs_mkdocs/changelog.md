@@ -21,6 +21,16 @@ Planned release: **1.10.2**.
   recovery, and provenance companions for SIF and Boolean exports.
 - Selected database identity on networks and regression coverage for mutation
   validation, provenance preservation and history consistency.
+- Lightweight history status, retained-state count and paginated summary access.
+
+### Changed
+
+- Avoid repeated full-table serialization during path deduplication and repeated
+  inclusion-reason scans during automatic network growth.
+- Reuse mutation fingerprints and normalize unique edge groups without parallel
+  evidence merging overhead.
+- Capture export history once without copying database resources; write compact
+  JSON companions by default with optional pretty printing.
 
 ---
 

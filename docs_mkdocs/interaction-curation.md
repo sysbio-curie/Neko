@@ -162,6 +162,10 @@ checkout. It returns `id`, `current`, `parent_ids`, `children_ids`, `metadata`, 
 `nodes`/`edges` tables, each represented by `columns` and `records` lists.
 `history_dict()` returns the same independent JSON-compatible dictionary written
 by `export_history`; callers need not access private fields or parse display text.
+For lightweight inspection, use `history_status()` for pruning and working-state
+flags, `state_count` for the retained count, and
+`list_states(offset=0, limit=25, detail="summary")` for a page without full evidence.
+See [History API](api/history.md) for the exact summary contract.
 
 State metadata adds `database_name`, `initial_nodes`, and `transition`:
 
@@ -209,6 +213,9 @@ restored.checkout(saved_state_id)
 # Explicitly supply resources to perform further database-driven construction.
 restored = Network.from_history("network.history.json", resources=resource_table)
 ```
+
+JSON is compact by default; `export_history(path, pretty=True)` and
+`Exports(net, pretty=True)` enable indentation without changing the schema.
 
 The versioned `neko-history` JSON format (`schema_version: 1`) stores retained
 snapshots, metadata, parent/child relationships, state counter, current/root IDs,

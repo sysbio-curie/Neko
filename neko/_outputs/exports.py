@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from neko.core.tools import consolidate_edges
-from neko.core.history import history_payload, records, write_json
+from neko.core.history import copy_frame, history_payload, json_value, records, write_json
 
 
 def _sanitize_bnet_identifier(value: str) -> str:
@@ -25,18 +25,19 @@ class Exports:
     In the future many more versatile methods will be implemented (SBML) and annotations will be included for each
     interaction, including the DOI of the relative reference and annotations from each database
     """
-    def __init__(self, network):
-        net = network.copy()
-        self._network = net
-        df_edges = net.convert_edgelist_into_genesymbol()
-        self.nodes = net.nodes
+    def __init__(self, network, *, pretty=False):
+        # Capture detached export data once. Copying Network also copies the
+        # provider tables, connection indexes and every historical DataFrame.
+        self._history = history_payload(network) if hasattr(network, '_states') else None
+        self._pretty = pretty
+        df_edges = copy_frame(network.convert_edgelist_into_genesymbol())
+        self.nodes = copy_frame(network.nodes)
         self.interactions = consolidate_edges(df_edges)
         return
 
     def _write_companion(self, file_name, format_name, interactions, mapping):
         """Bind a lossy graph export to its exact state and retained history."""
-        network = getattr(self, '_network', None)
-        history = history_payload(network) if hasattr(network, '_states') else None
+        history = getattr(self, '_history', None)
         identifiers = []
         for row in records(self.nodes):
             identifier = row.get('Uniprot') or row['Genesymbol']
@@ -45,15 +46,15 @@ class Exports:
                                 'exported_identifier': mapping.get(label, label)})
         return write_json(str(file_name) + '.neko.json', {
             'format': 'neko-export', 'schema_version': 1,
-            'export': {'format': format_name, 'file': Path(file_name).name,
+            'export': json_value({'format': format_name, 'file': Path(file_name).name,
                        'sha256': hashlib.sha256(Path(file_name).read_bytes()).hexdigest(),
                        'state_id': history['current_state_id'] if history else None,
                        'identifiers': identifiers,
                        'interactions': records(interactions),
-                       'omitted_effects': ['undefined'] if format_name == 'bnet' else []},
+                       'omitted_effects': ['undefined'] if format_name == 'bnet' else []}),
             'history': history,
             'history_limitation': None if history else 'No NetworkState history was supplied.',
-        })
+        }, pretty=getattr(self, '_pretty', False), _normalized=True)
 
     def export_bnet(self, file_name="logic_model.bnet", n=None):
         """

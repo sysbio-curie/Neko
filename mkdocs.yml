@@ -138,6 +138,7 @@ nav:
       - Core objects and tools: api/core-objects.md
   - Development:
       - Contributing: contributing.md
+      - History performance: history-performance.md
       - Changelog: changelog.md
   - "→ Sphinx docs": https://sysbio-curie.github.io/Neko/sphinx/
 

@@ -1,0 +1,822 @@
+{
+  "date": "2026-10-20",
+  "baseline_commit": "ba87f7631dd6420b5269852daceb303f773e8963",
+  "candidate_branch": "codex/wave2-curation-history (uncommitted performance changes)",
+  "python": "3.14",
+  "fixtures": {
+    "100": {
+      "before": {
+        "source": "/tmp/neko-wave2-performance-baseline",
+        "nodes": 100,
+        "steps": 20,
+        "repeats": 5,
+        "hash_seed": 0,
+        "strategies": {
+          "connect_nodes": {
+            "history_on": {
+              "median_ms": 214.6636529978423,
+              "samples_ms": [
+                250.06037899947842,
+                213.17117400030838,
+                213.31430000282126,
+                214.6636529978423,
+                215.54980799919576
+              ],
+              "result_nodes": 100,
+              "result_edges": 200,
+              "edges_sha256": "9fe77e997c3706ea327e2fbbf8db5e13f1640d9645073ba5f105ec6309ac2116",
+              "history_sha256": "14621817a7c7537b21473af764072638f845eeb1b9476e16ee4d3fc41e517345"
+            },
+            "history_off": {
+              "median_ms": 204.11546700051986,
+              "samples_ms": [
+                204.11546700051986,
+                204.93804199941223,
+                202.13523999700556,
+                206.4265709996107,
+                202.46232899808092
+              ],
+              "result_nodes": 100,
+              "result_edges": 200,
+              "edges_sha256": "9fe77e997c3706ea327e2fbbf8db5e13f1640d9645073ba5f105ec6309ac2116"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "complete_connection": {
+            "history_on": {
+              "median_ms": 80.17733300221153,
+              "samples_ms": [
+                82.35774099739501,
+                80.22952700048336,
+                80.17733300221153,
+                78.14345799852163,
+                78.89391900243936
+              ],
+              "result_nodes": 20,
+              "result_edges": 20,
+              "edges_sha256": "41bc57cd754c8a4d946c9199c69274ab6c72a98e9296da9ddd823193eff24653",
+              "history_sha256": "6616177d5fe0bba4f1091c3f6143a9fa1af6333d273fb852b5d522bc6dd5ff3a"
+            },
+            "history_off": {
+              "median_ms": 82.13892899948405,
+              "samples_ms": [
+                125.6537320005009,
+                81.84270399942761,
+                83.59801600090577,
+                81.04965099846595,
+                82.13892899948405
+              ],
+              "result_nodes": 20,
+              "result_edges": 20,
+              "edges_sha256": "41bc57cd754c8a4d946c9199c69274ab6c72a98e9296da9ddd823193eff24653"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "radial": {
+            "history_on": {
+              "median_ms": 1293.714423001802,
+              "samples_ms": [
+                1289.2256960003579,
+                1294.7248280033818,
+                1293.714423001802,
+                1338.501587000792,
+                1286.1608940002043
+              ],
+              "result_nodes": 40,
+              "result_edges": 60,
+              "edges_sha256": "a7b34e6fb99555153ce3d79e1ef6da1217364d477c1eaa41dbb10cddec6c68a7",
+              "history_sha256": "df81d08d2910455ff725bb4c07c28ab6592a01dd1fe399629eb7d0fd239bfef6"
+            },
+            "history_off": {
+              "median_ms": 1452.221532999829,
+              "samples_ms": [
+                1460.0746740034083,
+                1436.2534320025588,
+                1445.277774000715,
+                1491.8342320015654,
+                1452.221532999829
+              ],
+              "result_nodes": 40,
+              "result_edges": 60,
+              "edges_sha256": "a7b34e6fb99555153ce3d79e1ef6da1217364d477c1eaa41dbb10cddec6c68a7"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "upstream": {
+            "history_on": {
+              "median_ms": 97.98821699951077,
+              "samples_ms": [
+                97.98821699951077,
+                100.41760099920793,
+                97.19299800053705,
+                97.87457999846083,
+                100.177509997593
+              ],
+              "result_nodes": 70,
+              "result_edges": 100,
+              "edges_sha256": "bb1bdaf1481087b274d70e85645bb8a8370b716422268196e28c653ae816375d",
+              "history_sha256": "386a06fd2366f77338f2c0a2751d9c0687757c844dbafa6bec707a3baa128de1"
+            },
+            "history_off": {
+              "median_ms": 134.373216998938,
+              "samples_ms": [
+                135.27232500200626,
+                134.75933000154328,
+                133.70899800065672,
+                134.373216998938,
+                133.69305699961842
+              ],
+              "result_nodes": 70,
+              "result_edges": 100,
+              "edges_sha256": "bb1bdaf1481087b274d70e85645bb8a8370b716422268196e28c653ae816375d"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          }
+        },
+        "label_mutation": {
+          "median_ms": 18.69417900161352,
+          "samples_ms": [
+            19.342858002346475,
+            18.69417900161352,
+            18.549873002484674,
+            18.278314997587586,
+            18.746598998404806
+          ]
+        },
+        "history_dict": {
+          "median_ms": 38.92763600015314,
+          "samples_ms": [
+            43.30249600025127,
+            37.89394300110871,
+            38.0776429992693,
+            39.75182899739593,
+            38.92763600015314
+          ]
+        },
+        "full_list": {
+          "median_ms": 0.8748600012040697,
+          "samples_ms": [
+            1.152660002844641,
+            0.9827159992710222,
+            0.8748600012040697,
+            0.8614140024292283,
+            0.8487999984936323
+          ]
+        },
+        "sif_export": {
+          "median_ms": 202.63312099996256,
+          "samples_ms": [
+            252.96209299995098,
+            198.95412100231624,
+            198.7588340016373,
+            339.3807009997545,
+            202.63312099996256
+          ]
+        },
+        "companion_bytes": 3522551,
+        "retained_states": 26
+      },
+      "after": {
+        "source": "/tmp/neko-wave2-curation",
+        "nodes": 100,
+        "steps": 20,
+        "repeats": 5,
+        "hash_seed": 0,
+        "strategies": {
+          "connect_nodes": {
+            "history_on": {
+              "median_ms": 156.52327699717716,
+              "samples_ms": [
+                193.0990250002651,
+                152.21309600019595,
+                156.52327699717716,
+                154.79892200164613,
+                163.36130200215848
+              ],
+              "result_nodes": 100,
+              "result_edges": 200,
+              "edges_sha256": "9fe77e997c3706ea327e2fbbf8db5e13f1640d9645073ba5f105ec6309ac2116",
+              "history_sha256": "14621817a7c7537b21473af764072638f845eeb1b9476e16ee4d3fc41e517345"
+            },
+            "history_off": {
+              "median_ms": 142.28080599787063,
+              "samples_ms": [
+                146.21423300195602,
+                190.49172700033523,
+                141.21042099941405,
+                140.19604500208516,
+                142.28080599787063
+              ],
+              "result_nodes": 100,
+              "result_edges": 200,
+              "edges_sha256": "9fe77e997c3706ea327e2fbbf8db5e13f1640d9645073ba5f105ec6309ac2116"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "complete_connection": {
+            "history_on": {
+              "median_ms": 59.39381899952423,
+              "samples_ms": [
+                56.63841000205139,
+                56.329399998503504,
+                63.35833599951002,
+                59.39381899952423,
+                60.98709000070812
+              ],
+              "result_nodes": 20,
+              "result_edges": 20,
+              "edges_sha256": "41bc57cd754c8a4d946c9199c69274ab6c72a98e9296da9ddd823193eff24653",
+              "history_sha256": "6616177d5fe0bba4f1091c3f6143a9fa1af6333d273fb852b5d522bc6dd5ff3a"
+            },
+            "history_off": {
+              "median_ms": 61.44297599894344,
+              "samples_ms": [
+                62.14030099727097,
+                60.70604400156299,
+                59.77643900041585,
+                115.15967400191585,
+                61.44297599894344
+              ],
+              "result_nodes": 20,
+              "result_edges": 20,
+              "edges_sha256": "41bc57cd754c8a4d946c9199c69274ab6c72a98e9296da9ddd823193eff24653"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "radial": {
+            "history_on": {
+              "median_ms": 381.6627749984036,
+              "samples_ms": [
+                400.2256040002976,
+                381.6627749984036,
+                364.35489100040286,
+                405.67491999900085,
+                372.1705110001494
+              ],
+              "result_nodes": 40,
+              "result_edges": 60,
+              "edges_sha256": "a7b34e6fb99555153ce3d79e1ef6da1217364d477c1eaa41dbb10cddec6c68a7",
+              "history_sha256": "df81d08d2910455ff725bb4c07c28ab6592a01dd1fe399629eb7d0fd239bfef6"
+            },
+            "history_off": {
+              "median_ms": 548.2528610009467,
+              "samples_ms": [
+                551.3014950010984,
+                548.2528610009467,
+                557.3367390024941,
+                512.8840440011118,
+                521.3209409994306
+              ],
+              "result_nodes": 40,
+              "result_edges": 60,
+              "edges_sha256": "a7b34e6fb99555153ce3d79e1ef6da1217364d477c1eaa41dbb10cddec6c68a7"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "upstream": {
+            "history_on": {
+              "median_ms": 66.4272260000871,
+              "samples_ms": [
+                70.98772700192058,
+                66.54540599993197,
+                63.84502400032943,
+                66.4272260000871,
+                66.33073799821432
+              ],
+              "result_nodes": 70,
+              "result_edges": 100,
+              "edges_sha256": "bb1bdaf1481087b274d70e85645bb8a8370b716422268196e28c653ae816375d",
+              "history_sha256": "386a06fd2366f77338f2c0a2751d9c0687757c844dbafa6bec707a3baa128de1"
+            },
+            "history_off": {
+              "median_ms": 107.40444600014598,
+              "samples_ms": [
+                107.40444600014598,
+                102.3187799983134,
+                101.9574960009777,
+                116.68543300038436,
+                115.78161400029785
+              ],
+              "result_nodes": 70,
+              "result_edges": 100,
+              "edges_sha256": "bb1bdaf1481087b274d70e85645bb8a8370b716422268196e28c653ae816375d"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          }
+        },
+        "label_mutation": {
+          "median_ms": 28.049808999639936,
+          "samples_ms": [
+            18.710459000431,
+            28.870450998510933,
+            29.049666998616885,
+            28.049808999639936,
+            21.357402998546604
+          ]
+        },
+        "history_dict": {
+          "median_ms": 45.03519400168443,
+          "samples_ms": [
+            67.49268100247718,
+            125.33985400295933,
+            45.03519400168443,
+            43.049562998930924,
+            44.61132000142243
+          ]
+        },
+        "full_list": {
+          "median_ms": 1.0206280021520797,
+          "samples_ms": [
+            1.293900000746362,
+            1.0206280021520797,
+            1.0633489982865285,
+            0.997855000605341,
+            0.9267280001949985
+          ]
+        },
+        "history_status": {
+          "median_ms": 3.17312599872821,
+          "samples_ms": [
+            3.51309499819763,
+            3.17312599872821,
+            3.0952480010455474,
+            3.0959290015744045,
+            3.1833249995543156
+          ]
+        },
+        "summary_page": {
+          "median_ms": 0.02035899888142012,
+          "samples_ms": [
+            0.059313999372534454,
+            0.029987000743858516,
+            0.02035899888142012,
+            0.017914997442858294,
+            0.017522997950436547
+          ]
+        },
+        "sif_export": {
+          "median_ms": 77.00040000054287,
+          "samples_ms": [
+            77.56734400027199,
+            77.00040000054287,
+            76.95826399867656,
+            75.94784300090396,
+            77.73648900183616
+          ]
+        },
+        "companion_bytes": 1568294,
+        "retained_states": 26
+      }
+    },
+    "200": {
+      "before": {
+        "source": "/tmp/neko-wave2-performance-baseline",
+        "nodes": 200,
+        "steps": 20,
+        "repeats": 3,
+        "hash_seed": 0,
+        "strategies": {
+          "connect_nodes": {
+            "history_on": {
+              "median_ms": 670.4792570017162,
+              "samples_ms": [
+                696.5967010000895,
+                670.4792570017162,
+                600.7998419991054
+              ],
+              "result_nodes": 200,
+              "result_edges": 400,
+              "edges_sha256": "079b937e089a948b925f18414817fe601f69da1f0a75cd881eed36365566cceb",
+              "history_sha256": "ccbb36abea5a5f91103c7b74958a7d33edf39a270e09a44adc0594890479a11a"
+            },
+            "history_off": {
+              "median_ms": 629.677069002355,
+              "samples_ms": [
+                629.677069002355,
+                642.6870249997592,
+                581.8504599992593
+              ],
+              "result_nodes": 200,
+              "result_edges": 400,
+              "edges_sha256": "079b937e089a948b925f18414817fe601f69da1f0a75cd881eed36365566cceb"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "complete_connection": {
+            "history_on": {
+              "median_ms": 290.5210580029234,
+              "samples_ms": [
+                290.146127998014,
+                290.91355499986093,
+                290.5210580029234
+              ],
+              "result_nodes": 40,
+              "result_edges": 40,
+              "edges_sha256": "c2da5ad939c013026ff76a201214f2f13f2a85812417cd046c14b6cc5d6bd55f",
+              "history_sha256": "51e12da0b33340700040a678a6467a4f2e4057e7c3baf7706e8d31ae8ce10d02"
+            },
+            "history_off": {
+              "median_ms": 303.08549699839205,
+              "samples_ms": [
+                303.08549699839205,
+                301.15745699731633,
+                306.8593809985032
+              ],
+              "result_nodes": 40,
+              "result_edges": 40,
+              "edges_sha256": "c2da5ad939c013026ff76a201214f2f13f2a85812417cd046c14b6cc5d6bd55f"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "radial": {
+            "history_on": {
+              "median_ms": 4745.052675003535,
+              "samples_ms": [
+                4752.789029000269,
+                4733.132653997018,
+                4745.052675003535
+              ],
+              "result_nodes": 80,
+              "result_edges": 120,
+              "edges_sha256": "0e7f0bdeb624b596528b3af70cab8e6d565ef26441dcc306288c6f0ae4b77879",
+              "history_sha256": "f7a6495e4aaf0f19d991b74784852cc0bc39d1485c765ab98de7cc06bb9c3462"
+            },
+            "history_off": {
+              "median_ms": 5363.563959999738,
+              "samples_ms": [
+                5299.8080249999475,
+                5621.512354002334,
+                5363.563959999738
+              ],
+              "result_nodes": 80,
+              "result_edges": 120,
+              "edges_sha256": "0e7f0bdeb624b596528b3af70cab8e6d565ef26441dcc306288c6f0ae4b77879"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          },
+          "upstream": {
+            "history_on": {
+              "median_ms": 190.68202400012524,
+              "samples_ms": [
+                191.22251099906862,
+                190.68202400012524,
+                189.8607080001966
+              ],
+              "result_nodes": 140,
+              "result_edges": 200,
+              "edges_sha256": "ade28ee7983cc034c24ce88e4c209667743817d6932aa22f0cdd2eb72408ae15",
+              "history_sha256": "9554ade561ef64c71a04ecd37e84f59e3edf7847ba18bb41653a9079c05b7969"
+            },
+            "history_off": {
+              "median_ms": 336.5236220015504,
+              "samples_ms": [
+                332.44518299761694,
+                337.31116499984637,
+                336.5236220015504
+              ],
+              "result_nodes": 140,
+              "result_edges": 200,
+              "edges_sha256": "ade28ee7983cc034c24ce88e4c209667743817d6932aa22f0cdd2eb72408ae15"
+            },
+            "fingerprint_calls": 5,
+            "snapshots_created": 1
+          }
+        },
+        "label_mutation": {
+          "median_ms": 33.556547001353465,
+          "samples_ms": [
+            34.43908000190277,
+            33.556547001353465,
+            33.37850699972478
+          ]
+        },
+        "history_dict": {
+          "median_ms": 66.33315499857417,
+          "samples_ms": [
+            119.15982200298458,
+            66.33315499857417,
+            66.2423210014822
+          ]
+        },
+        "full_list": {
+          "median_ms": 1.7285879985138308,
+          "samples_ms": [
+            2.1442510005726945,
+            1.7285879985138308,
+            1.5583429994876496
+          ]
+        },
+        "sif_export": {
+          "median_ms": 425.7930310013762,
+          "samples_ms": [
+            425.7930310013762,
+            358.49397799756844,
+            427.11709599825554
+          ]
+        },
+        "companion_bytes": 6536177,
+        "retained_states": 24
+      },
+      "after": {
+        "source": "/tmp/neko-wave2-curation",
+        "nodes": 200,
+        "steps": 20,
+        "repeats": 3,
+        "hash_seed": 0,
+        "strategies": {
+          "connect_nodes": {
+            "history_on": {
+              "median_ms": 530.6412249992718,
+              "samples_ms": [
+                530.6412249992718,
+                540.9862019987486,
+                493.4027999988757
+              ],
+              "result_nodes": 200,
+              "result_edges": 400,
+              "edges_sha256": "079b937e089a948b925f18414817fe601f69da1f0a75cd881eed36365566cceb",
+              "history_sha256": "ccbb36abea5a5f91103c7b74958a7d33edf39a270e09a44adc0594890479a11a"
+            },
+            "history_off": {
+              "median_ms": 515.4066809991491,
+              "samples_ms": [
+                515.4066809991491,
+                515.6374699981825,
+                472.5987130004796
+              ],
+              "result_nodes": 200,
+              "result_edges": 400,
+              "edges_sha256": "079b937e089a948b925f18414817fe601f69da1f0a75cd881eed36365566cceb"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "complete_connection": {
+            "history_on": {
+              "median_ms": 162.1598609999637,
+              "samples_ms": [
+                182.60562899740762,
+                161.41906900156755,
+                162.1598609999637
+              ],
+              "result_nodes": 40,
+              "result_edges": 40,
+              "edges_sha256": "c2da5ad939c013026ff76a201214f2f13f2a85812417cd046c14b6cc5d6bd55f",
+              "history_sha256": "51e12da0b33340700040a678a6467a4f2e4057e7c3baf7706e8d31ae8ce10d02"
+            },
+            "history_off": {
+              "median_ms": 174.68300800101133,
+              "samples_ms": [
+                172.4545049983135,
+                175.30899299890734,
+                174.68300800101133
+              ],
+              "result_nodes": 40,
+              "result_edges": 40,
+              "edges_sha256": "c2da5ad939c013026ff76a201214f2f13f2a85812417cd046c14b6cc5d6bd55f"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "radial": {
+            "history_on": {
+              "median_ms": 1147.2020809997048,
+              "samples_ms": [
+                1147.2020809997048,
+                1257.6404759965953,
+                1076.7708390012558
+              ],
+              "result_nodes": 80,
+              "result_edges": 120,
+              "edges_sha256": "0e7f0bdeb624b596528b3af70cab8e6d565ef26441dcc306288c6f0ae4b77879",
+              "history_sha256": "f7a6495e4aaf0f19d991b74784852cc0bc39d1485c765ab98de7cc06bb9c3462"
+            },
+            "history_off": {
+              "median_ms": 1646.905596000579,
+              "samples_ms": [
+                1673.0763539999316,
+                1646.905596000579,
+                1632.5802339997608
+              ],
+              "result_nodes": 80,
+              "result_edges": 120,
+              "edges_sha256": "0e7f0bdeb624b596528b3af70cab8e6d565ef26441dcc306288c6f0ae4b77879"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          },
+          "upstream": {
+            "history_on": {
+              "median_ms": 126.6719599989301,
+              "samples_ms": [
+                127.73774699962814,
+                126.6719599989301,
+                125.82026599920937
+              ],
+              "result_nodes": 140,
+              "result_edges": 200,
+              "edges_sha256": "ade28ee7983cc034c24ce88e4c209667743817d6932aa22f0cdd2eb72408ae15",
+              "history_sha256": "9554ade561ef64c71a04ecd37e84f59e3edf7847ba18bb41653a9079c05b7969"
+            },
+            "history_off": {
+              "median_ms": 273.84526600144454,
+              "samples_ms": [
+                275.4878199993982,
+                271.98366499942495,
+                273.84526600144454
+              ],
+              "result_nodes": 140,
+              "result_edges": 200,
+              "edges_sha256": "ade28ee7983cc034c24ce88e4c209667743817d6932aa22f0cdd2eb72408ae15"
+            },
+            "fingerprint_calls": 6,
+            "snapshots_created": 1
+          }
+        },
+        "label_mutation": {
+          "median_ms": 27.80643200094346,
+          "samples_ms": [
+            27.80643200094346,
+            27.795630998298293,
+            28.68820600269828
+          ]
+        },
+        "history_dict": {
+          "median_ms": 69.5397800009232,
+          "samples_ms": [
+            69.5397800009232,
+            64.10151799718733,
+            108.29650200321339
+          ]
+        },
+        "full_list": {
+          "median_ms": 1.6645069990772754,
+          "samples_ms": [
+            1.8144530004065018,
+            1.6645069990772754,
+            1.4754260009794962
+          ]
+        },
+        "history_status": {
+          "median_ms": 5.3449420011020266,
+          "samples_ms": [
+            5.3449420011020266,
+            5.160840999451466,
+            5.595083999651251
+          ]
+        },
+        "summary_page": {
+          "median_ms": 0.018496000848244876,
+          "samples_ms": [
+            0.0407879997510463,
+            0.018496000848244876,
+            0.01688199699856341
+          ]
+        },
+        "sif_export": {
+          "median_ms": 112.6953359998879,
+          "samples_ms": [
+            112.12672699912218,
+            112.6953359998879,
+            113.09043499932159
+          ]
+        },
+        "companion_bytes": 2924900,
+        "retained_states": 24
+      }
+    },
+    "500": {
+      "before": {
+        "source": "/tmp/neko-wave2-performance-baseline",
+        "nodes": 500,
+        "steps": 50,
+        "repeats": 5,
+        "hash_seed": 0,
+        "strategies": {},
+        "label_mutation": {
+          "median_ms": 83.5231080018275,
+          "samples_ms": [
+            83.84085099896765,
+            139.62912199713173,
+            80.80297800188418,
+            83.5231080018275,
+            82.47404199937591
+          ]
+        },
+        "history_dict": {
+          "median_ms": 393.29598199765314,
+          "samples_ms": [
+            410.37931199753075,
+            380.1410849991953,
+            384.2543499995372,
+            467.22657899954356,
+            393.29598199765314
+          ]
+        },
+        "full_list": {
+          "median_ms": 4.334473000199068,
+          "samples_ms": [
+            4.919069000607124,
+            5.363762000342831,
+            4.262636000930797,
+            4.279938999388833,
+            4.334473000199068
+          ]
+        },
+        "sif_export": {
+          "median_ms": 1776.2984939981834,
+          "samples_ms": [
+            1776.2984939981834,
+            1756.2908790023357,
+            1783.4784139995463,
+            1983.607555001072,
+            1720.8868460002122
+          ]
+        },
+        "companion_bytes": 35442561,
+        "retained_states": 56
+      },
+      "after": {
+        "source": "/tmp/neko-wave2-curation",
+        "nodes": 500,
+        "steps": 50,
+        "repeats": 5,
+        "hash_seed": 0,
+        "strategies": {},
+        "label_mutation": {
+          "median_ms": 67.62245499703567,
+          "samples_ms": [
+            67.62245499703567,
+            68.56784900082857,
+            67.1687190006196,
+            65.51167699944926,
+            75.42706500316854
+          ]
+        },
+        "history_dict": {
+          "median_ms": 396.5349289974256,
+          "samples_ms": [
+            400.63237600043067,
+            396.5349289974256,
+            375.3056089990423,
+            457.9783580011281,
+            393.21928799836314
+          ]
+        },
+        "full_list": {
+          "median_ms": 4.925451001327019,
+          "samples_ms": [
+            4.925451001327019,
+            4.361593997600721,
+            5.182183998840628,
+            5.237877001491142,
+            4.158247000304982
+          ]
+        },
+        "history_status": {
+          "median_ms": 11.754305000067689,
+          "samples_ms": [
+            13.296368000737857,
+            11.950919997616438,
+            11.441196002124343,
+            11.589891000767238,
+            11.754305000067689
+          ]
+        },
+        "summary_page": {
+          "median_ms": 0.017614001990295947,
+          "samples_ms": [
+            0.058883000747300684,
+            0.018835999071598053,
+            0.017614001990295947,
+            0.01677200270933099,
+            0.016821999452076852
+          ]
+        },
+        "sif_export": {
+          "median_ms": 541.6080390023126,
+          "samples_ms": [
+            530.9903740017035,
+            531.82019200176,
+            636.7085839992797,
+            547.6847690006252,
+            541.6080390023126
+          ]
+        },
+        "companion_bytes": 15811104,
+        "retained_states": 56
+      }
+    }
+  }
+}

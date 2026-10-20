@@ -47,6 +47,17 @@ history. SIF additionally embeds provenance comments. Keep the JSON companion fo
 formats such as BNET that cannot carry this metadata. See
 [Interaction curation and persistence](../interaction-curation.md).
 
+`Exports(net)` captures independent working tables and one history payload when
+constructed, without copying resource tables or connection indexes. Later edits,
+checkout or pruning of `net` do not change that export capture. All Boolean
+variants reuse the captured history.
+
+Companions and `net.export_history(path)` use compact JSON by default, retaining
+the same schema and every snapshot/evidence field. Use `Exports(net, pretty=True)`
+or `net.export_history(path, pretty=True)` for indented JSON. Compact serialization
+writes individual states without allocating one full-history JSON string.
+Snapshot retention and downstream artifact-size limits still apply.
+
 ---
 
 ## Class reference

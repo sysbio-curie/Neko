@@ -9,6 +9,7 @@ import inspect
 import json
 from functools import wraps
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
 
@@ -81,14 +82,31 @@ def frame_from_payload(payload):
 
 
 def frame_fingerprint(frame):
-    return canonical(frame_payload(frame))
+    # frame_payload already normalizes every value. Do not traverse nested
+    # provenance a second time through canonical/json_value.
+    return json.dumps(frame_payload(frame), sort_keys=True, allow_nan=False)
 
 
 def unique_edges(frame):
     if frame.empty:
         return frame.copy().reset_index(drop=True)
-    keys = pd.Series([canonical(row) for row in records(frame)])
-    return frame.iloc[(~keys.duplicated()).to_numpy()].reset_index(drop=True)
+    # Resource insertion consolidates directed pairs already. Most calls from
+    # path growth therefore have nothing to deduplicate: do not serialize the
+    # entire growing graph (including all provenance) after every path batch.
+    candidates = frame.duplicated(subset=["source", "target"], keep=False)
+    if not candidates.any():
+        return frame.reset_index(drop=True)
+    positions = [i for i, duplicate in enumerate(candidates) if duplicate]
+    seen, removed = set(), set()
+    for position, row in zip(positions, records(frame.iloc[positions])):
+        key = json.dumps(row, sort_keys=True, allow_nan=False)
+        if key in seen:
+            removed.add(position)
+        else:
+            seen.add(key)
+    return frame.iloc[
+        [i for i in range(len(frame)) if i not in removed]
+    ].reset_index(drop=True)
 
 
 def provenance(row, origin="unknown", database_name=None):
@@ -166,6 +184,9 @@ def construction_operation(method):
             "method": method.__name__,
             "parameters": bound_parameters(method, network, *args, **kwargs),
         }
+        context.setdefault("_operation_indices", {})[id(operation)] = len(
+            context["operations"]
+        )
         context["operations"].append(operation)
         context["stack"].append(operation)
         try:
@@ -182,25 +203,47 @@ def effective_parameters(network, **values):
         context["stack"][-1]["parameters"].update(json_value(values))
 
 
+def _record_key(value):
+    """Hashable exact key for an already JSON-normalized explanation."""
+    if isinstance(value, dict):
+        return (
+            "dict",
+            tuple(
+                sorted((key, _record_key(item)) for key, item in value.items())
+            ),
+        )
+    if isinstance(value, list):
+        return ("list", tuple(_record_key(item) for item in value))
+    return value
+
+
 def inclusion(network, source, target, reason):
     context = getattr(network, "_transition_context", None)
     if context is None:
         return
+    indices = context.get("_operation_indices")
+    if indices is None:
+        indices = context["_operation_indices"] = {
+            id(operation): i
+            for i, operation in enumerate(context["operations"])
+        }
     item = {
         "source": source,
         "target": target,
         **json_value(reason),
         "operation_indices": [
-            next(
-                i
-                for i, candidate in enumerate(context["operations"])
-                if candidate is operation
-            )
-            for operation in context["stack"]
+            indices[id(operation)] for operation in context["stack"]
         ],
     }
     # Keep multiple actual paths, but avoid identical repeated records.
-    if item not in context["reasons"]:
+    keys = context.get("_reason_keys")
+    if keys is None:
+        keys = context["_reason_keys"] = {
+            _record_key(item) for item in context["reasons"]
+        }
+    key = _record_key(item)
+    if key not in keys:
+        keys.add(key)
         context["reasons"].append(item)
 
 
@@ -236,11 +279,18 @@ def history_payload(network):
     }
 
 
-def working_state_matches_current(network):
+def working_state_matches_current(network, *, working_fingerprints=None):
     state = network._states.get(network.current_state_id)
-    return state is not None and (
-        frame_fingerprint(state.nodes) == frame_fingerprint(network.nodes)
-        and frame_fingerprint(state.edges) == frame_fingerprint(network.edges)
+    if state is None:
+        return False
+    if working_fingerprints is None:
+        working_fingerprints = (
+            frame_fingerprint(network.nodes),
+            frame_fingerprint(network.edges),
+        )
+    return (
+        frame_fingerprint(state.nodes) == working_fingerprints[0]
+        and frame_fingerprint(state.edges) == working_fingerprints[1]
         and state.metadata.get("initial_nodes")
         == json_value(network.initial_nodes)
     )
@@ -281,11 +331,57 @@ def validate_provenance(value):
     json_value(value)
 
 
-def write_json(path, payload):
+def _write_compact_json(payload, stream):
+    """Encode array items separately, so histories allocate at most one state
+    string at a time while still using the fast JSON encoder for each state.
+    """
+    encoder = json.JSONEncoder(separators=(",", ":"), allow_nan=False)
+
+    def write(value):
+        if isinstance(value, dict):
+            stream.write("{")
+            for index, (key, item) in enumerate(value.items()):
+                if index:
+                    stream.write(",")
+                stream.write(encoder.encode(key))
+                stream.write(":")
+                write(item)
+            stream.write("}")
+        elif isinstance(value, list):
+            stream.write("[")
+            for index, item in enumerate(value):
+                if index:
+                    stream.write(",")
+                stream.write(encoder.encode(item))
+            stream.write("]")
+        else:
+            stream.write(encoder.encode(value))
+
+    write(payload)
+
+
+def write_json(path, payload, *, pretty=False, _normalized=False):
     path = Path(path)
-    text = json.dumps(json_value(payload), indent=2, allow_nan=False)
+    payload = payload if _normalized else json_value(payload)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text + "\n", encoding="utf-8")
+    temporary = None
+    try:
+        with NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            if pretty:
+                json.dump(payload, stream, indent=2, allow_nan=False)
+            else:
+                _write_compact_json(payload, stream)
+            stream.write("\n")
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return str(path)
 
 

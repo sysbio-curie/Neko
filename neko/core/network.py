@@ -22,7 +22,6 @@ from itertools import combinations
 from .algorithms.graph_traversal import bfs_algorithm as _bfs_algorithm
 from .algorithms.graph_traversal import dfs_algorithm as _dfs_algorithm
 import pandas as pd
-from pandas.util import hash_pandas_object
 from . import history as _history
 from .curation import InteractionEdit, InteractionEditError, InteractionEditResult
 
@@ -34,15 +33,6 @@ def _truncate_repr(value, limit=_METADATA_PREVIEW):
     if len(text) > limit:
         text = text[: limit - 1] + "…"
     return text
-
-
-def _frame_fingerprint(df: pd.DataFrame) -> tuple:
-    if "Provenance" in df:
-        return _history.frame_fingerprint(df)
-    if df.empty:
-        return (tuple(df.columns), 0, 0)
-    hashed = hash_pandas_object(df, index=True)
-    return (tuple(df.columns), len(df), int(hashed.sum()))
 
 
 def _record_state_operation(method):
@@ -69,10 +59,11 @@ def _record_state_operation(method):
 
         self._auto_state_depth = depth + 1
         self._transition_context = {"operations": [], "stack": [], "reasons": []}
-        self._transition_context["untracked_changes"] = not _history.working_state_matches_current(self)
-
-        before_nodes = _frame_fingerprint(self.nodes)
-        before_edges = _frame_fingerprint(self.edges)
+        before_nodes = _history.frame_fingerprint(self.nodes)
+        before_edges = _history.frame_fingerprint(self.edges)
+        self._transition_context["untracked_changes"] = not _history.working_state_matches_current(
+            self, working_fingerprints=(before_nodes, before_edges),
+        )
         before_initial_nodes = copy.deepcopy(self.initial_nodes)
 
         try:
@@ -86,8 +77,8 @@ def _record_state_operation(method):
         if getattr(self, "_is_initializing", False):
             return result
 
-        nodes_changed = before_nodes != _frame_fingerprint(self.nodes)
-        edges_changed = before_edges != _frame_fingerprint(self.edges)
+        nodes_changed = before_nodes != _history.frame_fingerprint(self.nodes)
+        edges_changed = before_edges != _history.frame_fingerprint(self.edges)
 
         if nodes_changed or edges_changed or before_initial_nodes != self.initial_nodes:
             metadata = self._prepare_history_metadata(method.__name__, args, kwargs)
@@ -294,13 +285,22 @@ class Network:
         from .curation import edit_interactions
         return edit_interactions(self, edits, expected_state_id)
 
-    def export_history(self, path):
+    def export_history(self, path, *, pretty=False):
         """Write all retained states, working state, provenance and ancestry."""
-        return _history.write_json(path, self.history_dict())
+        return _history.write_json(
+            path, self.history_dict(), pretty=pretty, _normalized=True,
+        )
 
     def history_dict(self) -> dict:
         """Return the independent JSON-compatible payload used by export_history."""
         return _history.history_payload(self)
+
+    def history_status(self) -> dict:
+        """Inspect pruning and working changes without serializing past states."""
+        return {
+            "pruned_state_count": len(self._pruned_state_ids),
+            "working_state_matches_current": _history.working_state_matches_current(self),
+        }
 
     def get_state(self, state_id: Optional[int] = None) -> dict:
         """Read one exact saved state without checkout or mutable internal references."""
@@ -1484,17 +1484,48 @@ class Network:
             converted["target"] = converted["target"].map(lambda value: labels.get(value, value))
         return {tuple(row.values()) for row in _history.records(converted)}
 
-    def list_states(self) -> list:
-        """Return a creation-ordered list of state metadata."""
+    def list_states(self, *, offset=0, limit=None, detail="full") -> list:
+        """Return a creation-ordered page; defaults preserve the full listing.
 
-        return [
-            {"id": state_id, "metadata": copy.deepcopy(self._state_metadata.get(state_id, {})),
-             "parent_ids": list(self._states[state_id].parent_ids),
-             "children_ids": list(self._states[state_id].children_ids),
-             "current": state_id == self.current_state_id,
-             "pruned_state_ids": list(self._pruned_state_ids)}
-            for state_id in self._state_log
-        ]
+        Summary metadata includes labels, explanation status and change counts,
+        without copying evidence, parameters or inclusion explanations.
+        """
+        if type(offset) is not int or offset < 0:
+            raise ValueError("offset must be a non-negative integer.")
+        if limit is not None and (type(limit) is not int or limit < 0):
+            raise ValueError("limit must be None or a non-negative integer.")
+        if detail not in ("full", "summary"):
+            raise ValueError("detail must be 'full' or 'summary'.")
+        stop = None if limit is None else offset + limit
+        result = []
+        for state_id in self._state_log[offset:stop]:
+            metadata = self._state_metadata.get(state_id, {})
+            if detail == "summary":
+                transition = metadata.get("transition", {})
+                metadata = {
+                    "method": metadata.get("method"),
+                    "label": metadata.get("label"),
+                    "ancestry_gaps": list(metadata.get("ancestry_gaps", [])),
+                    "transition": {
+                        "explanation_status": transition.get("explanation_status", "unavailable"),
+                        "counts": {
+                            table: {kind: len(transition.get(table, {}).get(kind, []))
+                                    for kind in ("added", "removed", "changed")}
+                            if table in transition else None
+                            for table in ("nodes", "edges")
+                        },
+                    },
+                }
+            entry = {
+                "id": state_id, "metadata": copy.deepcopy(metadata),
+                "parent_ids": list(self._states[state_id].parent_ids),
+                "children_ids": list(self._states[state_id].children_ids),
+                "current": state_id == self.current_state_id,
+            }
+            if detail == "full":
+                entry["pruned_state_ids"] = list(self._pruned_state_ids)
+            result.append(entry)
+        return result
 
     def describe_history(self) -> None:
         """Pretty-print the branching history tree."""
@@ -1531,6 +1562,11 @@ class Network:
     @property
     def current_state_id(self) -> Optional[int]:
         return self._current_state_id
+
+    @property
+    def state_count(self) -> int:
+        """Number of retained states, without materializing their metadata."""
+        return len(self._state_log)
 
     @property
     def root_state_id(self) -> Optional[int]:

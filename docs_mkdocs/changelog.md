@@ -11,7 +11,16 @@ developed backend rewrite.
 
 ## [Unreleased]
 
-No unreleased changes yet.
+Planned release: **1.10.2**.
+
+### Added
+
+- Atomic, validated interaction additions and effect changes between existing
+  endpoints, with manual origin, evidence, PMIDs and edit explanations.
+- Structured topology explanations in the existing network history, JSON
+  recovery, and provenance companions for SIF and Boolean exports.
+- Selected database identity on networks and regression coverage for mutation
+  validation, provenance preservation and history consistency.
 
 ---
 

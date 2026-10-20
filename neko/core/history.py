@@ -5,15 +5,25 @@ independent of provider data: restoring a snapshot is not construction replay.
 """
 
 import copy
+import hashlib
 import inspect
 import json
+import os
+import uuid
 from functools import wraps
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
+import numpy as np
 import pandas as pd
 
 from .strategy_options import UNSET
+
+# Metadata keys written by history recording itself. Displays omit them so
+# that user labels and method calls stay readable next to full explanations.
+INTERNAL_METADATA_KEYS = frozenset({
+    "transition", "parameters", "initial_nodes", "database_name",
+    "manual_changes", "untracked_changes", "ancestry_gaps",
+})
 
 
 def json_value(value):
@@ -26,8 +36,11 @@ def json_value(value):
         return {str(k): json_value(v) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
         return [json_value(v) for v in value]
-    if isinstance(value, set):
+    if isinstance(value, (set, frozenset)):
         return sorted((json_value(v) for v in value), key=canonical)
+    if isinstance(value, (pd.Series, pd.Index, np.ndarray)):
+        # Array-likes also define .item(), which only accepts one element.
+        return json_value(value.tolist())
     if value is None or isinstance(value, (str, bool, int)):
         return value
     if hasattr(value, "item"):
@@ -45,11 +58,20 @@ def canonical(value):
 
 def copy_frame(frame):
     # DataFrame.copy(deep=True) does not copy nested dictionaries/lists.
+    # Replace columns by position: label-based writes are wrong for
+    # duplicate index or column labels.
     result = frame.copy(deep=True)
-    for column in result.select_dtypes(include="object"):
-        for index, value in result[column].items():
-            if isinstance(value, (dict, list, set, tuple)):
-                result.at[index, column] = copy.deepcopy(value)
+    nested = (dict, list, set, tuple)
+    for position in range(result.shape[1]):
+        values = result.iloc[:, position]
+        if values.dtype != object or not any(
+            isinstance(value, nested) for value in values
+        ):
+            continue
+        result.isetitem(position, pd.Series(
+            [copy.deepcopy(v) if isinstance(v, nested) else v for v in values],
+            index=result.index, dtype=object,
+        ))
     return result
 
 
@@ -83,8 +105,10 @@ def frame_from_payload(payload):
 
 def frame_fingerprint(frame):
     # frame_payload already normalizes every value. Do not traverse nested
-    # provenance a second time through canonical/json_value.
-    return json.dumps(frame_payload(frame), sort_keys=True, allow_nan=False)
+    # provenance a second time through canonical/json_value. Keep a digest:
+    # snapshots cache their fingerprints, and the full text is table-sized.
+    text = json.dumps(frame_payload(frame), sort_keys=True, allow_nan=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def unique_edges(frame):
@@ -162,11 +186,23 @@ def delta(before, after, keys):
     return {"added": added, "removed": removed, "changed": changed}
 
 
+def parameter_value(value):
+    """Record an argument without ever rejecting the user's call."""
+    try:
+        return json_value(value)
+    except (TypeError, ValueError):
+        text = repr(value)
+        return {
+            "unrecorded_type": type(value).__name__,
+            "repr": text if len(text) <= 200 else text[:199] + "\u2026",
+        }
+
+
 def bound_parameters(method, *args, **kwargs):
     bound = inspect.signature(method).bind(*args, **kwargs)
     bound.apply_defaults()
     return {
-        k: json_value(v)
+        k: parameter_value(v)
         for k, v in bound.arguments.items()
         if k not in {"self", "network"} and not k.startswith("_")
     }
@@ -200,7 +236,9 @@ def construction_operation(method):
 def effective_parameters(network, **values):
     context = getattr(network, "_transition_context", None)
     if context and context["stack"]:
-        context["stack"][-1]["parameters"].update(json_value(values))
+        context["stack"][-1]["parameters"].update(
+            {key: parameter_value(value) for key, value in values.items()}
+        )
 
 
 def _record_key(value):
@@ -279,6 +317,28 @@ def history_payload(network):
     }
 
 
+def state_fingerprints(state, known=None):
+    """Fingerprints of a snapshot, computed once per snapshot frame pair.
+
+    Snapshots are immutable, so the cache is keyed on the frame objects
+    themselves; replacing ``state.nodes`` or ``state.edges`` invalidates it.
+    ``known`` seeds the cache with fingerprints already computed for frames
+    with identical content (the working frames the snapshot was copied from).
+    """
+    cached = getattr(state, "_fingerprints", None)
+    if known is None and (
+        cached is not None
+        and cached[0] is state.nodes
+        and cached[1] is state.edges
+    ):
+        return cached[2]
+    value = known or (
+        frame_fingerprint(state.nodes), frame_fingerprint(state.edges)
+    )
+    state._fingerprints = (state.nodes, state.edges, value)
+    return value
+
+
 def working_state_matches_current(network, *, working_fingerprints=None):
     state = network._states.get(network.current_state_id)
     if state is None:
@@ -289,8 +349,7 @@ def working_state_matches_current(network, *, working_fingerprints=None):
             frame_fingerprint(network.edges),
         )
     return (
-        frame_fingerprint(state.nodes) == working_fingerprints[0]
-        and frame_fingerprint(state.edges) == working_fingerprints[1]
+        state_fingerprints(state) == tuple(working_fingerprints)
         and state.metadata.get("initial_nodes")
         == json_value(network.initial_nodes)
     )
@@ -366,13 +425,13 @@ def write_json(path, payload, *, pretty=False, _normalized=False):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:
-        with NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=path.parent,
-            delete=False,
-        ) as stream:
-            temporary = Path(stream.name)
+        # NamedTemporaryFile always creates 0600 files. Create the temporary
+        # file like open() does, so the umask decides who can read the result.
+        temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+        descriptor = os.open(
+            temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666
+        )
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
             if pretty:
                 json.dump(payload, stream, indent=2, allow_nan=False)
             else:

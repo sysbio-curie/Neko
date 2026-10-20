@@ -10,8 +10,10 @@ change connection policies.
   `state_count` and paginated `list_states(detail="summary")` let MCP report
   history without materializing the whole history or a metadata-rich graph.
 - Mutation detection reuses pre-operation fingerprints and avoids normalizing
-  already normalized table records twice. Fingerprints are not cached across
-  operations, so direct nested evidence changes remain detectable.
+  already normalized table records twice. Working-table fingerprints are not
+  cached across operations, so direct nested evidence changes remain
+  detectable. Immutable snapshots keep a SHA-256 digest of their tables, so the
+  current snapshot is not serialized again by every later operation.
 - Inclusion explanations use an exact-key index instead of scanning all earlier
   explanations. Actual distinct paths and operation ancestry remain recorded.
 - Path cleanup first checks directed pairs. Unique pairs need no provenance
@@ -100,7 +102,8 @@ still exceed a downstream artifact-size limit.
 ## Validation and remaining limits
 
 Regression tests exercise six representative strategies at two sizes. Each
-outer operation creates one snapshot and makes six full-table fingerprint calls,
+outer operation creates one snapshot and makes at most six full-table
+fingerprint calls (four once the current snapshot's digests are cached),
 independent of how many nested additions occur. No full-history payload is
 constructed inside these strategy calls. Tests also verify exact duplicate
 handling, retained distinct paths, bounded page copying, nested evidence

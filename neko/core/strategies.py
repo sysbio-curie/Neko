@@ -150,7 +150,7 @@ def connect_to_upstream_nodes(network, nodes_to_connect=None, depth: int = 1, ra
     cascades = network._connect.find_upstream_cascades(nodes_to_connect, depth, rank)
     # No need to filter cascades, as sign filtering is handled in Connections if needed
     network._add_cascade_to_edge_list(cascades)
-    unique_edges(network.edges)
+    network.edges = unique_edges(network.edges)
     return
 
 @construction_operation
@@ -420,7 +420,7 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
             print("Current depth is 4, stopping the process")
             break
         depth += 1
-    unique_edges(network.edges)
+    network.edges = unique_edges(network.edges)
     target_nodes_set = set(network.edges["target"].unique())
     node_identifiers = _node_identifiers(network.nodes)
     disconnected_nodes = network.nodes[

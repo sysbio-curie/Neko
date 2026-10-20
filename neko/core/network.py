@@ -38,7 +38,7 @@ def _truncate_repr(value, limit=_METADATA_PREVIEW):
 def _record_state_operation(method):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        if method.__name__.startswith(("connect_", "complete_connection")) and not self._resources_available:
+        if method.__name__.startswith(("connect_", "complete_connection")) and not getattr(self, "_resources_available", True):
             raise ValueError("Supply resources when loading history before constructing connections.")
         if not getattr(self, "_history_enabled", True):
             result = method(self, *args, **kwargs)
@@ -67,27 +67,29 @@ def _record_state_operation(method):
         before_initial_nodes = copy.deepcopy(self.initial_nodes)
 
         try:
-            result = method(self, *args, **kwargs)
-        except Exception:
-            self._transition_context = None
-            raise
+            try:
+                result = method(self, *args, **kwargs)
+            finally:
+                self._auto_state_depth = depth
+
+            if getattr(self, "_is_initializing", False):
+                return result
+
+            after_nodes = _history.frame_fingerprint(self.nodes)
+            after_edges = _history.frame_fingerprint(self.edges)
+
+            if after_nodes != before_nodes or after_edges != before_edges or before_initial_nodes != self.initial_nodes:
+                metadata = self._prepare_history_metadata(method.__name__, args, kwargs)
+                metadata["parameters"] = _history.bound_parameters(method, self, *args, **kwargs)
+                self.sync_nodes_from_df()
+                self.sync_edges_from_df()
+                state_id = self.save_state(metadata=metadata)
+                # The snapshot copies the frames just fingerprinted; the next
+                # operation compares against it without serializing it again.
+                _history.state_fingerprints(self._states[state_id], known=(after_nodes, after_edges))
         finally:
-            self._auto_state_depth = depth
-
-        if getattr(self, "_is_initializing", False):
-            return result
-
-        nodes_changed = before_nodes != _history.frame_fingerprint(self.nodes)
-        edges_changed = before_edges != _history.frame_fingerprint(self.edges)
-
-        if nodes_changed or edges_changed or before_initial_nodes != self.initial_nodes:
-            metadata = self._prepare_history_metadata(method.__name__, args, kwargs)
-            metadata["parameters"] = _history.bound_parameters(method, self, *args, **kwargs)
-            self.sync_nodes_from_df()
-            self.sync_edges_from_df()
-            self.save_state(metadata=metadata)
-
-        self._transition_context = None
+            # Never leave a stale context behind for a later save_state().
+            self._transition_context = None
 
         return result
 
@@ -332,12 +334,19 @@ class Network:
     def __setstate__(self, state):
         """Keep existing serialized Network objects usable without invented history."""
         self.__dict__.update(state)
-        if "_states" not in state:
-            return
         self.__dict__.setdefault("_database_name", None)
         self.__dict__.setdefault("_resources_available", True)
         self.__dict__.setdefault("_pruned_state_ids", [])
         self.__dict__.setdefault("_transition_context", None)
+        if "_states" not in state:
+            # Pickled before history existed: start an empty history, so the
+            # next change becomes the root state instead of failing.
+            self.__dict__.update(
+                _states={}, _state_metadata={}, _state_log=[], _state_counter=0,
+                _current_state_id=None, _root_state_id=None, _auto_state_depth=0,
+                _history_enabled=True, _max_history=None,
+            )
+            return
         for snapshot in self._states.values():
             if "transition" not in snapshot.metadata:
                 snapshot.metadata["transition"] = {
@@ -835,6 +844,8 @@ class Network:
             return effect_types.get(interaction_type, "undefined")
 
         reference_prefix = "# Reference PMID:"
+        # Exports write "None"/"nan" for edges without references.
+        missing_references = {None, "", "None", "nan", "NaN", "<NA>"}
         provenance_prefix = "# NeKo provenance:"
         pending_references = None
         pending_provenance = None
@@ -856,7 +867,9 @@ class Network:
                 interaction = line.strip().split()
                 if not interaction:
                     continue
-                references = pending_references or "SIF file"
+                references = pending_references
+                if references in missing_references:
+                    references = "SIF file"
                 pending_references = None
                 imported_provenance = pending_provenance
                 pending_provenance = None
@@ -1539,6 +1552,7 @@ class Network:
             label = meta.get("label") or meta.get("description")
             if label:
                 return str(label)
+            meta = {key: value for key, value in meta.items() if key not in _history.INTERNAL_METADATA_KEYS}
             if meta:
                 return str(meta)
             return ""

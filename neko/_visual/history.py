@@ -6,7 +6,7 @@ import networkx as nx
 from graphviz import Digraph
 import html
 import json
-from ..core.history import json_value
+from ..core.history import INTERNAL_METADATA_KEYS, json_value
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..core.network import Network
@@ -51,7 +51,8 @@ def history_digraph(network: "Network", include_metadata: bool = True) -> Digrap
         elif include_metadata:
             extras = {
                 key: value for key, value in metadata.items()
-                if key in {"description", "database_name"}
+                if key not in {"label", "method", "args", "kwargs"}
+                and (key == "database_name" or key not in INTERNAL_METADATA_KEYS)
             }
             for key, value in extras.items():
                 label_lines.append(f"{key}: {value}")

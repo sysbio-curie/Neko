@@ -32,6 +32,22 @@ Planned release: **1.10.2**.
 - Capture export history once without copying database resources; write compact
   JSON companions by default with optional pretty printing.
 
+### Fixed
+
+- Array-like arguments (NumPy arrays, pandas Series/Index, frozensets) no longer
+  make recorded operations fail; unsupported values are recorded by type and
+  repr instead of rejecting the call.
+- A failure while recording history no longer leaves a stale transition context
+  for a later `save_state()`.
+- SIF import treats exported `None`/`nan` reference comments as missing and uses
+  the `SIF file` fallback instead of storing them as references.
+- Deep-copied history tables keep nested provenance when index labels repeat.
+- Networks pickled before history tracking can grow again; their next change
+  becomes the root state.
+- `describe_history()` and `history_digraph()` hide internal explanation
+  metadata and show user-supplied metadata again.
+- History and export companion JSON files follow the umask instead of 0600.
+
 ---
 
 ## [1.10.0] – 2026-08-13

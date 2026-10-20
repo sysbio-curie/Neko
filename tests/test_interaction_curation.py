@@ -4,6 +4,7 @@ import copy
 import json
 import pickle
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -644,3 +645,126 @@ def test_public_state_inspection_is_readonly_and_does_not_checkout(network):
         network.get_state(True)
     with pytest.raises(ValueError):
         network.get_state(999)
+
+
+@pytest.mark.parametrize(
+    "group",
+    [
+        lambda net: np.array(["ID:A", "ID:B"]),
+        lambda net: net.nodes["Uniprot"].iloc[:2],
+        lambda net: pd.Index(["ID:A", "ID:B"]),
+        lambda net: frozenset({"ID:A", "ID:B"}),
+        lambda net: (node for node in ["ID:A", "ID:B"]),
+    ],
+)
+def test_array_like_arguments_are_recorded_not_rejected(network, group):
+    network.connect_subgroup(group(network))
+    assert len(network.edges) == 1
+    operation = network.get_state()["metadata"]["transition"]["operations"][0]
+    assert operation["method"] == "connect_subgroup"
+    json.dumps(operation["parameters"], allow_nan=False)
+
+
+def test_failed_history_recording_does_not_leak_transition_context(
+    network, monkeypatch
+):
+    import neko.core.history as history
+
+    monkeypatch.setattr(
+        history,
+        "bound_parameters",
+        lambda *_, **__: (_ for _ in ()).throw(RuntimeError("boom")),
+    )
+    # add_node only records its parameters after it changed the network.
+    with pytest.raises(RuntimeError):
+        network.add_node("ID:D")
+    assert network._transition_context is None
+
+
+def test_sif_reload_does_not_turn_missing_references_into_text(
+    network, resources, tmp_path
+):
+    network.edit_interactions([edit(pmids=[])])
+    assert network.edges.iloc[0].References is None
+    sif = tmp_path / "model.sif"
+    Exports(network).export_sif(sif)
+    assert "# Reference PMID: None" in sif.read_text()
+    imported = Network(sif_file=sif, resources=resources)
+    assert imported.edges.iloc[0].References == "SIF file"
+
+
+def test_copy_frame_keeps_nested_values_with_duplicate_labels():
+    from neko.core.history import copy_frame
+
+    frame = pd.DataFrame(
+        {"source": ["A", "B"], "Provenance": [{"x": [1]}, {"y": [2]}]},
+        index=[0, 0],
+    )
+    copied = copy_frame(frame)
+    assert copied.Provenance.tolist() == [{"x": [1]}, {"y": [2]}]
+    copied.Provenance.iloc[0]["x"].append(3)
+    assert frame.Provenance.iloc[0] == {"x": [1]}
+
+
+def test_network_pickled_before_history_existed_can_still_grow(network):
+    network.add_node("ID:D")
+    for name in [
+        name for name in vars(network)
+        if name.startswith(("_state", "_current_state", "_root_state"))
+        or name in {
+            "_auto_state_depth", "_history_enabled", "_max_history",
+            "_pruned_state_ids", "_transition_context",
+            "_resources_available", "_database_name",
+        }
+    ]:
+        delattr(network, name)
+    restored = pickle.loads(pickle.dumps(network))
+    restored.connect_nodes()
+    assert len(restored.edges) == 4
+    root = restored.get_state()
+    assert root["id"] == restored.root_state_id
+    assert root["metadata"]["transition"]["explanation_status"] == "partial"
+
+
+def test_history_displays_stay_short_and_keep_user_metadata(network, capsys):
+    network.connect_nodes()
+    network.save_state(metadata={"note": "after manual pruning"})
+    network.describe_history()
+    printed = capsys.readouterr().out
+    assert "State 1 - {'method': 'connect_nodes', 'args': [], 'kwargs': {}}" in printed
+    assert "transition" not in printed and "Provenance" not in printed
+    source = network.history_digraph().source
+    assert "note: after manual pruning" in source
+    assert "database_name: SIGNOR" in source
+    assert "transition" not in source
+
+
+def test_history_files_follow_the_umask(network, tmp_path):
+    import os
+    import stat
+
+    previous = os.umask(0o022)
+    try:
+        network.export_history(tmp_path / "history.json")
+        Exports(network).export_sif(tmp_path / "model.sif")
+    finally:
+        os.umask(previous)
+    for name in ("history.json", "model.sif", "model.sif.neko.json"):
+        assert stat.S_IMODE((tmp_path / name).stat().st_mode) == 0o644
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        "history.json", "model.sif", "model.sif.neko.json",
+    ]
+
+
+def test_seeded_state_fingerprints_match_recomputed_ones(network):
+    from neko.core.history import frame_fingerprint, state_fingerprints
+
+    network.connect_nodes()
+    network.edit_interactions([edit()])
+    network.add_node("ID:D")
+    for state in network._states.values():
+        cached = state_fingerprints(state)
+        assert cached == (
+            frame_fingerprint(state.nodes), frame_fingerprint(state.edges)
+        )
+    assert history_payload(network)["working_state_matches_current"]

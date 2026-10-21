@@ -73,9 +73,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.describe_states"><code class="docutils literal notranslate"><span class="pre">Network.describe_states()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.dfs_algorithm"><code class="docutils literal notranslate"><span class="pre">Network.dfs_algorithm()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.edges_as_objects"><code class="docutils literal notranslate"><span class="pre">Network.edges_as_objects()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.edit_interactions"><code class="docutils literal notranslate"><span class="pre">Network.edit_interactions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.export_history"><code class="docutils literal notranslate"><span class="pre">Network.export_history()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.from_history"><code class="docutils literal notranslate"><span class="pre">Network.from_history()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.get_state"><code class="docutils literal notranslate"><span class="pre">Network.get_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.history_dict"><code class="docutils literal notranslate"><span class="pre">Network.history_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.history_digraph"><code class="docutils literal notranslate"><span class="pre">Network.history_digraph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.history_graph"><code class="docutils literal notranslate"><span class="pre">Network.history_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.history_html"><code class="docutils literal notranslate"><span class="pre">Network.history_html()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.history_status"><code class="docutils literal notranslate"><span class="pre">Network.history_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.list_states"><code class="docutils literal notranslate"><span class="pre">Network.list_states()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.mapping_node_identifier"><code class="docutils literal notranslate"><span class="pre">Network.mapping_node_identifier()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.modify_node_name"><code class="docutils literal notranslate"><span class="pre">Network.modify_node_name()</span></code></a></li>
@@ -99,7 +105,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.sync_nodes_to_df"><code class="docutils literal notranslate"><span class="pre">Network.sync_nodes_to_df()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.undo"><code class="docutils literal notranslate"><span class="pre">Network.undo()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.current_state_id"><code class="docutils literal notranslate"><span class="pre">Network.current_state_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.database_name"><code class="docutils literal notranslate"><span class="pre">Network.database_name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.root_state_id"><code class="docutils literal notranslate"><span class="pre">Network.root_state_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neko.core.network.Network.state_count"><code class="docutils literal notranslate"><span class="pre">Network.state_count</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -180,7 +188,7 @@
 <p>Below is a summary of the methods available in the <code class="docutils literal notranslate"><span class="pre">Network</span></code> class:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="neko.core.network.Network">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neko.core.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sif_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neko.core.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sif_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A molecular interaction network.</p>
 <blockquote>
@@ -418,6 +426,38 @@ null values.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.edit_interactions">
+<span class="sig-name descname"><span class="pre">edit_interactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">InteractionEdit</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_state_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">InteractionEditResult</span></span></span><a class="headerlink" href="#neko.core.network.Network.edit_interactions" title="Link to this definition"></a></dt>
+<dd><p>Atomically curate existing endpoints with explicit manual evidence.</p>
+<p>See <code class="xref py py-mod docutils literal notranslate"><span class="pre">neko.core.curation</span></code> and the interaction-curation guide for
+request/result schemas and stable InteractionEditError codes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.export_history">
+<span class="sig-name descname"><span class="pre">export_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pretty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network.export_history" title="Link to this definition"></a></dt>
+<dd><p>Write all retained states, working state, provenance and ancestry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.from_history">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network.from_history" title="Link to this definition"></a></dt>
+<dd><p>Restore stored history offline; resources are needed for growth.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#neko.core.network.Network.get_state" title="Link to this definition"></a></dt>
+<dd><p>Read one exact saved state without checkout or mutable internal references.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.history_dict">
+<span class="sig-name descname"><span class="pre">history_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#neko.core.network.Network.history_dict" title="Link to this definition"></a></dt>
+<dd><p>Return the independent JSON-compatible payload used by export_history.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="neko.core.network.Network.history_digraph">
 <span class="sig-name descname"><span class="pre">history_digraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko.core.network.Network.history_digraph" title="Link to this definition"></a></dt>
 <dd><p>Return a Graphviz digraph for the history.</p>
@@ -436,9 +476,17 @@ null values.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="neko.core.network.Network.history_status">
+<span class="sig-name descname"><span class="pre">history_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#neko.core.network.Network.history_status" title="Link to this definition"></a></dt>
+<dd><p>Inspect pruning and working changes without serializing past states.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="neko.core.network.Network.list_states">
-<span class="sig-name descname"><span class="pre">list_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#neko.core.network.Network.list_states" title="Link to this definition"></a></dt>
-<dd><p>Return a creation-ordered list of state metadata.</p>
+<span class="sig-name descname"><span class="pre">list_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#neko.core.network.Network.list_states" title="Link to this definition"></a></dt>
+<dd><p>Return a creation-ordered page; defaults preserve the full listing.</p>
+<p>Summary metadata includes labels, explanation status and change counts,
+without copying evidence, parameters or inclusion explanations.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -634,9 +682,21 @@ the edges between the nodes in the path.</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="neko.core.network.Network.database_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">database_name</span></span><a class="headerlink" href="#neko.core.network.Network.database_name" title="Link to this definition"></a></dt>
+<dd><p>Database selected at construction; not the origin of every edge.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="neko.core.network.Network.root_state_id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_state_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#neko.core.network.Network.root_state_id" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neko.core.network.Network.state_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#neko.core.network.Network.state_count" title="Link to this definition"></a></dt>
+<dd><p>Number of retained states, without materializing their metadata.</p>
+</dd></dl>
 
 </dd></dl>
 

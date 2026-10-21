@@ -348,7 +348,12 @@ def consolidate_edges(edges: pd.DataFrame) -> pd.DataFrame:
         detail = ', '.join(sorted(missing_columns))
         raise ValueError(f'Edges are missing required column(s): {detail}.')
 
+    from .history import merge_provenance
+
     columns = ['source', 'target', 'Type', 'Effect', 'References']
+    has_provenance = 'Provenance' in edges.columns
+    if has_provenance:
+        columns.append('Provenance')
     if edges.empty:
         return edges.reindex(columns=columns).copy().reset_index(drop=True)
 
@@ -363,6 +368,40 @@ def consolidate_edges(edges: pd.DataFrame) -> pd.DataFrame:
 
     for (source, target), group in working.groupby(
             ['source', 'target'], sort=False, dropna=False):
+        if len(group) == 1:
+            # Automatic growth repeatedly consolidates the working graph.
+            # A unique directed pair needs normalization, not DataFrame
+            # filtering/grouping for competing effects and evidence.
+            single = group.iloc[0]
+            value = single.get('Provenance')
+            if has_provenance and isinstance(value, dict) and value.get('edits'):
+                row = single[columns].to_dict()
+            else:
+                row = {
+                    'source': source, 'target': target,
+                    'Type': _join_unique_values([single['Type']]),
+                    'Effect': single['_normalized_effect'],
+                    'References': _join_unique_values([single['References']]),
+                }
+            if has_provenance:
+                row['Provenance'] = merge_provenance([single.to_dict()])
+            consolidated.append(row)
+            continue
+        if has_provenance:
+            curated = group[group['Provenance'].map(
+                lambda value: isinstance(value, dict) and bool(value.get('edits'))
+            )]
+            if not curated.empty:
+                if curated['_normalized_effect'].nunique() > 1:
+                    raise ValueError('Cannot consolidate conflicting manually curated effects.')
+                row = curated.iloc[0][columns].to_dict()
+                # A later database expansion must not undo a manual decision.
+                row['Provenance'] = merge_provenance([
+                    *curated.to_dict('records'),
+                    *group.loc[~group.index.isin(curated.index)].to_dict('records'),
+                ])
+                consolidated.append(row)
+                continue
         categories = []
         for effect in group['_normalized_effect']:
             if effect in regulatory_effects:
@@ -398,6 +437,8 @@ def consolidate_edges(edges: pd.DataFrame) -> pd.DataFrame:
                 'Effect': effect,
                 'References': _join_unique_values(selected['References']),
             })
+            if has_provenance:
+                consolidated[-1]['Provenance'] = merge_provenance(selected.to_dict('records'))
 
     return pd.DataFrame(consolidated, columns=columns).reset_index(drop=True)
 

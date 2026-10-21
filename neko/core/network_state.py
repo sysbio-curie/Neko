@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+import copy
+from .history import copy_frame
 
 
 class NetworkState:
@@ -14,9 +16,9 @@ class NetworkState:
         state_id: Optional[int] = None,
         parent_ids: Optional[List[int]] = None,
     ):
-        self.nodes = nodes.copy(deep=True)
-        self.edges = edges.copy(deep=True)
-        self.metadata: Dict[str, Any] = metadata or {}
+        self.nodes = copy_frame(nodes)
+        self.edges = copy_frame(edges)
+        self.metadata: Dict[str, Any] = copy.deepcopy(metadata or {})
         self.state_id = state_id
         self.parent_ids: List[int] = list(parent_ids or [])
         self.children_ids: List[int] = []

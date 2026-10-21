@@ -58,6 +58,8 @@ def network_universe(
     as a placeholder. Later we will dispatch all inputs through this API.
     """
 
+    if isinstance(resource, Universe):
+        return resource
     return Universe(resource, **kwargs)
 
 
@@ -71,7 +73,7 @@ def signor(path: str | None = None, **kwargs) -> Universe:
     # adapter downloads and populates that cache only when it has no usable
     # cached release.
     if path and os.path.exists(path):
-        return Universe(_signor.signor(path, **kwargs))
+        return Universe(_signor.signor(path, **kwargs), name='SIGNOR')
     else:
         if path:
             logging.warning(
@@ -80,7 +82,7 @@ def signor(path: str | None = None, **kwargs) -> Universe:
                 os.path.abspath(path),
             )
 
-        return Universe(_signor.signor(**kwargs))
+        return Universe(_signor.signor(**kwargs), name='SIGNOR')
 
 
 def phosphosite(
@@ -117,6 +119,10 @@ class Universe:
         self._resources = {}
         self._directed = {}
         self._resource = resources
+        self.database_name = param.get('name') or (
+            'OmniPath' if isinstance(resources, str) and resources == 'omnipath'
+            else getattr(resources, 'attrs', {}).get('database_name')
+        )
         self.interactions = None
         self.add_resources(resources, **param)
         self.build()
@@ -264,6 +270,7 @@ class Universe:
             )
 
         self.interactions.reset_index(drop=True, inplace=True)
+        self.interactions.attrs['database_name'] = self.database_name
 
 
     @property

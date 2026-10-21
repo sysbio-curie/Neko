@@ -20,6 +20,9 @@ from .strategy_options import (
     resolve_connection_policies,
 )
 
+from .history import (construction_operation, effective_parameters, inclusion,
+                      unique_edges, provenance)
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +54,7 @@ def _remove_nodes(network, nodes: pd.DataFrame) -> bool:
     return made_progress
 
 
+@construction_operation
 def connect_nodes(network, only_signed: bool = False, consensus_only: bool = False) -> None:
     """
     Basic node connections. Adds all interactions found in the resources database.
@@ -60,6 +64,7 @@ def connect_nodes(network, only_signed: bool = False, consensus_only: bool = Fal
         return
 
     interactions = []
+    effective_parameters(network, selected_nodes=network.nodes["Uniprot"].tolist())
 
     def select_edge_if_present_and_signed(node1, node2):
         interaction = network._connect.find_interactions(node1, node2)
@@ -68,6 +73,7 @@ def connect_nodes(network, only_signed: bool = False, consensus_only: bool = Fal
             or network.check_sign(interaction, consensus_only) != "undefined"
         ):
             interactions.append(interaction)
+            inclusion(network, node1, node2, {"kind": "induced_subgraph"})
 
     for node1, node2 in combinations(network.nodes["Uniprot"], 2):
         select_edge_if_present_and_signed(node1, node2)
@@ -79,6 +85,7 @@ def connect_nodes(network, only_signed: bool = False, consensus_only: bool = Fal
         )
     return
 
+@construction_operation
 def connect_subgroup(network, group, maxlen: int = 1, only_signed: bool = False, consensus: bool = False) -> None:
     """
     Connect all nodes in a subgroup by finding paths between all pairs and adding them to the network.
@@ -87,6 +94,7 @@ def connect_subgroup(network, group, maxlen: int = 1, only_signed: bool = False,
         uniprot_gene_list = group
     else:
         uniprot_gene_list = [network.mapping_node_identifier(i)[2] for i in group]
+    effective_parameters(network, resolved_group=uniprot_gene_list)
     if len(uniprot_gene_list) == 1:
         print("Number of node insufficient to create connection")
     else:
@@ -107,6 +115,7 @@ def connect_subgroup(network, group, maxlen: int = 1, only_signed: bool = False,
                     break
     return
 
+@construction_operation
 def connect_component(network, comp_A, comp_B, maxlen: int = 2, mode: Literal['OUT', 'IN', 'ALL'] = 'OUT', only_signed: bool = False, consensus: bool = False) -> None:
     """
     Connect subcomponents of a network using the specified mode and add paths to the network.
@@ -130,18 +139,21 @@ def connect_component(network, comp_A, comp_B, maxlen: int = 2, mode: Literal['O
         connect_subgroup(network, set_c, only_signed=only_signed, maxlen=maxlen, consensus=consensus)
     return
 
+@construction_operation
 def connect_to_upstream_nodes(network, nodes_to_connect=None, depth: int = 1, rank: int = 1, only_signed: bool = True, consensus: bool = False) -> None:
     """
     Connect provided nodes to their upstream nodes in the network.
     """
     if nodes_to_connect is None:
         nodes_to_connect = network.nodes["Uniprot"].tolist()
+    effective_parameters(network, nodes_to_connect=nodes_to_connect, sign_filter_applied=False)
     cascades = network._connect.find_upstream_cascades(nodes_to_connect, depth, rank)
     # No need to filter cascades, as sign filtering is handled in Connections if needed
     network._add_cascade_to_edge_list(cascades)
-    network.edges.drop_duplicates().reset_index(drop=True)
+    network.edges = unique_edges(network.edges)
     return
 
+@construction_operation
 def connect_genes_to_phenotype(
         network,
         phenotype: str = None,
@@ -164,6 +176,7 @@ def connect_genes_to_phenotype(
         phenotype=phenotype,
         id_accession=id_accession,
     )
+    effective_parameters(network, id_accession=id_accession)
     term = network._ontology.get_term(id_accession)
     go_genes = network._ontology.fetch_go_genes(
         id_accession,
@@ -213,6 +226,8 @@ def connect_genes_to_phenotype(
         else network.nodes["Uniprot"].dropna().tolist()
     )
     unique_uniprot = set(uniprot_genes) - set(source_uniprot)
+    effective_parameters(network, selected_go_genes=sorted(set(uniprot_genes)),
+                         resolved_source_nodes=source_uniprot)
     connect_component(
         network,
         source_uniprot,
@@ -227,6 +242,12 @@ def connect_genes_to_phenotype(
         has_compressed_nodes = compressed_node_mask.any()
 
         network.nodes = network.nodes.loc[~compressed_node_mask].copy()
+        for _, edge in network.edges.iterrows():
+            if edge['source'] in unique_uniprot or edge['target'] in unique_uniprot:
+                inclusion(network, phenotype_modified if edge['source'] in unique_uniprot else edge['source'],
+                          phenotype_modified if edge['target'] in unique_uniprot else edge['target'],
+                          {"kind": "ontology_compression", "go_id": term.go_id,
+                           "original_edge": [edge['source'], edge['target']]})
         for column in ['source', 'target']:
             network.edges[column] = network.edges[column].replace(
                 dict.fromkeys(unique_uniprot, phenotype_modified),
@@ -255,6 +276,9 @@ def connect_genes_to_phenotype(
                 'Effect': 'stimulation',
                 'References': f'Gene Ontology: {term.go_id}',
             })
+            go_edges['Provenance'] = [provenance(row, 'resource', 'Gene Ontology') for row in go_edges.to_dict('records')]
+            for source in sorted(common_genes):
+                inclusion(network, source, phenotype_modified, {"kind": "ontology_association", "go_id": term.go_id})
             network.edges = pd.concat(
                 [network.edges, go_edges],
                 ignore_index=True,
@@ -268,6 +292,7 @@ def connect_genes_to_phenotype(
             network.sync_edges_from_df()
     return
 
+@construction_operation
 def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT', 'IN', None] = None, loops: bool = False, consensus: bool = False, only_signed: bool = True) -> None:
     """
     Connect all nodes of a network in a radial manner.
@@ -278,6 +303,7 @@ def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT'
         for node in initial_nodes
         if (identifier := network.mapping_node_identifier(node)[2]) is not None
     }
+    effective_parameters(network, resolved_initial_nodes=sorted(initial_nodes_set))
     i = 0
     source_nodes = initial_nodes_set
     target_nodes = initial_nodes_set
@@ -331,6 +357,7 @@ def connect_network_radially(network, max_len: int = 1, direction: Literal['OUT'
         ]
     return
 
+@construction_operation
 def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = None, max_len: int = 1, loops: bool = False, outputs=None, only_signed: bool = True, consensus: bool = False) -> None:
     """
     Connect all nodes of a network in a topological manner.
@@ -341,6 +368,7 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
         if (identifier := network.mapping_node_identifier(node)[2]) is not None
     ]
     initial_nodes_set = set(initial_nodes)
+    effective_parameters(network, resolved_initial_nodes=initial_nodes, max_upstream_depth=4)
     if strategy == 'radial':
         connect_network_radially(network, max_len, direction=None, loops=loops, consensus=consensus, only_signed=only_signed)
     elif strategy == 'complete':
@@ -392,7 +420,7 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
             print("Current depth is 4, stopping the process")
             break
         depth += 1
-    network.edges.drop_duplicates().reset_index(drop=True)
+    network.edges = unique_edges(network.edges)
     target_nodes_set = set(network.edges["target"].unique())
     node_identifiers = _node_identifiers(network.nodes)
     disconnected_nodes = network.nodes[
@@ -410,6 +438,7 @@ def connect_as_atopo(network, strategy: Literal['radial', 'complete', None] = No
         ]
     return
 
+@construction_operation
 def complete_connection(network,
                         maxlen: Optional[int] = 2,
                         algorithm=UNSET,
@@ -441,6 +470,13 @@ def complete_connection(network,
         connect_with_bias=connect_with_bias,
         warning_stacklevel=_warning_stacklevel,
     )
+
+    effective_parameters(network, maxlen=resolved.maxlen,
+                         path_policy=resolved.path_policy, reuse_policy=resolved.reuse_policy)
+    context = getattr(network, "_transition_context", None)
+    if context and context["stack"]:
+        for legacy in ("algorithm", "minimal", "connect_with_bias"):
+            context["stack"][-1]["parameters"].pop(legacy, None)
 
     nodes = network.nodes.copy()
     working_graph = Connections(network.edges)
@@ -490,7 +526,10 @@ def complete_connection(network,
             if not selected_paths:
                 continue
 
-            network._add_paths_to_edge_list(selected_paths)
+            reason = None
+            if resolved.path_policy == "all_shortest":
+                reason = {"kind": "shortest_path_union", "seed_pair": [source, target]}
+            network._add_paths_to_edge_list(selected_paths, reason=reason)
 
             if resolved.reuse_policy == "induced_subgraph":
                 connect_nodes(
@@ -506,5 +545,5 @@ def complete_connection(network,
         only_signed=only_signed,
         consensus_only=consensus,
     )
-    network.edges = network.edges.drop_duplicates().reset_index(drop=True)
+    network.edges = unique_edges(network.edges)
     return

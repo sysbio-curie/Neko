@@ -1,10 +1,14 @@
 import os
 import re
 import itertools
+import json
+import hashlib
+from pathlib import Path
 
 import pandas as pd
 
 from neko.core.tools import consolidate_edges
+from neko.core.history import copy_frame, history_payload, json_value, records, write_json
 
 
 def _sanitize_bnet_identifier(value: str) -> str:
@@ -21,12 +25,52 @@ class Exports:
     In the future many more versatile methods will be implemented (SBML) and annotations will be included for each
     interaction, including the DOI of the relative reference and annotations from each database
     """
-    def __init__(self, network):
-        net = network.copy()
-        df_edges = net.convert_edgelist_into_genesymbol()
-        self.nodes = net.nodes
+    def __init__(self, network, *, pretty=False):
+        # Capture detached export data once. Copying Network also copies the
+        # provider tables, connection indexes and every historical DataFrame.
+        self._history = history_payload(network) if hasattr(network, '_states') else None
+        self._pretty = pretty
+        df_edges = copy_frame(network.convert_edgelist_into_genesymbol())
+        self.nodes = copy_frame(network.nodes)
         self.interactions = consolidate_edges(df_edges)
         return
+
+    def _write_shared_history(self, file_name):
+        """Write the retained history once for several exported variants."""
+        path = Path(write_json(file_name, self._history,
+                               pretty=getattr(self, '_pretty', False), _normalized=True))
+        return {'file': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+    def _write_companion(self, file_name, format_name, interactions, mapping,
+                         history_reference=None):
+        """Bind a lossy graph export to its exact state and retained history.
+
+        Schema 1 embeds the history. Schema 2 references a shared history file
+        in the same directory (see ``_write_shared_history``).
+        """
+        history = getattr(self, '_history', None)
+        identifiers = []
+        for row in records(self.nodes):
+            identifier = row.get('Uniprot') or row['Genesymbol']
+            label = row['Genesymbol']
+            identifiers.append({'identifier': identifier, 'label': label,
+                                'exported_identifier': mapping.get(label, label)})
+        payload = {
+            'format': 'neko-export', 'schema_version': 1,
+            'export': json_value({'format': format_name, 'file': Path(file_name).name,
+                       'sha256': hashlib.sha256(Path(file_name).read_bytes()).hexdigest(),
+                       'state_id': history['current_state_id'] if history else None,
+                       'identifiers': identifiers,
+                       'interactions': records(interactions),
+                       'omitted_effects': ['undefined'] if format_name == 'bnet' else []}),
+            'history': history,
+            'history_limitation': None if history else 'No NetworkState history was supplied.',
+        }
+        if history_reference is not None:
+            del payload['history']
+            payload.update(schema_version=2, history_file=history_reference)
+        return write_json(str(file_name) + '.neko.json', payload,
+                          pretty=getattr(self, '_pretty', False), _normalized=True)
 
     def export_bnet(self, file_name="logic_model.bnet", n=None):
         """
@@ -147,6 +191,18 @@ class Exports:
         if directory:
             os.makedirs(directory, exist_ok=True)
 
+        # A single variant keeps the self-contained schema 1 companion that
+        # callers such as the MCP server read. Several variants share one
+        # history file instead of each embedding an identical copy.
+        variant_count = 2 ** len(bimodal_indices)
+        if n is not None:
+            variant_count = min(n, variant_count)
+        history_reference = None
+        if variant_count > 1 and getattr(self, '_history', None) is not None:
+            history_reference = self._write_shared_history(
+                f"{os.path.splitext(file_name)[0]}.bnet.history.json"
+            )
+
         # Iterate through permutations and create a BNet file for each
         generated = 0
 
@@ -208,6 +264,8 @@ class Exports:
                     f.write(f"{sanitized_node}, {formula}\n")
 
             print(f"Created BNet file: {perm_file_name}")
+            self._write_companion(perm_file_name, 'bnet', interactions_copy, sanitized_nodes,
+                                  history_reference)
             generated += 1
 
         print(f"Generated {generated} BNet files.")
@@ -235,8 +293,11 @@ class Exports:
 
                 # Write a comment line with the interaction reference
                 file.write(f"# Reference PMID: {interaction_reference}\n")
+                if isinstance(row.get('Provenance'), dict):
+                    file.write('# NeKo provenance: ' + json.dumps(row['Provenance'], allow_nan=False) + '\n')
 
                 # Write the formatted interaction to the .sif file
                 file.write(f"{row['source']}\t{interaction_type}\t{row['target']}\n")
 
+        self._write_companion(file_name, 'sif', self.interactions, {})
         return

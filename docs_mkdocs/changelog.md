@@ -9,9 +9,7 @@ developed backend rewrite.
 
 ---
 
-## [Unreleased]
-
-Planned release: **1.10.2**.
+## [1.10.2] – 2026-10-21
 
 ### Added
 
@@ -51,6 +49,16 @@ Planned release: **1.10.2**.
   `<stem>.bnet.history.json`; their companions reference it (`neko-export`
   schema version 2) instead of each embedding a full copy. Single-model exports
   keep the self-contained schema version 1 companion.
+
+---
+
+## [1.10.1] – 2026-10-01
+
+### Fixed
+
+- SIF import keeps each edge's `# Reference PMID:` comment as its reference
+  across export/import round trips. Unannotated interactions keep the
+  `SIF file` fallback, and a comment is never carried over to another edge.
 
 ---
 

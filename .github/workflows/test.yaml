@@ -9,6 +9,8 @@ on:
     branches:
         - main
         - development
+  # Lets publish.yml run the full matrix before uploading a release.
+  workflow_call:
 
 jobs:
 
@@ -77,13 +79,9 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
 
+      # No event filter: when called from publish.yml the event is 'release',
+      # and a push/pull_request filter would skip the tests silently.
       - name: Tests and coverage
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          poetry run pytest -v --cov --color=yes --durations=0
-
-      - name: Tests
-        if: ${{ github.event_name == 'pull_request' }}
         run: |
           poetry run pytest -v --cov --color=yes --durations=0
 

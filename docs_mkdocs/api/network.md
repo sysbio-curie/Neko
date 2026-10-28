@@ -22,6 +22,19 @@ print(net.nodes)
 print(net.edges)
 ```
 
+`resources` defaults to OmniPath, so `Network(["EGFR", "KRAS", "MYC"])` loads
+the same data as the example above. Seeds are matched against the selected
+database: aliases are replaced by the database symbol (for example `FAK`
+becomes `PTK2`) and seeds that are not found are dropped with a `UserWarning`.
+`net.seed_mapping` records what happened to each requested seed, with `None`
+for dropped seeds:
+
+```python
+net = Network(["EGFR", "FAK", "NOTAGENE"])
+net.seed_mapping
+# {'EGFR': 'EGFR', 'FAK': 'PTK2', 'NOTAGENE': None}
+```
+
 ## Complete a seed network
 
 `complete_connection` attempts both directed orientations for every original

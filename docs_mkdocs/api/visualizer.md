@@ -16,10 +16,13 @@ from neko._visual.visualize_network import NetworkVisualizer
 ```python
 from neko._visual.visualize_network import NetworkVisualizer
 
-vis = NetworkVisualizer(net, color_by="role")
+vis = NetworkVisualizer(net)
 vis.set_node_colors({"EGFR": "#e74c3c"})
-vis.render("my_network", format="svg")
+vis.render("my_network", format="svg")  # writes my_network.svg
 ```
+
+`render()` writes a PDF unless `format` names another Graphviz output format,
+such as `"svg"` or `"png"`. The extension is appended to the file name.
 
 ---
 

@@ -9,6 +9,37 @@ developed backend rewrite.
 
 ---
 
+## [1.10.3] – 2026-10-28
+
+### Added
+
+- `Network.seed_mapping` records what happened to each requested seed: its
+  database symbol (aliases such as `FAK` map to `PTK2`) or `None` when it was
+  dropped. The initial history state stores the same mapping.
+- `NetworkVisualizer.render()` accepts `format=` (`"pdf"` by default; also
+  `"svg"`, `"png"` or any other Graphviz format).
+
+### Fixed
+
+- `Network(genes)` without `resources` loads OmniPath, as documented, instead of
+  failing with `TypeError: 'NoneType' object is not subscriptable`.
+- Custom interaction tables: text labels in an `effect` column are parsed by
+  meaning. Before this fix, any non-empty text, including `"inhibition"`, was read as a
+  stimulation, and missing effects were read as inhibitions. Unrecognised effect
+  values now raise `ValueError` that names them, and missing values are
+  `undefined`. `form complex` sets `form_complex`.
+- Boolean flag columns (`is_stimulation`, `is_inhibition`, `is_directed`,
+  `form_complex`) accept `TRUE`/`FALSE`, `t`/`f` and `y`/`n` in any case, and
+  raise `ValueError` for other text instead of reading it as `True`.
+- Seeds and nodes missing from the database are reported with a `UserWarning`
+  instead of a printed message, so they can be caught, logged or turned into
+  errors.
+- Documentation: corrected the `render()` example and the default-resource note
+  in the network-building notebook, and documented the accepted values for
+  custom interaction tables.
+
+---
+
 ## [1.10.2] – 2026-10-21
 
 ### Added

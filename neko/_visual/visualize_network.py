@@ -175,17 +175,21 @@ class NetworkVisualizer:
             node_color = 'lightblue' if in_tissue else 'lightgray'
             self.__node_colors[gene_symbol] = node_color
 
-    def render(self, output_file='network', view=False, highlight_nodes=None, highlight_color='lightyellow'):
+    def render(self, output_file='network', view=False, highlight_nodes=None, highlight_color='lightyellow',
+               format='pdf'):
         """
         Render the graph.
 
         Args:
-            output_file (str): The name of the output file.
+            output_file (str): The name of the output file, without extension.
             view (bool): If True, display the graph.
             highlight_nodes (list): List of nodes to highlight.
             highlight_color (str): Color to use for highlighting nodes.
+            format (str): Any Graphviz output format, such as 'pdf', 'svg' or 'png'.
+                The extension is appended to ``output_file``.
         """
         self.__build_graph(highlight_nodes, highlight_color)
+        self.graph.format = format
         if view:
             self.graph.view(filename=output_file)
         else:

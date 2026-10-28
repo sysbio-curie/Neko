@@ -405,3 +405,67 @@ def test_omnipath_universe():
     df = omnipath_universe()
     assert isinstance(df, pd.DataFrame)
     assert {'source', 'target'}.issubset(df.columns)
+
+
+def _custom_universe(effects):
+    df = pd.DataFrame({
+        'source': [f'S{i}' for i in range(len(effects))],
+        'target': [f'T{i}' for i in range(len(effects))],
+        'effect': effects,
+    })
+    return universe_module.Universe(df).interactions
+
+
+def test_custom_effect_labels_set_the_matching_sign():
+    effects = [
+        'stimulation', 'Activation', 'inhibition', ' Inhibit ', 'repression',
+        '+', '-', '1', '-1', 1, -1, True, False, 'bimodal', 'undefined', None,
+    ]
+    interactions = _custom_universe(effects)
+
+    signs = list(zip(
+        interactions['is_stimulation'].tolist(),
+        interactions['is_inhibition'].tolist(),
+    ))
+    stim, inhib, both, neither = (True, False), (False, True), (True, True), (False, False)
+    assert signs == [
+        stim, stim, inhib, inhib, inhib,
+        stim, inhib, stim, inhib, stim, inhib, stim, inhib,
+        both, neither, neither,
+    ]
+
+
+def test_custom_effect_form_complex_sets_complex_flag():
+    interactions = _custom_universe(['form complex'])
+
+    row = interactions.iloc[0]
+    assert bool(row['form_complex'])
+    assert not row['is_stimulation'] and not row['is_inhibition']
+
+
+def test_unrecognised_custom_effect_raises():
+    with pytest.raises(ValueError, match="'upregulates'.*'phosphorylation'"):
+        _custom_universe(['stimulation', 'upregulates', 'phosphorylation'])
+
+
+def test_unrecognised_boolean_flag_raises():
+    df = pd.DataFrame({
+        'source': ['A', 'B', 'C'],
+        'target': ['B', 'C', 'A'],
+        'is_stimulation': ['TRUE', 'FALSE', 'inhibition'],
+    })
+
+    with pytest.raises(ValueError, match="is_stimulation.*'inhibition'"):
+        universe_module.Universe(df)
+
+
+def test_boolean_flags_accept_common_spellings():
+    df = pd.DataFrame({
+        'source': ['A', 'B', 'C', 'D'],
+        'target': ['B', 'C', 'D', 'A'],
+        'is_stimulation': ['TRUE', 'FALSE', 't', 0.0],
+    })
+
+    interactions = universe_module.Universe(df).interactions
+
+    assert interactions['is_stimulation'].tolist() == [True, False, True, False]

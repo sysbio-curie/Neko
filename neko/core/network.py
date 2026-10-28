@@ -2,6 +2,7 @@ from __future__ import annotations
 from ..inputs import _universe, chebi_mapping
 from .._methods.enrichment_methods import Connections
 import copy
+import warnings
 from contextlib import contextmanager
 from functools import wraps
 from .._annotations.gene_ontology import Ontology
@@ -207,7 +208,10 @@ class Network:
 
     def _populate(self):
 
-        universe = _universe.network_universe(self._init_args['resources'])
+        resources = self._init_args['resources']
+        if resources is None:
+            resources = 'omnipath'
+        universe = _universe.network_universe(resources)
         supplied_name = self._init_args['database_name']
         loader_name = universe.database_name
         if supplied_name is not None and (not isinstance(supplied_name, str) or not supplied_name.strip()):
@@ -232,9 +236,11 @@ class Network:
             chebi_mapping.identifiers_in_frame(self.resources),
         )
 
+        self.seed_mapping = {}
         if self.initial_nodes:
             nodes_found = []
             for node in self.initial_nodes:
+                self.seed_mapping[node] = None
                 if self.add_node(node):
                     identifiers = mapping_node_identifier(node)
                     candidates = {
@@ -253,6 +259,7 @@ class Network:
                         else identifiers[0] or identifiers[1] or node
                     )
                     nodes_found.append(canonical)
+                    self.seed_mapping[node] = canonical
             self.initial_nodes = list(dict.fromkeys(nodes_found))
             self._drop_missing_nodes()
             self.nodes.reset_index(inplace=True, drop=True)
@@ -271,6 +278,7 @@ class Network:
                 "initial_nodes": copy.deepcopy(self._init_args['initial_nodes']),
                 "sif_file": str(self._init_args['sif_file']) if self._init_args['sif_file'] else None,
                 "database_name": self.database_name,
+                "seed_mapping": dict(self.seed_mapping),
             }})
 
     @property
@@ -338,6 +346,7 @@ class Network:
         self.__dict__.setdefault("_resources_available", True)
         self.__dict__.setdefault("_pruned_state_ids", [])
         self.__dict__.setdefault("_transition_context", None)
+        self.__dict__.setdefault("seed_mapping", {})
         if "_states" not in state:
             # Pickled before history existed: start an empty history, so the
             # next change becomes the root state instead of failing.
@@ -386,13 +395,13 @@ class Network:
 
     def _drop_missing_nodes(self) -> None:
         """
-        This function drops the nodes that are not present in the resources database and print a warning with the
+        This function drops the nodes that are not present in the resources database and issues a warning with the
         name of the missing nodes.
 
         The function works as follows:
         1. It first calls the `check_nodes` function to get a list of nodes that exist in the resources' database.
         2. It then finds the nodes in the network that are not in this list, and removes them from the network.
-        3. If there are any missing nodes, it prints a warning with their names.
+        3. If there are any missing nodes, it issues a ``UserWarning`` with their names.
 
         This function does not return anything. It modifies the `nodes` attribute of the `Network` object in-place.
         """
@@ -411,10 +420,10 @@ class Network:
             missing_uniprot = removed_nodes["Uniprot"].tolist()
             missing_genesymbol = removed_nodes["Genesymbol"].tolist()
             missing_identifiers = list(set(missing_uniprot + missing_genesymbol))  # Remove duplicates
-            print(
-                "Warning: The following nodes were not found in the resources database and have been removed from the "
-                "network:",
-                ", ".join(str(node) for node in missing_identifiers if pd.notna(node))
+            warnings.warn(
+                "The following nodes were not found in the resources database and have been removed from the "
+                "network: " + ", ".join(str(node) for node in missing_identifiers if pd.notna(node)),
+                stacklevel=2,
             )
         # Keep only the nodes that exist in the resources database
         self.nodes = self.nodes[existing_mask]
@@ -475,7 +484,10 @@ class Network:
         )
 
         if resource_identifier is None:
-            print("Error: node %s is not present in the resources database" % node)
+            warnings.warn(
+                f"Node {node!r} is not present in the resources database and was not added.",
+                stacklevel=2,
+            )
             return False
 
         new_entry = {

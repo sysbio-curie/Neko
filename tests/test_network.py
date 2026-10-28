@@ -253,3 +253,77 @@ def test_check_nodes_and_connectivity(sample_genes, sample_resources):
     present = net.check_nodes(["P12931", "P12830", "Q99999"])
     assert "P12931" in present and "Q99999" not in present
     assert isinstance(is_connected(net), bool)
+
+
+def test_network_defaults_to_omnipath_resources(monkeypatch):
+    import neko.inputs._universe as universe_module
+
+    calls = []
+
+    def fake_omnipath(**kwargs):
+        calls.append(kwargs)
+        return pd.DataFrame({
+            'source': ['P12931'],
+            'target': ['P12830'],
+            'is_stimulation': [True],
+            'is_inhibition': [False],
+        })
+
+    monkeypatch.setitem(universe_module._METHODS, 'omnipath', fake_omnipath)
+
+    net = Network(initial_nodes=['P12931', 'P12830'])
+
+    assert calls
+    assert net.database_name == 'OmniPath'
+    assert set(net.nodes['Uniprot']) == {'P12931', 'P12830'}
+
+
+def test_missing_seed_warns_and_seed_mapping_records_renames(monkeypatch):
+    import neko.core.network as network_module
+
+    identifiers = {
+        'FAK': [None, 'PTK2', 'Q05397'],
+        'SRC': [None, 'SRC', 'P12931'],
+        'NOTAGENE': [None, None, None],
+    }
+    monkeypatch.setattr(
+        network_module,
+        'mapping_node_identifier',
+        lambda node: identifiers.get(node, [None, None, None]),
+    )
+    resources = pd.DataFrame({
+        'source': ['Q05397'],
+        'target': ['P12931'],
+        'Effect': ['stimulation'],
+    })
+
+    with pytest.warns(UserWarning, match='NOTAGENE'):
+        net = Network(initial_nodes=['FAK', 'SRC', 'NOTAGENE'], resources=resources)
+
+    assert net.initial_nodes == ['PTK2', 'SRC']
+    assert net.seed_mapping == {'FAK': 'PTK2', 'SRC': 'SRC', 'NOTAGENE': None}
+
+
+def test_render_writes_requested_format(tmp_path, sample_genes, sample_resources):
+    from neko._visual.visualize_network import NetworkVisualizer
+
+    net = Network(initial_nodes=sample_genes, resources=sample_resources)
+    net.complete_connection(maxlen=2)
+    output = tmp_path / 'network'
+
+    NetworkVisualizer(net).render(output_file=str(output), format='svg')
+
+    assert (tmp_path / 'network.svg').is_file()
+    assert not (tmp_path / 'network.pdf').exists()
+
+
+def test_network_pickled_before_seed_mapping_unpickles_with_empty_mapping(
+        sample_genes, sample_resources):
+    import pickle
+
+    net = Network(initial_nodes=sample_genes, resources=sample_resources)
+    del net.seed_mapping
+
+    restored = pickle.loads(pickle.dumps(net))
+
+    assert restored.seed_mapping == {}

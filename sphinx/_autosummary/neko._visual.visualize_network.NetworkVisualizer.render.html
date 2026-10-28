@@ -118,13 +118,17 @@
 <h1>neko._visual.visualize_network.NetworkVisualizer.render<a class="headerlink" href="#neko-visual-visualize-network-networkvisualizer-render" title="Link to this heading"></a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="neko._visual.visualize_network.NetworkVisualizer.render">
-<span class="sig-prename descclassname"><span class="pre">NetworkVisualizer.</span></span><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'network'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lightyellow'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko._visual.visualize_network.NetworkVisualizer.render" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">NetworkVisualizer.</span></span><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'network'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lightyellow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pdf'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neko._visual.visualize_network.NetworkVisualizer.render" title="Link to this definition"></a></dt>
 <dd><p>Render the graph.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>output_file (str): The name of the output file.
+<dl>
+<dt>Args:</dt><dd><p>output_file (str): The name of the output file, without extension.
 view (bool): If True, display the graph.
 highlight_nodes (list): List of nodes to highlight.
-highlight_color (str): Color to use for highlighting nodes.</p>
+highlight_color (str): Color to use for highlighting nodes.
+format (str): Any Graphviz output format, such as ‘pdf’, ‘svg’ or ‘png’.</p>
+<blockquote>
+<div><p>The extension is appended to <code class="docutils literal notranslate"><span class="pre">output_file</span></code>.</p>
+</div></blockquote>
 </dd>
 </dl>
 </dd></dl>

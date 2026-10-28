@@ -1309,6 +1309,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#custom-interaction-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom interaction tables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#universe" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1880,6 +1891,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#custom-interaction-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom interaction tables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#universe" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2161,6 +2183,54 @@ PhosphoSitePlus; a custom DataFrame can be supplied directly.</p>
 </span></code></pre></div>
 <p>A bare <code>Universe()</code> is intentionally empty. Use an explicit resource name when
 data should be loaded.</p>
+<h2 id="custom-interaction-tables">Custom interaction tables<a class="headerlink" href="#custom-interaction-tables" title="Permanent link">&para;</a></h2>
+<p>A custom DataFrame needs <code>source</code> and <code>target</code> columns. Give interaction signs
+either as boolean <code>is_stimulation</code> / <code>is_inhibition</code> columns or as one lowercase
+<code>effect</code> column. Recognised <code>effect</code> values (case-insensitive) are:</p>
+<table>
+<thead>
+<tr>
+<th>Meaning</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stimulation</td>
+<td><code>stimulation</code>, <code>activation</code>, <code>activate(s)</code>, <code>stimulate(s)</code>, <code>positive</code>, <code>+</code>, <code>True</code>, <code>1</code></td>
+</tr>
+<tr>
+<td>Inhibition</td>
+<td><code>inhibition</code>, <code>inhibit(s)</code>, <code>repression</code>, <code>repress(es)</code>, <code>negative</code>, <code>-</code>, <code>False</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td>Both</td>
+<td><code>bimodal</code>, <code>both</code></td>
+</tr>
+<tr>
+<td>Undefined</td>
+<td><code>undefined</code>, <code>unknown</code>, or an empty value</td>
+</tr>
+<tr>
+<td>Complex formation</td>
+<td><code>form complex</code>, <code>complex</code></td>
+</tr>
+</tbody>
+</table>
+<p>Any other value raises <code>ValueError</code> and names the offending values; NeKo does
+not guess a sign. Boolean flag columns (<code>is_directed</code>, <code>is_stimulation</code>,
+<code>is_inhibition</code>, <code>form_complex</code>) accept <code>True</code>/<code>False</code>, <code>yes</code>/<code>no</code>, <code>t</code>/<code>f</code>,
+<code>y</code>/<code>n</code> and <code>1</code>/<code>0</code>/<code>-1</code> in any case, and raise <code>ValueError</code> for other text.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">neko.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;PTEN&quot;</span><span class="p">],</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PIK3CA&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1&quot;</span><span class="p">],</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="s2">&quot;effect&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;stimulation&quot;</span><span class="p">,</span> <span class="s2">&quot;inhibition&quot;</span><span class="p">],</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">})</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">([</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1&quot;</span><span class="p">],</span> <span class="n">resources</span><span class="o">=</span><span class="n">Universe</span><span class="p">(</span><span class="n">table</span><span class="p">)</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+</span></code></pre></div>
 <h2 id="universe">Universe<a class="headerlink" href="#universe" title="Permanent link">&para;</a></h2>
 
 
@@ -2709,7 +2779,7 @@ as a placeholder. Later we will dispatch all inputs through this API.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 07:39:18 UTC">August 13, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 28, 2026 06:07:33 UTC">October 28, 2026</span>
   </span>
 
     
